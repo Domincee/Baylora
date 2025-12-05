@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
                   fontFamily: AppTextStyles.fontHeader,
                 ),
             textGradiant(),
+              Text('Hello World', style: GoogleFonts.nunitoSans()),
             ],
           ),
         ),

@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 class TextWidget extends StatelessWidget {
   final String data;
   final double? size;
-  final TextStyle? fontFamily;
   final Color? color;
+  final FontWeight? weight;
+  final  TextStyle? fontFam;
 
-  const TextWidget({
+  const TextWidget(
+    this.data, {
     super.key,
-    
-    this.color,
-    this.fontFamily,
     this.size,
-    required this.data,
-    });
+    this.color,
+    this.weight,
+    this.fontFam,
+  
+  });
 
   @override
   Widget build(BuildContext context) {
