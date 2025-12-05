@@ -8,8 +8,8 @@ class TextWidget extends StatelessWidget {
   final FontWeight? weight;
   final  TextStyle? fontFam;
 
-  const TextWidget(
-    this.data, {
+  const TextWidget({
+    required this.data, 
     super.key,
     this.size,
     this.color,
@@ -25,7 +25,7 @@ class TextWidget extends StatelessWidget {
       style: TextStyle(
         fontSize: size ?? 16,
         color: color ?? AppTextStyles.textColorDefault,
-        fontFamily: fontFamily?.fontFamily ?? AppTextStyles.fontBody.fontFamily,
+        fontFamily: fontFam?.fontFamily ?? AppTextStyles.fontBody.fontFamily,
       ),
     );
     
