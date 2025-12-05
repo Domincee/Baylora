@@ -23,11 +23,11 @@ class TextWidget extends StatelessWidget {
     return Text(
       data,
       style: TextStyle(
-        fontFamily: fontFam?.fontFamily ?? AppTextStyles.fontBody.fontFamily,
-        fontSize: size ?? AppTextStyles.bodyTextSize,
+        fontSize: size ?? 16,
         color: color ?? AppTextStyles.textColorDefault,
-        fontWeight: weight ?? FontWeight.normal,
+        fontFamily: fontFamily?.fontFamily ?? AppTextStyles.fontBody.fontFamily,
       ),
     );
+    
   }
 }

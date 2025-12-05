@@ -92,11 +92,7 @@ packages:
     source: sdk
     version: "0.0.0"
   google_fonts:
-<<<<<<< HEAD
     dependency: "direct dev"
-=======
-    dependency: "direct main"
->>>>>>> 6b24017cc9fa0abd31aeacba89cfa9028134e36e
     description:
       name: google_fonts
       sha256: ba03d03bcaa2f6cb7bd920e3b5027181db75ab524f8891c8bc3aa603885b8055

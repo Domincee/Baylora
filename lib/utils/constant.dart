@@ -44,3 +44,24 @@ static const double bodyTextSizeXXSmall = 8;
 
 }
 
+
+  ShaderMask textGradiant() {
+    final Color color1 = const Color.fromARGB(255, 78, 217, 226);
+    final Color color2 = const Color.fromARGB(255, 24, 82, 129);
+    
+    return ShaderMask(
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: [ color1, color2],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+                  child: Text(
+                    "LOG",
+                    style: TextStyle(
+                      color: Colors.white, // Required but will be replaced by shader
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+        );
+  }

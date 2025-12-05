@@ -1,4 +1,5 @@
 import 'package:baylora_prjct/utils/constant.dart';
+import 'package:baylora_prjct/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -24,6 +25,14 @@ class MyApp extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+             TextWidget
+             (
+                  data: "Hello WOrld", 
+                  size: AppTextStyles.bodyTextSize, 
+                  color: AppTextStyles.textColorSemiDark, 
+                  fontFamily: AppTextStyles.fontHeader,
+                ),
+            textGradiant(),
               Text('Hello World', style: GoogleFonts.nunitoSans()),
             ],
           ),
