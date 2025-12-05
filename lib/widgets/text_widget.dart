@@ -1,0 +1,33 @@
+import 'package:baylora_prjct/utils/constant.dart';
+import 'package:flutter/material.dart';
+
+class TextWidget extends StatelessWidget {
+  final String data;
+  final double? size;
+  final Color? color;
+  final FontWeight? weight;
+  final  TextStyle? fontFam;
+
+  const TextWidget(
+    this.data, {
+    super.key,
+    this.size,
+    this.color,
+    this.weight,
+    this.fontFam,
+  
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      data,
+      style: TextStyle(
+        fontFamily: fontFam?.fontFamily ?? AppTextStyles.fontBody.fontFamily,
+        fontSize: size ?? AppTextStyles.bodyTextSize,
+        color: color ?? AppTextStyles.textColorDefault,
+        fontWeight: weight ?? FontWeight.normal,
+      ),
+    );
+  }
+}
