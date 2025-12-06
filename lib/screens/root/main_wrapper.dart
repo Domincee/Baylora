@@ -22,7 +22,7 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-          appBar: AppBar(
+      appBar: AppBar(
         title: Text('Title'),
         centerTitle: true,
         backgroundColor: Colors.blue,
@@ -30,13 +30,12 @@ class _MainWrapperState extends State<MainWrapper> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () {
-              // TODO: action
-            }
-            )
-            ]
-            ),
-            
+            onPressed: () {          
+          }
+           )
+         ]
+        ),
+
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
