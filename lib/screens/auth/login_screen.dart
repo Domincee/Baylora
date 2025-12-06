@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/config/routes.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -5,9 +6,18 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+ return Scaffold(
       body: Center(
-        child: Text('Login Screen'),
+         child: Column(
+           mainAxisAlignment: MainAxisAlignment.center,
+           crossAxisAlignment: CrossAxisAlignment.center,
+           children: [
+            Text("Login Screen"),
+            ElevatedButton(onPressed: () => Navigator.pushNamed(context, AppRoutes.main), child: Text("Login"))
+           
+           ],
+         ),
+        
       ),
     );
   }

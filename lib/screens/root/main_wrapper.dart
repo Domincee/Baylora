@@ -1,10 +1,79 @@
 import 'package:flutter/material.dart';
+import '../home/home_screen.dart';
+import '../profile/profile_screen.dart';
 
-class MainWrapper extends StatelessWidget {
+class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
 
   @override
+  State<MainWrapper> createState() => _MainWrapperState();
+}
+
+class _MainWrapperState extends State<MainWrapper> {
+  int _currentIndex = 0;
+
+  // 1. Define your pages here
+  final List<Widget> _pages = [
+    const HomeScreen(),
+    const SizedBox(), // Placeholder for Post (Index 1)
+    const ProfileScreen(),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+          appBar: AppBar(
+        title: Text('Title'),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+        leading: null,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              // TODO: action
+            }
+            )
+            ]
+            ),
+            
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
+
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: const Color(0xFF8B5CF6), 
+        type: BottomNavigationBarType.fixed,
+        onTap: (index) {
+          
+          if (index == 1) {
+            // User clicked (+). Open the Modal!
+            Navigator.pushNamed(context, '/create_listing');
+          } else {
+            setState(() {
+              _currentIndex = index;
+            });
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle, size: 32), // Big Plus
+            label: "Post", 
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: "Profile",
+          ),
+        ],
+      ),
+    );
   }
 }
