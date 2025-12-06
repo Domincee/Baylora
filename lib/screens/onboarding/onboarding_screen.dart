@@ -1,6 +1,9 @@
 import 'package:baylora_prjct/config/routes.dart';
 import 'package:baylora_prjct/models/onboarding_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
+
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});  
 
@@ -39,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(item.image),
+                    SvgPicture.asset(item.image),
                     Text(item.title),
                     Text(item.description),
                   ],
