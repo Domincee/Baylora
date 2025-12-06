@@ -42,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset(item.image),
+                    Padding(padding: EdgeInsets.all(3), child: SvgPicture.asset(item.image),),
                     Text(item.title),
                     Text(item.description),
                   ],
