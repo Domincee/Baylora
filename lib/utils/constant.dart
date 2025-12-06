@@ -58,7 +58,7 @@ static const double bodyTextSizeXXSmall = 8;
                   child: Text(
                     "LOG",
                     style: TextStyle(
-                      color: Colors.white, // Required but will be replaced by shader
+                      color: Colors.white, 
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
                     ),
