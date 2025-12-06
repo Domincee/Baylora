@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/config/routes.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -5,9 +6,19 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return  Scaffold(
+  
+
       body: Center(
-        child: Text('Home Screen'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("HomeSreen"),
+
+            ElevatedButton(onPressed: () => Navigator.pushNamed(context, AppRoutes.itemDetailScreen), child: Text("Go to Item Details"))
+          ],
+        )
+        
       ),
     );
   }
