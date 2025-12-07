@@ -1,6 +1,5 @@
 import 'package:baylora_prjct/config/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +14,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        textTheme: GoogleFonts.nunitoSansTextTheme(), 
+        textTheme: const TextTheme(
+          titleLarge: TextStyle(
+            fontFamily: 'MontserratAlternates',
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          )
+
+        ), 
       ),
       initialRoute: AppRoutes.onboarding,
       routes: AppRoutes.routes,
