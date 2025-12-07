@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
           titleLarge: TextStyle(
             fontFamily: 'MontserratAlternates',
             fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontSize: 36,
           )
 
         ), 

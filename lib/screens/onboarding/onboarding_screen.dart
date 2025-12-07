@@ -1,5 +1,6 @@
 import 'package:baylora_prjct/config/routes.dart';
 import 'package:baylora_prjct/models/onboarding_model.dart';
+import 'package:baylora_prjct/utils/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -55,11 +56,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Column(
                             children: [
                               SvgPicture.asset(item.logo, height: 50),
-                              const SizedBox(height: 8),
-                              Text(
+                              const SizedBox(height: 10),
+
+                              GradientText(
                                 "Baylora",
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
+                                style: Theme.of(context).textTheme.titleLarge!,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xffFFFFFF),
+                                    Color(0xffA293FF),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.topRight,
+                                ),
+                              )
                             ],
                           ),
 
@@ -84,17 +94,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                           Column(
                             children: [
-                              Text(
-                                item.title,
-                                style: Theme.of(context).textTheme.titleMedium,
-                                textAlign: TextAlign.center,
+
+                              Align(
+                                alignment: Alignment.center,
+                                child: GradientText(
+                                  item.title,
+                                  style:
+                                  Theme.of(context).textTheme.titleMedium!,
+
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xffFFFFFF),
+                                      Color(0xffA293FF),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.topRight,
+                                  ),
+                                ),
                               ),
+
                               const SizedBox(height: 4),
-                              Text(
-                                item.description,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                                textAlign: TextAlign.center,
+
+                              Center(
+                                child: GradientText(
+                                  item.description,
+                                  style:
+                                  Theme.of(context).textTheme.titleMedium!,
+
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xffFFFFFF),
+                                      Color(0xffA293FF),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.topRight,
+                                  ),
+                                ),
                               ),
+
                             ],
                           ),
                         ],
@@ -104,6 +141,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
+
+   Padding(padding: EdgeInsets.all(10),
+     child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    data.length, // FIXED
+                    (index) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.only(right: 5),
+                      height: 8,
+                      width: currentIndex == index ? 16 : 8, // FIXED
+                      decoration: BoxDecoration(
+                        color: currentIndex == index ? Colors.white : Colors.white38,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
+   ),
               // BOTTOM BUTTON
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -128,6 +184,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
               ),
+
+          
             ],
           ),
         ),
