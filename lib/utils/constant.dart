@@ -13,55 +13,58 @@ class AppColors {
 
 
  class AppTextStyles {
- //font-family
+   //font-family
 
- 
- static TextStyle fontHeader = GoogleFonts.poppins();
- static TextStyle fontBody = GoogleFonts.nunitoSans();
 
- //font-color
+   static TextStyle fontHeader = GoogleFonts.poppins();
+   static TextStyle fontBody = GoogleFonts.nunitoSans();
 
- static const Color textColorDefault = Color(0xFF000000);
- static const Color textColorSemiFade = Color(0xFFB0B0B0);
- static const Color textColorSemiDark = Color(0xFF6D6D6D);
- static const Color textHighLight_1 = Color(0xFFFFFFFF);
- static const Color textHighLight_2 = Color(0xFF09B7FD);
+   //font-color
+
+   static const Color textColorDefault = Color(0xFF000000);
+   static const Color textColorSemiFade = Color(0xFFB0B0B0);
+   static const Color textColorSemiDark = Color(0xFF6D6D6D);
+   static const Color textHighLight_1 = Color(0xFFFFFFFF);
+   static const Color textHighLight_2 = Color(0xFF09B7FD);
 
 //font-sizes
-static const double logoTextSize = 52;
-static const double headerTextLarge = 22;
-static const double headerTextSize = 18;
-static const double bodyTextSize = 14;
-static const double bodyTextSizeSmall = 12;
-static const double bodyTextSizeXSmall = 10;
-static const double bodyTextSizeXXSmall = 8;
+   static const double logoTextSize = 52;
+   static const double headerTextLarge = 22;
+   static const double headerTextSize = 18;
+   static const double bodyTextSize = 14;
+   static const double bodyTextSizeSmall = 12;
+   static const double bodyTextSizeXSmall = 10;
+   static const double bodyTextSizeXXSmall = 8;
 
 //logo Style
- static TextStyle logoStyle = (
-   TextStyle(
-   )
- );
 
-}
+ }
 
 
-  ShaderMask textGradiant() {
-    final Color color1 = const Color.fromARGB(255, 78, 217, 226);
-    final Color color2 = const Color.fromARGB(255, 24, 82, 129);
-    
+class GradientText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final Gradient gradient;
+
+  const GradientText(
+      this.text, {
+        super.key,
+        required this.gradient,
+        required this.style,
+      });
+
+  @override
+  Widget build(BuildContext context) {
     return ShaderMask(
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [ color1, color2],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
-                  child: Text(
-                    "LOG",
-                    style: TextStyle(
-                      color: Colors.white, 
-                      fontSize: 50,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+      shaderCallback: (bounds) {
+        return gradient.createShader(
+          Rect.fromLTWH(0, 0, bounds.width, bounds.height),
         );
+      },
+      child: Text(
+        text,
+        style: style.copyWith(color: Colors.white),
+      ),
+    );
   }
+}
