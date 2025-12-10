@@ -13,8 +13,9 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("HomeSreen"),
+            Container(
 
+            ),
             ElevatedButton(onPressed: () => Navigator.pushNamed(context, AppRoutes.itemDetailScreen), child: Text("Go to Item Details"))
           ],
         )
