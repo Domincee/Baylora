@@ -9,22 +9,23 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body:
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding:
+               const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1, // 2 items per row
-                  childAspectRatio:
-                      0.75, 
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  
+                 // 2 items per row
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 30,
+                  maxCrossAxisExtent: 500,
                 ),
-                itemCount: 4, // Let's test 4 cards
+                itemCount: 4, // 4 cards
                 itemBuilder: (context, index) {
-                  // Logic to rotate through types for testing
+               
                   String currentType = 'cash';
                   if (index % 3 == 1) currentType = 'trade';
                   if (index % 3 == 2) currentType = 'mix';
-
+              
                   return ItemCard(
                     title: "Item #$index title test",
                     sellerName: "FAfa",
@@ -36,6 +37,7 @@ class HomeScreen extends StatelessWidget {
                     rating: " 4.5",
                     postedTime: "2 hours ago",
                     description: "This is a description test item",
+                    isVerified: (index % 2 == 0),
                   );
                 },
               ),

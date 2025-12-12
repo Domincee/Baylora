@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ItemCard extends StatelessWidget {
   final String postedTime;
@@ -47,7 +48,8 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
+
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -61,82 +63,94 @@ class ItemCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // LEFT GROUP: Avatar + name + time
-                Row(
-                  spacing: 20,
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundImage: AssetImage(sellerImage),
-                    ),
-
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("@ $sellerName"),
-                        Text("$postedTime ago"),
-                      ],
-                    ),
-                  ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,  
+            children: [
+              // LEFT GROUP: Avatar + name + time
+              Row(
+                spacing: 20,
+                children: [
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundImage: AssetImage(sellerImage),
+                  ),
+          
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("@ $sellerName"),
+                      Text("$postedTime ago"),
+                    ],
+                  ),
+             
+                 Row(
+                    children: [
+                      if (isVerified)
+                        Padding(
+                          padding: EdgeInsets.all(1),
+                          child: SvgPicture.asset(
+                            'assets/images/itemcard/status-verified.svg',
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+              // RATING
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10 , vertical: 0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF4F4F4),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                // RATING
-                Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   spacing: 20,
                   children: [
+                       SvgPicture.asset('assets/images/itemcard/star.svg'),
                       Text(rating),
                       // TOTAL TRADE
                       Text(totalTrade),
                   ],
-                )
-            
+                ),
+              )
+          
+            ],
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                Text(description),
+                _buildPriceRow(),
               ],
             ),
           ),
-
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Title
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  Text(description),
-                  _buildPriceRow(),
-                ],
-              ),
+          ClipRRect(
+              borderRadius: BorderRadius.all( Radius.circular(16)),
+              child:ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 250, // limit height so it doesn't get too big
+            ),
+            child: Image.network(
+              imagePath,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
           ),
-
-          // IMAGE SECTION (Unchanged)
-          Expanded(
-            flex: 3,
-            child: ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              child: Image.network(
-                imagePath,
-                width: double.infinity,
-                fit: BoxFit.fill,
-              ),
-            ),
-          ),
-
-          // DETAILS SECTION
+        ),
         ],
       ),
     );
