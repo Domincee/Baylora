@@ -23,7 +23,11 @@ class _MainWrapperState extends State<MainWrapper> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Title'),
+        title: Text(
+          _currentIndex == 0 ? "Home" : 
+          _currentIndex == 1 ? "Home" : "Profile",
+          
+        ),
         centerTitle: true,
         backgroundColor: Colors.blue,
         leading: null,
