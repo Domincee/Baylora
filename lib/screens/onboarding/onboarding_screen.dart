@@ -13,7 +13,7 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
-  int currentIndex = 0;
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -21,7 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     _pageController.addListener(() {
       setState(() {
-        currentIndex = _pageController.page?.round() ?? 0;
+        _currentIndex = _pageController.page?.round() ?? 0;
       });
     });
   }
@@ -34,7 +34,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/images/onboarding_images/onboarding_bg1.png"),
+            image: AssetImage(
+              "assets/images/onboarding_images/onboarding_bg1.png",
+            ),
             fit: BoxFit.cover,
           ),
         ),
@@ -48,90 +50,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   itemCount: data.length,
                   itemBuilder: (context, index) {
                     final item = data[index];
+
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 20,
+                      ),
                       child: Column(
                         children: [
                           // Logo + App Name
-                          Column(
-                            children: [
-                              SvgPicture.asset(item.logo, height: 50),
-                              const SizedBox(height: 10),
-
-                              GradientText(
-                                "Baylora",
-                                style: Theme.of(context).textTheme.titleLarge!,
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xffFFFFFF),
-                                    Color(0xffA293FF),
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.topRight,
-                                ),
-                              )
-                            ],
-                          ),
+                          LogoName(item: item),
 
                           const SizedBox(height: 16),
 
                           // Main image
-                          Expanded(
-                            child: item.image.toLowerCase().endsWith('.svg')
-                                ? SvgPicture.asset(
-                                    item.image,
-                                    fit: BoxFit.contain,
-                                    width: double.infinity,
-                                  )
-                                : Image.asset(
-                                    item.image,
-                                    fit: BoxFit.contain,
-                                    width: double.infinity,
-                                  ),
-                          ),
+                          MainImg(item: item),
 
                           const SizedBox(height: 16),
 
                           Column(
                             children: [
-
-                              Align(
-                                alignment: Alignment.center,
-                                child: GradientText(
-                                  item.title,
-                                  style:
-                                  Theme.of(context).textTheme.titleMedium!,
-
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xffFFFFFF),
-                                      Color(0xffA293FF),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                ),
-                              ),
+                              Title(item: item),
 
                               const SizedBox(height: 4),
 
-                              Center(
-                                child: GradientText(
-                                  item.description,
-                                  style:
-                                  Theme.of(context).textTheme.titleMedium!,
-
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xffFFFFFF),
-                                      Color(0xffA293FF),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.topRight,
-                                  ),
-                                ),
-                              ),
-
+                              Description(item: item),
                             ],
                           ),
                         ],
@@ -141,55 +84,180 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-
-   Padding(padding: EdgeInsets.all(10),
-     child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    data.length, // FIXED
-                    (index) => AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      margin: const EdgeInsets.only(right: 5),
-                      height: 8,
-                      width: currentIndex == index ? 16 : 8, // FIXED
-                      decoration: BoxDecoration(
-                        color: currentIndex == index ? Colors.white : Colors.white38,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                ),
-   ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Pagination(data: data, currentIndex: _currentIndex),
+              ),
               // BOTTOM BUTTON
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (currentIndex == data.length - 1) {
-                        // LAST PAGE → GO TO MAIN
-                        Navigator.pushReplacementNamed(context, AppRoutes.main);
-                      } else {
-                        // NEXT PAGE
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeIn,
-                        );
-                      }
-                    },
-                    child: Text(
-                      currentIndex == data.length - 1 ? "Get Started" : "Next",
-                    ),
+                  child: ButtonWidget(
+                    currentIndex: _currentIndex,
+                    data: data,
+                    pageController: _pageController,
                   ),
                 ),
               ),
-
-          
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class LogoName extends StatelessWidget {
+  const LogoName({super.key, required this.item});
+
+  final OnboardingModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SvgPicture.asset(item.logo, height: 50),
+        const SizedBox(height: 10),
+
+        GradientText(
+          "Baylora",
+          style: Theme.of(context).textTheme.titleLarge!,
+          gradient: const LinearGradient(
+            colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
+            begin: Alignment.topLeft,
+            end: Alignment.topRight,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class MainImg extends StatelessWidget {
+  const MainImg({super.key, required this.item});
+
+  final OnboardingModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: item.image.toLowerCase().endsWith('.svg')
+          ? SvgPicture.asset(
+              item.image,
+              fit: BoxFit.contain,
+              width: double.infinity,
+            )
+          : Image.asset(
+              item.image,
+              fit: BoxFit.contain,
+              width: double.infinity,
+            ),
+    );
+  }
+}
+
+class Description extends StatelessWidget {
+  const Description({super.key, required this.item});
+
+  final OnboardingModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GradientText(
+        item.description,
+        style: Theme.of(context).textTheme.titleMedium!,
+
+        gradient: const LinearGradient(
+          colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.topRight,
+        ),
+      ),
+    );
+  }
+}
+
+class Title extends StatelessWidget {
+  const Title({super.key, required this.item});
+
+  final OnboardingModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: GradientText(
+        item.title,
+        style: Theme.of(context).textTheme.titleMedium!,
+
+        gradient: const LinearGradient(
+          colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.topRight,
+        ),
+      ),
+    );
+  }
+}
+
+class Pagination extends StatelessWidget {
+  const Pagination({super.key, required this.data, required this.currentIndex});
+
+  final List<OnboardingModel> data;
+  final int currentIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        data.length, // FIXED
+        (index) => AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          margin: const EdgeInsets.only(right: 5),
+          height: 8,
+          width: currentIndex == index ? 16 : 8, // FIXED
+          decoration: BoxDecoration(
+            color: currentIndex == index ? Colors.white : Colors.white38,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ButtonWidget extends StatelessWidget {
+  const ButtonWidget({
+    super.key,
+    required this.currentIndex,
+    required this.data,
+    required PageController pageController,
+  }) : _pageController = pageController;
+
+  final int currentIndex;
+  final List<OnboardingModel> data;
+  final PageController _pageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(20)),
+      onPressed: () {
+        if (currentIndex == data.length - 1) {
+          // LAST PAGE → GO TO MAIN
+          Navigator.pushReplacementNamed(context, AppRoutes.main);
+        } else {
+          // NEXT PAGE
+          _pageController.nextPage(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeIn,
+          );
+        }
+      },
+      child: Text(currentIndex == data.length - 1 ? "Get Started" : "Next"),
     );
   }
 }
