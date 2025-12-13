@@ -1,10 +1,51 @@
+
+
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+@immutable
+class CustomTextStyles extends ThemeExtension<CustomTextStyles> {
+ 
+  final TextStyle? titleSmallRegular;
+  
+ 
+  final TextStyle? bodyExtraSmall; 
+
+  const CustomTextStyles({
+    required this.titleSmallRegular,
+    this.bodyExtraSmall, // Add to constructor
+  });
+
+  @override
+  CustomTextStyles copyWith({
+    TextStyle? titleSmallRegular,
+    TextStyle? bodyExtraSmall, // Add to copyWith parameters
+  }) {
+
+    return CustomTextStyles(
+      titleSmallRegular: titleSmallRegular ?? this.titleSmallRegular,
+      // Add assignment logic
+      bodyExtraSmall: bodyExtraSmall ?? this.bodyExtraSmall, 
+    );
+  }
+
+  @override
+  CustomTextStyles lerp(ThemeExtension<CustomTextStyles>? other, double t) {
+    if (other is! CustomTextStyles) return this;
+    return CustomTextStyles(
+      titleSmallRegular: TextStyle.lerp(titleSmallRegular, other.titleSmallRegular, t),
+
+      bodyExtraSmall: TextStyle.lerp(bodyExtraSmall, other.bodyExtraSmall, t), 
+    );
+  }
+}
+
+
+
 
 class AppColors {
   // Your Primary Brand Color
   static const Color primary = Color(0xFF8B5CF6);
-  
+
   // Standard UI Colors
   static const Color background = Color(0xFFFBFBFB);
   static const Color containerColor = Color(0xFFFFFFFF);
@@ -12,45 +53,17 @@ class AppColors {
 }
 
 
- class AppTextStyles {
-   //font-family
-
-
-   static TextStyle fontHeader = GoogleFonts.poppins();
-   static TextStyle fontBody = GoogleFonts.nunitoSans();
-
-   //font-color
-
-   static const Color textColorDefault = Color(0xFF000000);
-   static const Color textColorSemiFade = Color(0xFFB0B0B0);
-   static const Color textColorSemiDark = Color(0xFF6D6D6D);
-   static const Color textHighLight_1 = Color(0xFFFFFFFF);
-   static const Color textHighLight_2 = Color(0xFF09B7FD);
-
-//font-sizes
-   static const double logoTextSize = 52;
-   static const double headerTextLarge = 22;
-   static const double headerTextSize = 18;
-   static const double bodyTextSize = 14;
-   static const double bodyTextSizeSmall = 12;
-   static const double bodyTextSizeXSmall = 10;
-   static const double bodyTextSizeXXSmall = 8;
-
-//logo Style
-
- }
-
-
 class GradientText extends StatelessWidget {
   final String text;
   final TextStyle style;
   final Gradient gradient;
-
+ final TextAlign textAlign;
   const GradientText(
       this.text, {
         super.key,
         required this.gradient,
         required this.style,
+        this.textAlign = TextAlign.center,
       });
 
   @override
@@ -63,7 +76,8 @@ class GradientText extends StatelessWidget {
       },
       child: Text(
         text,
-        style: style.copyWith(color: Colors.white),
+       textAlign: textAlign,
+        style: style.copyWith(color: Colors.white, ),
       ),
     );
   }

@@ -42,6 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         child: SafeArea(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               // PAGEVIEW
               Expanded(
@@ -119,15 +120,19 @@ class LogoName extends StatelessWidget {
       children: [
         SvgPicture.asset(item.logo, height: 50),
         const SizedBox(height: 10),
-
         GradientText(
           "Baylora",
-          style: Theme.of(context).textTheme.titleLarge!,
-          gradient: const LinearGradient(
-            colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFFFFFFF), // Baylora Purple
+              Color(0xffA293FF), // Secondary Color
+            ],
             begin: Alignment.topLeft,
             end: Alignment.topRight,
           ),
+
+          // 3. Define the font weight or font family here
+          style: Theme.of(context).textTheme.titleLarge!,
         ),
       ],
     );
@@ -157,27 +162,6 @@ class MainImg extends StatelessWidget {
   }
 }
 
-class Description extends StatelessWidget {
-  const Description({super.key, required this.item});
-
-  final OnboardingModel item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: GradientText(
-        item.description,
-        style: Theme.of(context).textTheme.titleMedium!,
-
-        gradient: const LinearGradient(
-          colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
-          begin: Alignment.topLeft,
-          end: Alignment.topRight,
-        ),
-      ),
-    );
-  }
-}
 
 class Title extends StatelessWidget {
   const Title({super.key, required this.item});
@@ -190,7 +174,7 @@ class Title extends StatelessWidget {
       alignment: Alignment.center,
       child: GradientText(
         item.title,
-        style: Theme.of(context).textTheme.titleMedium!,
+        style: Theme.of(context).textTheme.titleSmall!,
 
         gradient: const LinearGradient(
           colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
@@ -201,6 +185,37 @@ class Title extends StatelessWidget {
     );
   }
 }
+
+class Description extends StatelessWidget {
+  const Description(
+    {
+      super.key, 
+      required this.item
+    });
+
+  final OnboardingModel item;
+
+  @override
+  Widget build(BuildContext context) {
+    return
+     Center(
+      child: 
+      GradientText(
+        item.description,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium!,
+
+        gradient: const LinearGradient(
+          colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.topRight,
+        ),
+      ),
+    );
+  }
+}
+
+
 
 class Pagination extends StatelessWidget {
   const Pagination({super.key, required this.data, required this.currentIndex});
@@ -218,7 +233,7 @@ class Pagination extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.only(right: 5),
           height: 8,
-          width: currentIndex == index ? 16 : 8, // FIXED
+          width: currentIndex == index ? 10 : 8, // FIXED
           decoration: BoxDecoration(
             color: currentIndex == index ? Colors.white : Colors.white38,
             borderRadius: BorderRadius.circular(4),
