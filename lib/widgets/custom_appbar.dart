@@ -16,9 +16,12 @@ class CustomeAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
+           
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(
+              padding: EdgeInsets.symmetric(horizontal: AppSizesWidget.appbarHorPad ),
               decoration: BoxDecoration(
+                
                 color: AppColors.primaryColor,
                 boxShadow: [
                   BoxShadow(
@@ -33,7 +36,6 @@ class CustomeAppBar extends StatelessWidget {
                  title: Text(
                       _currentIndex == 0 ? AppStrings.home : 
                       _currentIndex == 1 ?  AppStrings.home  :  AppStrings.profile,
-
                       style: Theme.of(context).textTheme.titleSmall!,
                       
                     ),
@@ -44,11 +46,22 @@ class CustomeAppBar extends StatelessWidget {
                       padding: AppSizesWidget.logoPadding,
                       child: SvgPicture.asset(Images.logo),
                     ),
+
+
                     actions: [
-                      IconButton(
-                        icon: const Icon(Icons.settings, size: 20, color: Color.fromARGB(255, 0, 0, 0)),
+                      
+                       IconButton(
+                        icon: const Icon(Icons.notifications_outlined, 
+                        size: AppSizesWidget.iconDefaultSize, color:
+                         Color.fromARGB(255, 0, 0, 0)),
                         onPressed: () {},
+
+
                       ),
+
+
+                      IconButton(onPressed: (){}, icon: CircleAvatar()),
+                     
                     ],
               ),
             ),
