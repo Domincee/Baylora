@@ -20,10 +20,14 @@ class AppTheme {
           //DEFAULT BODY SIZE
           bodyMedium: TextStyle(
             fontFamily: 'NunitoSans',
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             fontSize:16,
           ),
-
+         bodySmall: TextStyle(
+          fontFamily: 'NunitoSans',
+          fontWeight: FontWeight.w400,
+          fontSize:14,
+         )
         ),
       );
 }

@@ -9,4 +9,6 @@ class AppStrings {
  static const String home = "Home";
  static const String post = "Post";
  static const String profile = "Profile";
+
+ static const String searchText = "Search Item...";
 }

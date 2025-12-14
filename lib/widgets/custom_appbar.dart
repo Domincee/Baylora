@@ -1,5 +1,5 @@
 import 'package:baylora_prjct/assets/images.dart';
-import 'package:baylora_prjct/constant/app_sizes_widget.dart';
+import 'package:baylora_prjct/constant/app_values_widget.dart';
 import 'package:baylora_prjct/constant/app_strings.dart';
 import 'package:baylora_prjct/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,6 @@ class CustomeAppBar extends StatelessWidget {
            
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: AppSizesWidget.appbarHorPad ),
               decoration: BoxDecoration(
                 
                 color: AppColors.primaryColor,
@@ -32,37 +31,40 @@ class CustomeAppBar extends StatelessWidget {
                   ),
                 ],
               ),
-              child: AppBar(
-                 title: Text(
-                      _currentIndex == 0 ? AppStrings.home : 
-                      _currentIndex == 1 ?  AppStrings.home  :  AppStrings.profile,
-                      style: Theme.of(context).textTheme.titleSmall!,
-                      
-                    ),
-                    centerTitle: true,
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    leading: Padding(
-                      padding: AppSizesWidget.logoPadding,
-                      child: SvgPicture.asset(Images.logo),
-                    ),
 
-
-                    actions: [
-                      
-                       IconButton(
-                        icon: const Icon(Icons.notifications_outlined, 
-                        size: AppSizesWidget.iconDefaultSize, color:
-                         Color.fromARGB(255, 0, 0, 0)),
-                        onPressed: () {},
-
-
+              child: Container(
+                color: AppColors.primaryColor,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppValuesWidget.appbarHorPad,                 
+                vertical: AppValuesWidget.appbarVertPad
+                ),
+                child: AppBar(
+                   title: Text(
+                        _currentIndex == 0 ? AppStrings.home : 
+                        _currentIndex == 1 ?  AppStrings.home  :  AppStrings.profile,
+                        style: Theme.of(context).textTheme.titleSmall!,
+                        
                       ),
-
-
-                      IconButton(onPressed: (){}, icon: CircleAvatar()),
-                     
-                    ],
+                      centerTitle: true,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      leading: Padding(
+                        padding: AppValuesWidget.logoPadding,
+                        child: SvgPicture.asset(Images.logo),
+                      ),
+                
+                
+                      actions: [
+                         IconButton(
+                          icon: const Icon(Icons.notifications_outlined, 
+                          size: AppValuesWidget.iconDefaultSize, color:
+                           Color.fromARGB(255, 0, 0, 0)),
+                          onPressed: () {},
+                        ),
+                        IconButton(onPressed: (){}, icon: CircleAvatar()),
+                       
+                      ],
+                ),
               ),
             ),
           );

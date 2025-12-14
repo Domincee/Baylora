@@ -1,8 +1,9 @@
+import 'package:baylora_prjct/constant/app_values_widget.dart';
 import 'package:baylora_prjct/widgets/category.dart';
-import 'package:baylora_prjct/widgets/item_card.dart'; // Keep your import
+import 'package:baylora_prjct/widgets/item_card.dart';
+import 'package:baylora_prjct/widgets/search_bar.dart'; 
 import 'package:flutter/material.dart';
 
-// 1. Must be Stateful to handle the Filter selection (Purple/Blue change)
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -28,71 +29,53 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // A. Search Bar
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey,
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: const TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            hintText: "Search Item...",
-                            hintStyle: TextStyle(color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 15),
-                          ),
-                        ),
-                      ),
 
-                      const SizedBox(height: 20),
+                      CustomeSearchBar(),
+
+                      const SizedBox(height: AppValuesWidget.sizedBoxSize,),
 
                       // B. Filters
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: filters.map((filter) {
-                            // This assumes you have the Category/FilterPill widget defined
-                            return Category(
-                              label: filter,
-                              isSelected: selectedFilter == filter,
-                              onTap: () {
-                                setState(() {
-                                  selectedFilter = filter;
-                                });
-                              },
-                            );
-                          }).toList(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: 
+                              filters.map((filter) {
+                                
+                                // This assumes you have the Category/FilterPill widget defined
+                                return Category(
+                                  label: filter,
+                                  isSelected: selectedFilter == filter,
+                                  onTap: () {
+                                    setState(() {
+                                      selectedFilter = filter;
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                            ),
+
+                            SizedBox(height: AppValuesWidget.sizedBoxSize,),
+                                // C. Header Text
+                           Text(
+                            "$selectedFilter Items" ,
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          ],
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // C. Header Text
-                      const Text(
-                        "Latest Post",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
 
-
-
                 Expanded(
                   child: Padding(
                     padding:
-                     const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                     const EdgeInsets.symmetric(horizontal: AppValuesWidget.appbarHorPad, vertical: AppValuesWidget.appbarVertPad),
                     child: GridView.builder(
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                        
                        // 2 items per row
                         crossAxisSpacing: 15,
                         mainAxisSpacing: 30,

@@ -1,10 +1,12 @@
+import 'package:baylora_prjct/constant/app_values_widget.dart';
+import 'package:baylora_prjct/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class Category extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
-
+  
   const Category({
     super.key,
     required this.label,
@@ -16,19 +18,25 @@ class Category extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-        margin: const EdgeInsets.only(right: 10), // Spacing between pills
-        decoration: BoxDecoration(
-          // Change to Colors.purple or any color you prefer
-          color: isSelected ? const Color(0xFF00A8FF) : Colors.white, 
-          borderRadius: BorderRadius.circular(30),
+        duration: const Duration(milliseconds: AppValuesWidget.animDuration),
+        padding: AppValuesWidget.boxSizeCat,
+        margin: const EdgeInsets.only(right: 10), 
+transform: isSelected 
+    ? Matrix4.diagonal3Values(1.1, 1.1, 1.0) 
+    : Matrix4.identity(),     // 2. IMPORTANT: Scale from the center, otherwise it grows from the top-left
+      transformAlignment: Alignment.center,
+
+        decoration: 
+        BoxDecoration(
+          color: isSelected ?  AppColors.selectedColor : AppColors.primaryColor, 
+          borderRadius: BorderRadius.all(Radius.circular(AppValuesWidget.borderRadius)),
           boxShadow: [
-             // Subtle shadow for unselected items to make them pop against white bg
+       
             if (!isSelected)
               BoxShadow(
-                color: Colors.grey,
+                color: AppColors.shadowColor,
                 blurRadius: 5,
                 offset: const Offset(0, 2),
               ),
@@ -36,11 +44,9 @@ class Category extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+            color: isSelected ? Colors.white : Colors.black87),
+        
         ),
       ),
     );
