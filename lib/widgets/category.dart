@@ -1,10 +1,11 @@
+import 'package:baylora_prjct/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class Category extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
-
+  
   const Category({
     super.key,
     required this.label,
@@ -19,16 +20,17 @@ class Category extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-        margin: const EdgeInsets.only(right: 10), // Spacing between pills
+        margin: const EdgeInsets.only(right: 10), 
+
         decoration: BoxDecoration(
-          // Change to Colors.purple or any color you prefer
-          color: isSelected ? const Color(0xFF00A8FF) : Colors.white, 
+        
+          color: isSelected ?  AppColors.selectedColor : AppColors.primaryColor, 
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
-             // Subtle shadow for unselected items to make them pop against white bg
+       
             if (!isSelected)
               BoxShadow(
-                color: Colors.grey,
+                color: AppColors.shadowColor,
                 blurRadius: 5,
                 offset: const Offset(0, 2),
               ),

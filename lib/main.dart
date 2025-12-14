@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.themeData,
       
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Bidaro',
      
       initialRoute: AppRoutes.onboarding,
       routes: AppRoutes.routes,
