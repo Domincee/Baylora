@@ -23,8 +23,13 @@ class Category extends StatelessWidget {
         duration: const Duration(milliseconds: AppValuesWidget.animDuration),
         padding: AppValuesWidget.boxSizeCat,
         margin: const EdgeInsets.only(right: 10), 
+transform: isSelected 
+    ? Matrix4.diagonal3Values(1.1, 1.1, 1.0) 
+    : Matrix4.identity(),     // 2. IMPORTANT: Scale from the center, otherwise it grows from the top-left
+      transformAlignment: Alignment.center,
 
-        decoration: BoxDecoration(
+        decoration: 
+        BoxDecoration(
           color: isSelected ?  AppColors.selectedColor : AppColors.primaryColor, 
           borderRadius: BorderRadius.all(Radius.circular(AppValuesWidget.borderRadius)),
           boxShadow: [
@@ -39,7 +44,7 @@ class Category extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          style: Theme.of(context).textTheme.bodySmall!.copyWith(
             color: isSelected ? Colors.white : Colors.black87),
         
         ),
