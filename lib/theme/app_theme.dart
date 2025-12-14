@@ -14,7 +14,7 @@ class AppTheme {
           titleSmall: TextStyle(
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
-            fontSize:30,
+            fontSize:22,
           ),
 
           //DEFAULT BODY SIZE
