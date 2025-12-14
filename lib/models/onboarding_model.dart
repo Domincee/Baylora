@@ -1,3 +1,5 @@
+import 'package:baylora_prjct/assets/images.dart';
+
 class OnboardingModel {
   final String title;
   final String description;
@@ -7,7 +9,7 @@ class OnboardingModel {
     required this.title,
     required this.description,
     required this.image,
-    this.logo = "assets/images/logo.svg"
+    this.logo =  Images.logo
   });
 
  
@@ -20,7 +22,7 @@ class OnboardingModel {
       description: 
       "Anything from gadgets to gear.", 
 
-      image: "assets/images/onboarding_images/onboarding_img_1.svg"),
+      image: Images.obBoardingImg1),
 
 
       OnboardingModel(
@@ -28,14 +30,14 @@ class OnboardingModel {
       "Win the Bidding War.", 
       description: 
       "Bid smart, act fast, and secure the winning deal before time runs out.", 
-      image: "assets/images/onboarding_images/onboarding_img_2.png"),
+      image:Images.obBoardingImg2),
 
       OnboardingModel(
       title: 
       "Your Items Are Currency", 
       description: 
       "Turn your unused gear into purchasing power. Offer straight swaps or add cash to win the bid.", 
-      image: "assets/images/onboarding_images/onboarding_img_3.png"),
+      image: Images.obBoardingImg3),
     ];
   }
 }
