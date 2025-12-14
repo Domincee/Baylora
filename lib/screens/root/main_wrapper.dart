@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
 import '../profile/profile_screen.dart';
@@ -22,23 +23,10 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _currentIndex == 0 ? "Home" : 
-          _currentIndex == 1 ? "Home" : "Profile",
-          
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-        leading: null,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {          
-          }
-           )
-         ]
-        ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(60.0),
+        child: CustomeAppBar(currentIndex: _currentIndex),
+      ),
 
       body: IndexedStack(
         index: _currentIndex,

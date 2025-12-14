@@ -1,4 +1,5 @@
 import 'package:baylora_prjct/config/routes.dart';
+import 'package:baylora_prjct/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,34 +13,11 @@ class MyApp extends StatelessWidget {
 
 
     return MaterialApp(
+      theme: AppTheme.themeData,
       
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        textTheme: const TextTheme(
-          //LOGO TEXT
-          titleLarge: TextStyle(
-            fontFamily: 'MontserratAlternates',
-            fontWeight: FontWeight.bold,
-            fontSize: 40,
-          ),
-
-          titleSmall: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            fontSize:30,
-          ),
-
-          //DEFAULT BODY SIZE
-          bodyMedium: TextStyle(
-            fontFamily: 'NunitoSans',
-            fontWeight: FontWeight.w500,
-            fontSize:16,
-          ),
-
-
-        ),
-      ),
+     
       initialRoute: AppRoutes.onboarding,
       routes: AppRoutes.routes,
     );
