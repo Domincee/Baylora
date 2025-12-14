@@ -13,4 +13,6 @@ class AppColors {
       static const Color highLightTextColor = Color(0xFF09B7FD);
 
       static const Color subTextColor = Color(0xFF7C7C7C);
+
+      static const Color shadowColor = Color(0xFFF3E3E3);
 }
