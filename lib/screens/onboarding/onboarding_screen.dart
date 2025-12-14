@@ -1,6 +1,7 @@
+import 'package:baylora_prjct/assets/images.dart';
 import 'package:baylora_prjct/config/routes.dart';
 import 'package:baylora_prjct/models/onboarding_model.dart';
-import 'package:baylora_prjct/utils/constant.dart';
+import 'package:baylora_prjct/widgets/gradiant_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -35,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
-              "assets/images/onboarding_images/onboarding_bg1.png",
+              Images.obBoardingBg1,
             ),
             fit: BoxFit.cover,
           ),
