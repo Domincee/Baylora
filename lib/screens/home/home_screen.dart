@@ -1,8 +1,7 @@
 import 'package:baylora_prjct/constant/app_values_widget.dart';
-import 'package:baylora_prjct/constant/app_strings.dart';
-import 'package:baylora_prjct/theme/app_colors.dart';
 import 'package:baylora_prjct/widgets/category.dart';
-import 'package:baylora_prjct/widgets/item_card.dart'; 
+import 'package:baylora_prjct/widgets/item_card.dart';
+import 'package:baylora_prjct/widgets/search_bar.dart'; 
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,29 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       // A. Search Bar
 
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.shadowColor,
-                              blurRadius: AppValuesWidget.borderRadius,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        
-                        child: const TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            hintText: AppStrings.searchText,
-                            hintStyle: TextStyle(color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 15),
-                          ),
-                        ),
-                      ),
+                      CustomeSearchBar(),
 
                       const SizedBox(height: AppValuesWidget.sizedBoxSize,),
 

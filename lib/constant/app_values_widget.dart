@@ -19,4 +19,7 @@ class AppValuesWidget {
 /* category */
  static const int animDuration = 300;
  static const EdgeInsets boxSizeCat = EdgeInsets.symmetric(horizontal:8 , vertical: 5);
+
+ /* searchbar */
+ static const double searchBarSize = 50.0;
 }
