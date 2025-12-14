@@ -1,5 +1,6 @@
 import 'package:baylora_prjct/assets/images.dart';
 import 'package:baylora_prjct/config/routes.dart';
+import 'package:baylora_prjct/constant/app_strings.dart';
 import 'package:baylora_prjct/models/onboarding_model.dart';
 import 'package:baylora_prjct/widgets/gradiant_text.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +123,7 @@ class LogoName extends StatelessWidget {
         SvgPicture.asset(item.logo, height: 50),
         const SizedBox(height: 10),
         GradientText(
-          "Baylora",
+          AppStrings.appName,
           gradient: LinearGradient(
             colors: [
               Color(0xFFFFFFFF), // Baylora Purple
@@ -273,7 +274,7 @@ class ButtonWidget extends StatelessWidget {
           );
         }
       },
-      child: Text(currentIndex == data.length - 1 ? "Get Started" : "Next"),
+      child: Text(currentIndex == data.length - 1 ? AppStrings.getStartedBtn : AppStrings.nextBtn),
     );
   }
 }

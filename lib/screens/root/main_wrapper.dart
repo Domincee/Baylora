@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/constant/app_strings.dart';
 import 'package:baylora_prjct/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
@@ -40,7 +41,7 @@ class _MainWrapperState extends State<MainWrapper> {
         onTap: (index) {
           
           if (index == 1) {
-            // User clicked (+). Open the Modal!
+         
             Navigator.pushNamed(context, '/create_listing');
           } else {
             setState(() {
@@ -52,16 +53,19 @@ class _MainWrapperState extends State<MainWrapper> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
-            label: "Home",
+
+            label: AppStrings.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 32), // Big Plus
-            label: "Post", 
+            icon: Icon(Icons.add_circle, size: 32),
+          
+            label: AppStrings.post, 
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
-            label: "Profile",
+
+            label: AppStrings.profile,
           ),
         ],
       ),
