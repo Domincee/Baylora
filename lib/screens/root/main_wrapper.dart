@@ -29,7 +29,8 @@ class _MainWrapperState extends State<MainWrapper> {
         child: CustomeAppBar(currentIndex: _currentIndex),
       ),
 
-      body: IndexedStack(
+      body: 
+      IndexedStack(
         index: _currentIndex,
         children: _pages,
       ),
