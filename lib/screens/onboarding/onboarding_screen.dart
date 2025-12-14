@@ -228,12 +228,12 @@ class Pagination extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
-        data.length, // FIXED
+        data.length, // numbers of pages fixed 3
         (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.only(right: 5),
           height: 8,
-          width: currentIndex == index ? 10 : 8, // FIXED
+          width: currentIndex == index ? 16 : 8, // active size : not active sive
           decoration: BoxDecoration(
             color: currentIndex == index ? Colors.white : Colors.white38,
             borderRadius: BorderRadius.circular(4),

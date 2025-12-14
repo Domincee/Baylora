@@ -1,0 +1,8 @@
+  chore/create-screens[m
+* [32mchore/file-theme-structure[m
+  chore/project-setup[m
+  feat/global-theme[m
+  feat/item-card-widget[m
+  feat/navigation-setup[m
+  feat/onboarding-ui[m
+  main[m
