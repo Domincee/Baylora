@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class AppSizesWidget {
+class AppValuesWidget {
 
    /* Logo Size */
    static const EdgeInsets logoPadding = EdgeInsets.all(10.0);
@@ -16,5 +16,7 @@ class AppSizesWidget {
 
   static const double borderRadius = 10.0;
 
-
+/* category */
+ static const int animDuration = 300;
+ static const EdgeInsets boxSizeCat = EdgeInsets.symmetric(horizontal:8 , vertical: 5);
 }

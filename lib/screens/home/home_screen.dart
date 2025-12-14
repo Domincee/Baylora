@@ -1,4 +1,4 @@
-import 'package:baylora_prjct/constant/app_sizes_widget.dart';
+import 'package:baylora_prjct/constant/app_values_widget.dart';
 import 'package:baylora_prjct/constant/app_strings.dart';
 import 'package:baylora_prjct/theme/app_colors.dart';
 import 'package:baylora_prjct/widgets/category.dart';
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           boxShadow: [
                             BoxShadow(
                               color: AppColors.shadowColor,
-                              blurRadius: AppSizesWidget.borderRadius,
+                              blurRadius: AppValuesWidget.borderRadius,
                               offset: const Offset(0, 5),
                             ),
                           ],
@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: AppSizesWidget.sizedBoxSize,),
+                      const SizedBox(height: AppValuesWidget.sizedBoxSize,),
 
                       // B. Filters
                       SingleChildScrollView(
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               }).toList(),
                             ),
 
-                            SizedBox(height: AppSizesWidget.sizedBoxSize,),
+                            SizedBox(height: AppValuesWidget.sizedBoxSize,),
                                 // C. Header Text
                            Text(
                             "$selectedFilter Items" ,
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Padding(
                     padding:
-                     const EdgeInsets.symmetric(horizontal: AppSizesWidget.appbarHorPad, vertical: AppSizesWidget.appbarVertPad),
+                     const EdgeInsets.symmetric(horizontal: AppValuesWidget.appbarHorPad, vertical: AppValuesWidget.appbarVertPad),
                     child: GridView.builder(
                       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                        // 2 items per row

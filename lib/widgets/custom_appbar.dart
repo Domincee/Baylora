@@ -1,5 +1,5 @@
 import 'package:baylora_prjct/assets/images.dart';
-import 'package:baylora_prjct/constant/app_sizes_widget.dart';
+import 'package:baylora_prjct/constant/app_values_widget.dart';
 import 'package:baylora_prjct/constant/app_strings.dart';
 import 'package:baylora_prjct/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +34,8 @@ class CustomeAppBar extends StatelessWidget {
 
               child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: AppSizesWidget.appbarHorPad,                 
-                vertical: AppSizesWidget.appbarVertPad
+                horizontal: AppValuesWidget.appbarHorPad,                 
+                vertical: AppValuesWidget.appbarVertPad
                 ),
                 child: AppBar(
                    title: Text(
@@ -48,7 +48,7 @@ class CustomeAppBar extends StatelessWidget {
                       backgroundColor: Colors.transparent,
                       elevation: 0,
                       leading: Padding(
-                        padding: AppSizesWidget.logoPadding,
+                        padding: AppValuesWidget.logoPadding,
                         child: SvgPicture.asset(Images.logo),
                       ),
                 
@@ -56,7 +56,7 @@ class CustomeAppBar extends StatelessWidget {
                       actions: [
                          IconButton(
                           icon: const Icon(Icons.notifications_outlined, 
-                          size: AppSizesWidget.iconDefaultSize, color:
+                          size: AppValuesWidget.iconDefaultSize, color:
                            Color.fromARGB(255, 0, 0, 0)),
                           onPressed: () {},
                         ),
