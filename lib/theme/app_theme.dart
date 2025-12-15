@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData themeData = ThemeData(
         textTheme: const TextTheme(
-          //LOGO TEXT Header 1
+          //LOGO TEXT  1
           titleLarge: TextStyle(
             fontFamily: 'MontserratAlternates',
             fontWeight: FontWeight.bold,
@@ -22,6 +22,7 @@ class AppTheme {
             fontFamily: 'NunitoSans',
             fontWeight: FontWeight.w600,
             fontSize:16,
+            
           ),
          bodySmall: TextStyle(
           fontFamily: 'NunitoSans',
