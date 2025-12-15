@@ -65,7 +65,7 @@ class CustomeAppBar extends StatelessWidget {
                        PopupMenuButton<String>(
                         offset: const Offset(0, 60),
                             icon: CircleAvatar(
-                              // Once logged in, this will be their real photo
+                              // user photo
                               backgroundImage: NetworkImage('placeholder_url'), 
                             ),
                             onSelected: (value) {
