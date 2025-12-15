@@ -61,8 +61,39 @@ class CustomeAppBar extends StatelessWidget {
                            Color.fromARGB(255, 0, 0, 0)),
                           onPressed: () {},
                         ),
-                        IconButton(onPressed: (){}, icon: CircleAvatar()),
-                       
+                        
+                       PopupMenuButton<String>(
+                        offset: const Offset(0, 60),
+                            icon: CircleAvatar(
+                              // Once logged in, this will be their real photo
+                              backgroundImage: NetworkImage('placeholder_url'), 
+                            ),
+                            onSelected: (value) {
+                              if (value == 'my_items') {
+                                // Navigate to BottomNav index 2 (Profile)
+                              } else if (value == 'settings') {
+                                // Push to Settings Page
+                              } else if (value == 'logout') {
+                                // Call Supabase Logout function
+                              }
+                            },
+                            itemBuilder: (BuildContext context) {
+                              return [
+                                const PopupMenuItem(
+                                  value: 'my_items',
+                                  child: Text('My Items'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'settings',
+                                  child: Text('Settings'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'logout',
+                                  child: Text('Logout', style: TextStyle(color: Colors.red)),
+                                ),
+                              ];
+                            },
+        ),               
                       ],
                 ),
               ),
