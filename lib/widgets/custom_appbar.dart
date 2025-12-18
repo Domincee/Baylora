@@ -24,7 +24,7 @@ class CustomeAppBar extends StatelessWidget {
                 color: AppColors.primaryColor,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadowColor, // 👈 shadow color
+                    color: AppColors.shadowColor, 
                     blurRadius: 2,
                     spreadRadius: -2,
                     offset: const Offset(0, 3),
@@ -34,70 +34,70 @@ class CustomeAppBar extends StatelessWidget {
 
               child: Container(
                 color: AppColors.primaryColor,
-              padding: EdgeInsets.symmetric(
-                horizontal: AppValuesWidget.appbarHorPad,                 
-                vertical: AppValuesWidget.appbarVertPad
-                ),
-                child: AppBar(
-                   title: Text(
-                        _currentIndex == 0 ? AppStrings.home : 
-                        _currentIndex == 1 ?  AppStrings.home  :  AppStrings.profile,
-                        style: Theme.of(context).textTheme.titleSmall!,
-                        
-                      ),
-                      centerTitle: true,
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      leading: Padding(
-                        padding: AppValuesWidget.logoPadding,
-                        child: SvgPicture.asset(Images.logo),
-                      ),
-                
-                
-                      actions: [
-                         IconButton(
-                          icon: const Icon(Icons.notifications_outlined, 
-                          size: AppValuesWidget.iconDefaultSize, color:
-                           Color.fromARGB(255, 0, 0, 0)),
-                          onPressed: () {},
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppValuesWidget.appbarHorPad,                 
+                  vertical: AppValuesWidget.appbarVertPad
+                  ),
+                  child: AppBar(
+                    title: Text(
+                          _currentIndex == 0 ? AppStrings.home : 
+                          _currentIndex == 1 ?  AppStrings.home  :  AppStrings.profile,
+                          style: Theme.of(context).textTheme.titleSmall!,
+                          
                         ),
-                        
-                       PopupMenuButton<String>(
-                        offset: const Offset(0, 60),
-                            icon: CircleAvatar(
-                              // Once logged in, this will be their real photo
-                              backgroundImage: NetworkImage('placeholder_url'), 
-                            ),
-                            onSelected: (value) {
-                              if (value == 'my_items') {
-                                // Navigate to BottomNav index 2 (Profile)
-                              } else if (value == 'settings') {
-                                // Push to Settings Page
-                              } else if (value == 'logout') {
-                                // Call Supabase Logout function
-                              }
-                            },
-                            itemBuilder: (BuildContext context) {
-                              return [
-                                const PopupMenuItem(
-                                  value: 'my_items',
-                                  child: Text('My Items'),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'settings',
-                                  child: Text('Settings'),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'logout',
-                                  child: Text('Logout', style: TextStyle(color: Colors.red)),
-                                ),
-                              ];
-                            },
-        ),               
-                      ],
+                        centerTitle: true,
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        leading: Padding(
+                          padding: AppValuesWidget.logoPadding,
+                          child: SvgPicture.asset(Images.logo),
+                        ),
+                  
+                  
+                        actions: [
+                          IconButton(
+                            icon: const Icon(Icons.notifications_outlined, 
+                            size: AppValuesWidget.iconDefaultSize, color:
+                            Color.fromARGB(255, 0, 0, 0)),
+                            onPressed: () {},
+                          ),
+                          
+                        PopupMenuButton<String>(
+                          offset: const Offset(0, 60),
+                              icon: CircleAvatar(
+                                // user photo 
+                                backgroundImage: NetworkImage(Images.defaultAvatar), 
+                              ),
+                              onSelected: (value) {
+                                if (value == 'my_items') {
+                                  // Navigate to BottomNav index 2 (Profile)
+                                } else if (value == 'settings') {
+                                  // Push to Settings Page
+                                } else if (value == 'logout') {
+                                  // Call Supabase Logout function
+                                }
+                              },
+                              itemBuilder: (BuildContext context) {
+                                return [
+                                  const PopupMenuItem(
+                                    value: 'my_items',
+                                    child: Text('My Items'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'settings',
+                                    child: Text('Settings'),
+                                  ),
+                                  const PopupMenuItem(
+                                    value: 'logout',
+                                    child: Text('Logout', style: TextStyle(color: Colors.red)),
+                                  ),
+                                ];
+                              },
+          ),               
+                        ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
   }
 }

@@ -13,6 +13,10 @@ class Images {
   static const String obBoardingImg2 = 'assets/images/onboarding/onboarding_img_2.png';
   static const String obBoardingImg3 = 'assets/images/onboarding/onboarding_img_3.png';
 
+  static const String defaultAvatar = 'assets/images/default_avatar.png';
+  static const String successSvg = 'assets/images/successful.svg';
+
+
 
 
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../assets/images.dart';
+
 class ItemCard extends StatelessWidget {
   final String postedTime;
   /* seller info */
@@ -74,7 +76,7 @@ class ItemCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundImage: AssetImage(sellerImage),
+                    backgroundImage: AssetImage(Images.defaultAvatar),
                   ),
           
                   Column(
