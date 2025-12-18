@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       
       debugShowCheckedModeBanner: false,
      
-      initialRoute: AppRoutes.onboarding,
+      initialRoute: AppRoutes.splash,
       routes: AppRoutes.routes,
     );
   }
