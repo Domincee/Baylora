@@ -21,7 +21,7 @@ class CustomeAppBar extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 
-                color: AppColors.primaryColor,
+                color: Colors.transparent,
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.shadowColor, 
@@ -46,8 +46,10 @@ class CustomeAppBar extends StatelessWidget {
                           
                         ),
                         centerTitle: true,
-                        backgroundColor: Colors.transparent,
+                        backgroundColor: AppColors.primaryColor,
+                        surfaceTintColor: Colors.transparent,
                         elevation: 0,
+                        scrolledUnderElevation: 0,
                         leading: Padding(
                           padding: AppValuesWidget.logoPadding,
                           child: SvgPicture.asset(Images.logo),
@@ -65,7 +67,7 @@ class CustomeAppBar extends StatelessWidget {
                         PopupMenuButton<String>(
                           offset: const Offset(0, 60),
                               icon: CircleAvatar(
-                                // user photo 
+                                // user photo
                                 backgroundImage: NetworkImage(Images.defaultAvatar), 
                               ),
                               onSelected: (value) {

@@ -22,7 +22,7 @@ class OnboardingModel {
       description: 
       "Anything from gadgets to gear.", 
 
-      image: Images.obBoardingImg1),
+      image: Images.onBoardingImg1),
 
 
       OnboardingModel(
@@ -30,14 +30,14 @@ class OnboardingModel {
       "Win the Bidding War.", 
       description: 
       "Bid smart, act fast, and secure the winning deal before time runs out.", 
-      image:Images.obBoardingImg2),
+      image:Images.onBoardingImg2),
 
       OnboardingModel(
       title: 
       "Your Items Are Currency", 
       description: 
       "Turn your unused gear into purchasing power. Offer straight swaps or add cash to win the bid.", 
-      image: Images.obBoardingImg3),
+      image: Images.onBoardingImg3),
     ];
   }
 }
