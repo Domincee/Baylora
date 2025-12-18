@@ -265,7 +265,7 @@ class ButtonWidget extends StatelessWidget {
       onPressed: () {
         if (currentIndex == data.length - 1) {
           // LAST PAGE → GO TO MAIN
-          Navigator.pushReplacementNamed(context, AppRoutes.main);
+          Navigator.pushReplacementNamed(context, AppRoutes.login);
         } else {
           // NEXT PAGE
           _pageController.nextPage(

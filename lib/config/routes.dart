@@ -1,4 +1,4 @@
-import 'package:baylora_prjct/screens/auth/login_screen.dart';
+import 'package:baylora_prjct/screens/auth/pages/login_screen.dart';
 import 'package:baylora_prjct/screens/details/item_details_screen.dart';
 import 'package:baylora_prjct/screens/onboarding/onboarding_screen.dart';
 import 'package:baylora_prjct/screens/post/create_listing_screen.dart';
