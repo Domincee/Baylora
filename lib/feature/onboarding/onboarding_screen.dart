@@ -1,8 +1,8 @@
-import 'package:baylora_prjct/assets/images.dart';
-import 'package:baylora_prjct/config/routes.dart';
-import 'package:baylora_prjct/constant/app_strings.dart';
-import 'package:baylora_prjct/models/onboarding_model.dart';
-import 'package:baylora_prjct/widgets/gradiant_text.dart';
+import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/config/routes.dart';
+import 'package:baylora_prjct/core/constant/app_strings.dart';
+import 'package:baylora_prjct/feature/onboarding/models/onboarding_model.dart';
+import 'package:baylora_prjct/core/widgets/gradiant_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 

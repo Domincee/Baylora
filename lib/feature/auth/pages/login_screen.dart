@@ -1,6 +1,6 @@
-import 'package:baylora_prjct/assets/images.dart';
-import 'package:baylora_prjct/constant/app_values_widget.dart';
-import 'package:baylora_prjct/screens/auth/widget/auth_input_field.dart';
+import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/feature/auth/widget/auth_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 

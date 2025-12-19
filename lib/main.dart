@@ -1,5 +1,5 @@
-import 'package:baylora_prjct/config/routes.dart';
-import 'package:baylora_prjct/theme/app_theme.dart';
+import 'package:baylora_prjct/core/config/routes.dart';
+import 'package:baylora_prjct/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

@@ -1,4 +1,4 @@
-import 'package:baylora_prjct/assets/images.dart';
+import 'package:baylora_prjct/core/assets/images.dart';
 
 class OnboardingModel {
   final String title;

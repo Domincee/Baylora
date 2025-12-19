@@ -1,7 +1,7 @@
-import 'package:baylora_prjct/constant/app_values_widget.dart';
-import 'package:baylora_prjct/widgets/category.dart';
-import 'package:baylora_prjct/widgets/item_card.dart';
-import 'package:baylora_prjct/widgets/search_bar.dart'; 
+import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/feature/home/widgets/category.dart';
+import 'package:baylora_prjct/feature/home/widgets/item_card.dart';
+import 'package:baylora_prjct/feature/home/widgets/search_bar.dart'; 
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
