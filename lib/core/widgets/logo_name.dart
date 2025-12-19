@@ -1,4 +1,3 @@
-import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/widgets/gradiant_text.dart';
 import 'package:flutter/material.dart';
