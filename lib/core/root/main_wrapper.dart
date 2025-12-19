@@ -1,8 +1,8 @@
-import 'package:baylora_prjct/constant/app_strings.dart';
-import 'package:baylora_prjct/widgets/custom_appbar.dart';
+import 'package:baylora_prjct/core/constant/app_strings.dart';
+import 'package:baylora_prjct/feature/home/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
-import '../home/home_screen.dart';
-import '../profile/profile_screen.dart';
+import '../../feature/home/home_screen.dart';
+import '../../feature/profile/profile_screen.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});

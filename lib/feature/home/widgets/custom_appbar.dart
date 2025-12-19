@@ -1,7 +1,7 @@
-import 'package:baylora_prjct/assets/images.dart';
-import 'package:baylora_prjct/constant/app_values_widget.dart';
-import 'package:baylora_prjct/constant/app_strings.dart';
-import 'package:baylora_prjct/theme/app_colors.dart';
+import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/constant/app_strings.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

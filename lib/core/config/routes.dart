@@ -1,9 +1,9 @@
-import 'package:baylora_prjct/screens/auth/login_screen.dart';
-import 'package:baylora_prjct/screens/details/item_details_screen.dart';
-import 'package:baylora_prjct/screens/onboarding/onboarding_screen.dart';
-import 'package:baylora_prjct/screens/post/create_listing_screen.dart';
-import 'package:baylora_prjct/screens/root/main_wrapper.dart';
-import 'package:baylora_prjct/screens/splash_page.dart';
+import 'package:baylora_prjct/feature/auth/pages/login_screen.dart';
+import 'package:baylora_prjct/feature/details/item_details_screen.dart';
+import 'package:baylora_prjct/feature/onboarding/onboarding_screen.dart';
+import 'package:baylora_prjct/feature/post/create_listing_screen.dart';
+import 'package:baylora_prjct/core/root/main_wrapper.dart';
+import 'package:baylora_prjct/feature/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 
 class AppRoutes {

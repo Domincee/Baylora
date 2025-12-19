@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../assets/images.dart';
+import '../../../core/assets/images.dart';
 
 class ItemCard extends StatelessWidget {
   final String postedTime;

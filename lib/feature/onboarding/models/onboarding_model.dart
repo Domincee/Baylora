@@ -1,15 +1,13 @@
-import 'package:baylora_prjct/assets/images.dart';
+import 'package:baylora_prjct/core/assets/images.dart';
 
 class OnboardingModel {
   final String title;
   final String description;
   final String image;
-  final String logo;
   OnboardingModel({
     required this.title,
     required this.description,
     required this.image,
-    this.logo =  Images.logo
   });
 
  

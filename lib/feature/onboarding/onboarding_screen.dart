@@ -1,8 +1,10 @@
-import 'package:baylora_prjct/assets/images.dart';
-import 'package:baylora_prjct/config/routes.dart';
-import 'package:baylora_prjct/constant/app_strings.dart';
-import 'package:baylora_prjct/models/onboarding_model.dart';
-import 'package:baylora_prjct/widgets/gradiant_text.dart';
+import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/config/routes.dart';
+import 'package:baylora_prjct/core/constant/app_strings.dart';
+import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/widgets/logo_name.dart';
+import 'package:baylora_prjct/feature/onboarding/models/onboarding_model.dart';
+import 'package:baylora_prjct/core/widgets/gradiant_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -61,15 +63,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                       child: Column(
                         children: [
-                          // Logo + App Name
-                          LogoName(item: item),
-
-                          const SizedBox(height: 16),
+                          // LogoName
+                          LogoName(image:Images.logoLight),
+                          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
 
                           // Main image
                           MainImg(item: item),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
+
 
                           Column(
                             children: [
@@ -111,41 +113,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-class LogoName extends StatelessWidget {
-  const LogoName({super.key, required this.item});
-
-  final OnboardingModel item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SvgPicture.asset(item.logo, height: 50),
-        const SizedBox(height: 10),
-        GradientText(
-          AppStrings.appName,
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFFFFFFF), // Baylora Purple
-              Color(0xffA293FF), // Secondary Color
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.topRight,
-          ),
-
-          // 3. Define the font weight or font family here
-          style: Theme.of(context).textTheme.titleLarge!,
-        ),
-      ],
-    );
-  }
-}
-
 class MainImg extends StatelessWidget {
   const MainImg({super.key, required this.item});
 
   final OnboardingModel item;
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -265,7 +236,7 @@ class ButtonWidget extends StatelessWidget {
       onPressed: () {
         if (currentIndex == data.length - 1) {
           // LAST PAGE → GO TO MAIN
-          Navigator.pushReplacementNamed(context, AppRoutes.main);
+          Navigator.pushReplacementNamed(context, AppRoutes.login);
         } else {
           // NEXT PAGE
           _pageController.nextPage(
