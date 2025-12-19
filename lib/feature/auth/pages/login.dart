@@ -1,11 +1,12 @@
 import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/root/main_wrapper.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/app_text_input.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-// UPDATE THESE IMPORTS to match your project structure:
+
 
 
 class LoginScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // --- LOGIN LOGIC ---
   Future<void> _login() async {
     setState(() => _isLoading = true);
+    
     try {
       // 1. Attempt Login
       final AuthResponse res = await Supabase.instance.client.auth.signInWithPassword(
@@ -32,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passCtrl.text.trim(),
       );
 
+      // Check if screen is still valid after network request
       if (!mounted) return;
 
       // 2. Success
@@ -40,28 +43,34 @@ class _LoginScreenState extends State<LoginScreen> {
           const SnackBar(
             content: Text("Login Successful!"),
             backgroundColor: Colors.green,
-          
           ),
-          
         );
         
+        // --- FIX FOR ASYNC GAP ---
+        // Capture the navigator NOW, while we know context is valid
+        final navigator = Navigator.of(context);
+        
+        // Now wait
+        await Future.delayed(const Duration(seconds: 1));
+
+        // Use the CAPTURED 'navigator' variable, not 'context'
+        navigator.pushReplacement(
+          MaterialPageRoute(builder: (context) => const MainWrapper()), 
+        );
       }
       
     } on AuthException catch (e) {
-      // Handle "Email not confirmed" or "Invalid login"
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message), 
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Unexpected error occurred"), 
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Unexpected error occurred"), backgroundColor: Colors.red),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

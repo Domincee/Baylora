@@ -12,7 +12,6 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String register = '/register';
   static const String login = '/login';
-
   static const String main = '/main';
   static const String itemDetailScreen = '/item_details';
   static const String createListing = '/create_listing';
