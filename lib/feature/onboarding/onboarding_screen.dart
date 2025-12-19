@@ -64,7 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Column(
                         children: [
                           // LogoName
-                          LogoName(image:Images.logoLight),
+                          LogoName(image:Images.logoLight, fromColor: Color(0xffFFFFFF),toColor: Color(0xffA293FF),),
                           const SizedBox(height: AppValuesWidget.sizedBoxSize,),
 
                           // Main image

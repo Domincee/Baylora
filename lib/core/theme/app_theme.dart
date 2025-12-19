@@ -5,9 +5,8 @@ class AppTheme {
         textTheme: const TextTheme(
           //LOGO TEXT  1
           titleLarge: TextStyle(
-            fontFamily: 'MontserratAlternates',
-            fontWeight: FontWeight.bold,
-            fontSize: 40,
+            fontFamily: 'LogoFont',
+            fontSize: 50,
           ),
 
           /* header 2 */

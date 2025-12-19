@@ -6,13 +6,17 @@ import 'package:flutter_svg/svg.dart';
 class LogoName extends StatelessWidget {
   const LogoName({
   super.key, 
+
+ required this.toColor,
+  required this.fromColor,
+
  required this.image
   
   });
-
+ final Color fromColor;
+ final Color toColor;
  final String image;
   
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,8 +27,9 @@ class LogoName extends StatelessWidget {
           AppStrings.appName,
           gradient: LinearGradient(
             colors: [
-              Color(0xFFFFFFFF), // Baylora Purple
-              Color(0xffA293FF), // Secondary Color
+              fromColor,
+              toColor
+               // Secondary Color
             ],
             begin: Alignment.topLeft,
             end: Alignment.topRight,
