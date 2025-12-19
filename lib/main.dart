@@ -3,7 +3,16 @@ import 'package:baylora_prjct/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+
+void configLoading() {
+  EasyLoading.instance
+    ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+    ..loadingStyle = EasyLoadingStyle.dark
+    ..maskType = EasyLoadingMaskType.black // This prevents clicking while loading
+    ..userInteractions = false;
+}
 
 Future<void> main() async {
 
@@ -39,6 +48,7 @@ class MyApp extends StatelessWidget {
      
       initialRoute: AppRoutes.splash,
       routes: AppRoutes.routes,
+      builder: EasyLoading.init(),
     );
   }
 

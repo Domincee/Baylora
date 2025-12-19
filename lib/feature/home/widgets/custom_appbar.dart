@@ -2,8 +2,11 @@ import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_values_widget.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/auth/pages/login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomeAppBar extends StatelessWidget {
   const CustomeAppBar({
@@ -70,14 +73,29 @@ class CustomeAppBar extends StatelessWidget {
                                 // user photo
                                 backgroundImage: NetworkImage(Images.defaultAvatar), 
                               ),
-                              onSelected: (value) {
+                              onSelected: (value) async {
                                 if (value == 'my_items') {
                                   // Navigate to BottomNav index 2 (Profile)
                                 } else if (value == 'settings') {
                                   // Push to Settings Page
                                 } else if (value == 'logout') {
-                                  // Call Supabase Logout function
-                                }
+
+                                      await Supabase.instance.client.auth.signOut();
+
+                                      // 2. Navigate back to Login Screen
+                                      if (context.mounted) {
+                                        await EasyLoading.show(status: 'Signing out...');
+                                     if (context.mounted) {
+                                              Navigator.of(context).pushAndRemoveUntil(
+                                                MaterialPageRoute(builder: (context) => const LoginScreen()), 
+                                                (route) => false
+                                        );
+                                     }
+
+                                            // 4. Hide loader
+                                    EasyLoading.dismiss();
+                                     }
+                                    }
                               },
                               itemBuilder: (BuildContext context) {
                                 return [
