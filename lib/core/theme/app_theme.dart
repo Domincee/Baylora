@@ -28,7 +28,8 @@ class AppTheme {
           fontFamily: 'NunitoSans',
           fontWeight: FontWeight.w400,
           fontSize:14,
-         )
+         ),
+        
         ),
       );
 }

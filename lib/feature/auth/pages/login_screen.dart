@@ -1,5 +1,7 @@
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/widget/auth_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passCtrl = TextEditingController();
   final _confirmPassCtrl = TextEditingController();
   final _codeCtrl = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
   bool _agreeToTerms = false;
 
@@ -26,26 +27,19 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+        backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // --- 1. BACKGROUND ---
-          Container(
+         Container(
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF7C4DFF), Color(0xFF512DA8)],
-              ),
-            ),
-          ),
-          Positioned(
-            top: -50, left: -50,
-            child: CircleAvatar(radius: 100, backgroundColor: Colors.white.withValues(alpha: 0.1)),
-          ),
-          Positioned(
-            bottom: -80, right: -20,
-            child: CircleAvatar(radius: 140, backgroundColor: Colors.white.withValues(alpha: 0.1)),
-          ),
+              image: DecorationImage(
+                      image: AssetImage(
+                        Images.onBoardingBg1,
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
 
           // --- 2. MAIN FORM ---
           SafeArea(
@@ -54,15 +48,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    const Align(
+                     Align(
                       alignment: Alignment.topRight,
-                      child: Text("Need help?", style: TextStyle(color: Colors.white70)),
-                    ),
+                       child:
+                       TextButton(onPressed: (){}, child: 
+                         Text(
+                        "Need Help?",
+                         style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                          color: AppColors.primaryColor.withValues(alpha: 0.5)),
+                         ),
+                       ),
+                      ),
                     const SizedBox(height: 10),
                     
                     // Brand Header
-                    Padding(padding:AppValuesWidget.logoPadding, child: SvgPicture.asset(Images.logo) ,),
-                    const Text("Baylora", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white)),
+                    LogoName(image: Images.logoLight),
                     const SizedBox(height: 25),
 
                     // Card

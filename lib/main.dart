@@ -9,9 +9,7 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-
   await dotenv.load(fileName: ".env");
-
   try {
     await Supabase.initialize(
       url: dotenv.env['SUPABASE_URL']!,
@@ -21,11 +19,10 @@ Future<void> main() async {
   } catch (e) {
     debugPrint("Supabase Initialization Failed: $e");
   }
-
   runApp(const MyApp());
 }
 
-// Shortcut to access Supabase anywhere in your app
+//  access to Supabase 
 final supabase = Supabase.instance.client;
 
 

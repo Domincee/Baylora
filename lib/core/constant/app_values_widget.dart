@@ -9,8 +9,6 @@ class AppValuesWidget {
 
    static const double appbarHorPad = 15.0;
    static const double appbarVertPad = 4.0;
-
-
    static const double sizedBoxSize = 20.0;
 
 

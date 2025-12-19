@@ -11,4 +11,5 @@ class AppStrings {
  static const String profile = "Profile";
 
  static const String searchText = "Search Item...";
+ 
 }
