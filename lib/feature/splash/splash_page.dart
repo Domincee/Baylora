@@ -3,6 +3,7 @@ import 'package:baylora_prjct/core/config/routes.dart';
 import 'package:baylora_prjct/core/constant/app_values_widget.dart';
 import 'package:baylora_prjct/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class SplashPage extends StatefulWidget {
   
@@ -63,11 +64,8 @@ void _navigateTo(String routeName) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
-          // 1. Look up the builder from your existing map
           final widgetBuilder = AppRoutes.routes[routeName];
           
-          // 2. Call the builder to return the actual Widget
-          // (Using ! assumes the route definitely exists in your map)
           return widgetBuilder!(context);
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -86,7 +84,7 @@ void _navigateTo(String routeName) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(Images.logo, width: 125),
+            SvgPicture.asset(Images.logo, width: 125),
             const SizedBox(height: AppValuesWidget.sizedBoxSize),
             // Changed to WHITE so it is visible on your red background
             const CircularProgressIndicator(color: Colors.white), 

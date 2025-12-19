@@ -1,40 +1,102 @@
 import 'package:baylora_prjct/core/assets/images.dart';
-import 'package:baylora_prjct/core/config/routes.dart';
 import 'package:baylora_prjct/core/constant/app_values_widget.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/constant/data_strings.dart';
 import 'package:baylora_prjct/core/widgets/app_text_input.dart';
+import 'package:baylora_prjct/feature/auth/pages/login.dart';
+import 'package:baylora_prjct/feature/auth/widget/navigate_to_login.dart';
+import 'package:baylora_prjct/feature/auth/widget/terms_agrement.dart';
+import 'package:baylora_prjct/main.dart'; 
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _userNameCtrl = TextEditingController();
   final _firstNameCtrl = TextEditingController();
   final _lastNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmPassCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  
   bool _agreeToTerms = false;
+  bool _isLoading = false; // To show spinner
+
+  // --- REGISTRATION LOGIC ---
+  Future<void> _register() async {
+  setState(() => _isLoading = true);
+
+  try {
+    // 1. Send data to Supabase
+    final AuthResponse res = await supabase.auth.signUp(
+      email: _emailCtrl.text.trim(),
+      password: _passCtrl.text.trim(),
+      data: {
+        'first_name': _firstNameCtrl.text.trim(),
+        'last_name': _lastNameCtrl.text.trim(),
+        'username': _userNameCtrl.text.trim(), // FIXED: Was _lastNameCtrl
+      },
+    );
+
+    // Stop if the widget closed during the request
+    if (!mounted) return;
+
+    // 2. Success Handling
+    if (res.user != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Registration Successful! Please Login."),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // --- FIX FOR ASYNC GAP & NAVIGATION ---
+      // capture the navigator BEFORE the await delay
+      final navigator = Navigator.of(context);
+      
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Use the captured 'navigator' variable instead of 'context'
+      navigator.pushReplacement(
+        _createRoute(const LoginScreen()), 
+      );
+    }
+    
+  } on AuthException catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+      );
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Unexpected error occurred"), backgroundColor: Colors.red),
+      );
+    }
+  } finally {
+    if (mounted) setState(() => _isLoading = false);
+  }
+}
 
   @override
   Widget build(BuildContext context) {
-
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-
-      resizeToAvoidBottomInset: false, 
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // --- 1. BACKGROUND IMAGE ---
+          // --- BACKGROUND ---
           Container(
             height: double.infinity,
             width: double.infinity,
@@ -46,13 +108,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-  
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Column(
                 children: [
-                  // --- TOP: Help Button ---
+                  // --- TOP HELP ---
                   Align(
                     alignment: Alignment.topRight,
                     child: TextButton(
@@ -60,71 +121,96 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         DataStrings.helpText,
                         style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: AppColors.primaryColor.withValues( alpha: 0.5),
-                        ),
+                              color: AppColors.primaryColor.withValues(alpha:  0.5),
+                            ),
                       ),
                     ),
                   ),
-                      const SizedBox(height: AppValuesWidget.sizedBoxSize),
+                  const SizedBox(height: AppValuesWidget.sizedBoxSize),
 
-                  // --- MIDDLE:  ---
+                  // --- FORM AREA ---
                   Expanded(
                     child: Center(
-              
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Container(
-                   
-                          width: size.width > 500 ? 500 : size.width - 40, 
+                          width: size.width > 500 ? 500 : size.width - 40,
                           padding: const EdgeInsets.all(25),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues( alpha: 0.95),
+                            color: Colors.white.withValues(alpha:  0.95),
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: const [
                               BoxShadow(
                                 color: AppColors.shadowColor,
                                 blurRadius: AppValuesWidget.borderRadius,
                                 offset: Offset(0, 5),
-                              )
+                              ),
                             ],
                           ),
                           child: Form(
                             key: _formKey,
                             child: Column(
-                              mainAxisSize: MainAxisSize.min, // Hug content
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                // Header
-                                const LogoName(image: Images.logo, fromColor: Color(0xff0049DC), toColor:Color(0xff8F7EFF) ,),
+                                const LogoName(
+                                  image: Images.logo,
+                                  fromColor: Color(0xff0049DC),
+                                  toColor: Color(0xff8F7EFF),
+                                ),
                                 const SizedBox(height: 10),
-                                Text( 
+                                Text(
                                   DataStrings.fillFormText,
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                    color: AppColors.royalBlue,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall!
+                                      .copyWith(color: AppColors.royalBlue),
                                 ),
                                 const SizedBox(height: 20),
 
-                                // Inputs
+                                // --- INPUTS ---
+                                    AppTextInput(
+                                  label: "Username",
+                                  icon: Icons.person,
+                                  controller: _userNameCtrl,
+                                  validator: (val) {
+                                    if (val == null || val.isEmpty) return "Required";
+                                    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(val)) return "Letters only";
+                                    return null;
+                                  },
+                                ),
                                 AppTextInput(
                                   label: "First Name",
                                   icon: Icons.person,
                                   controller: _firstNameCtrl,
-                                  validator: (val) => val!.isEmpty ? "Required" : null,
+                                  validator: (val) {
+                                    if (val == null || val.isEmpty) return "Required";
+                                    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(val)) return "Letters only";
+                                    return null;
+                                  },
                                 ),
                                 AppTextInput(
                                   label: "Last Name",
                                   icon: Icons.person,
                                   controller: _lastNameCtrl,
-                                  validator: (val) => val!.isEmpty ? "Required" : null,
+                                  validator: (val) {
+                                    if (val == null || val.isEmpty) return "Required";
+                                    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(val)) return "Letters only";
+                                    return null;
+                                  },
                                 ),
                                 AppTextInput(
                                   label: "Email",
                                   icon: Icons.email,
                                   controller: _emailCtrl,
                                   keyboardType: TextInputType.emailAddress,
-                                  validator: (val) => !val!.contains('@') ? "Invalid Email" : null,
+                                  validator: (val) {
+                                    if (val == null || val.isEmpty) return "Required";
+                                    if (val.startsWith('@')) return "Enter name before @";
+                                    if (!val.contains('@') || !val.contains('.')) return "Invalid Email";
+                                    return null;
+                                  },
                                 ),
                                 AppTextInput(
                                   label: "Enter password",
@@ -138,15 +224,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   icon: Icons.lock,
                                   controller: _confirmPassCtrl,
                                   isPassword: true,
-                                  validator: (val) {
-                                    if (val != _passCtrl.text) return "Mismatch";
-                                    return null;
-                                  },
+                                  validator: (val) => val != _passCtrl.text ? "Mismatch" : null,
                                 ),
 
                                 const SizedBox(height: 10),
 
-                                // Terms Checkbox
+                                // --- TERMS ---
                                 Row(
                                   children: [
                                     SizedBox(
@@ -158,62 +241,42 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                     Expanded(
-                                                                              child:  RichText(
-                                          text: TextSpan(
-                                            text: "By registering, you agree to our ",
-                                            style: TextStyle(fontSize: 12, color: Colors.grey[800]),
-                                            children: [
-                                              TextSpan(
-                                                text: "Terms & Agreements",
-                                                style: const TextStyle(
-                                                  color: AppColors.highLightTextColor, // highlighted color
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration.underline, // optional
-                                                ),
-                                                recognizer: TapGestureRecognizer()
-                                                  ..onTap = () {
-                                                    // Show modal
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) {
-                                                        return AlertDialog(
-                                                          title: const Text("Terms & Agreements"),
-                                                          content: const SingleChildScrollView(
-                                                            child: Text(
-                                                              "Here are the full terms & agreements...",
-                                                            ),
-                                                          ),
-                                                          actions: [
-                                                            TextButton(
-                                                              onPressed: () => Navigator.pop(context),
-                                                              child: const Text("Done"),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                              ),
-                                            ],
-                                          ),
-                                        )
+                                    Expanded(
+                                      child: RichText(text: termsAgrement(context)),
                                     ),
                                   ],
                                 ),
-
                                 const SizedBox(height: AppValuesWidget.sizedBoxSize),
-                    
-                                // Register Button
+
+                                // --- REGISTER BUTTON ---
                                 ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate() && _agreeToTerms) {
-                                      // Proceed
-                                    } else if (!_agreeToTerms) {
+                                  onPressed: _isLoading ? null : () {
+                                    // 1. Validate Form
+                                    final bool isFormValid = _formKey.currentState!.validate();
+                                    
+                                    if (!isFormValid) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("Please accept terms.")),
+                                        const SnackBar(
+                                          content: Text("Please fill the empty fields"),
+                                          backgroundColor: Colors.red,
+                                        ),
                                       );
+                                      return;
                                     }
+
+                                    // 2. Validate Terms
+                                    if (!_agreeToTerms) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Please accept terms & agreement"),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // 3. SUCCESS -> Call Register Logic
+                                    _register();
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF512DA8),
@@ -223,68 +286,35 @@ class _LoginScreenState extends State<LoginScreen> {
                                       borderRadius: BorderRadius.circular(30),
                                     ),
                                   ),
-                                  child: const Text(
-                                    "Register",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
+                                  child: _isLoading
+                                    ? const SizedBox(
+                                        height: 20, width: 20,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                      )
+                                    : const Text(
+                                        "Register",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
                                 ),
 
-                                                             const SizedBox(height: AppValuesWidget.sizedBoxSize),
-
-                        
-                          RichText(
-                              text: TextSpan(
-                                
-                                text: "Already Have Account? ",
-                                style: TextStyle(fontSize: 12, color: Colors.grey[800]),
-                                children: [
-                                  
-                                  TextSpan(
-                                    text: "Login",
-                                    style: const TextStyle(
-                                      color: AppColors.highLightTextColor, 
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                    recognizer: TapGestureRecognizer()
-                                      ..onTap = () {
-                                        Navigator.pushNamed(context, AppRoutes.createListing);
-
-                                      },
-                                  ),
-                                ],
-                              ),
-                            ),
+                                const SizedBox(height: AppValuesWidget.sizedBoxSize),
+                                navigateToLogin(context),
                               ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                    
                   ),
 
-                  // --- BOTTOM: Footer Info ---
+                  // --- FOOTER ---
                   Column(
                     children: [
                       const SizedBox(height: AppValuesWidget.sizedBoxSize),
-                      Text(
-                        "Version 1.0.0",
-                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: AppColors.secondaryColor.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      Text(
-                        "© 2024 Baylora. All rights reserved",
-                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                         color: AppColors.secondaryColor.withValues(alpha: 0.3),
-
-                        ),
-                      ),
-                       
+                      Text("Version 1.0.0", style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.secondaryColor.withValues(alpha:  0.3))),
+                      Text("© 2024 Baylora. All rights reserved", style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.secondaryColor.withValues(alpha:  0.3))),
                     ],
                   ),
-                  
                 ],
               ),
             ),
@@ -293,4 +323,23 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+Route _createRoute(Widget page) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = 0.0;
+      const end = 1.0;
+      const curve = Curves.easeInOut;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return FadeTransition(
+        opacity: animation.drive(tween),
+        child: child,
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 500), // Adjust speed here
+  );
 }
