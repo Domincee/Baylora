@@ -37,10 +37,7 @@ class CustomeAppBar extends StatelessWidget {
 
               child: Container(
                 color: AppColors.primaryColor,
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppValuesWidget.appbarHorPad,                 
-                  vertical: AppValuesWidget.appbarVertPad
-                  ),
+                padding: AppValuesWidget.padding,
                   child: AppBar(
                     title: Text(
                           _currentIndex == 0 ? AppStrings.home : 

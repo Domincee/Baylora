@@ -50,7 +50,7 @@ class _AppTextInputState extends State<AppTextInput> {
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 color: AppColors.bgColor,
-                borderRadius: BorderRadius.circular(AppValuesWidget.borderRadius),
+                borderRadius: AppValuesWidget.borderRadius,
                 border: Border.all(
                   color: hasError ? AppColors.errorColor : AppColors.shadowColor,
                 ),

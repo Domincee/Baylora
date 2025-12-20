@@ -17,21 +17,33 @@ class UniversalImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    final isSvg = path.toLowerCase().endsWith('.svg');
+    // 1. Check if it is an SVG file (handling query parameters like ?token=...)
+    bool isSvg = false;
+    try {
+      final uri = Uri.parse(path);
+      isSvg = uri.path.toLowerCase().endsWith('.svg');
+    } catch (_) {
+      // Fallback for asset paths or invalid URIs
+      isSvg = path.toLowerCase().endsWith('.svg');
+    }
     
-
+    // 2. Check if it is a Network URL (http/https)
     final isNetwork = path.startsWith('http');
 
     if (isSvg) {
-      
+      // --- SVG HANDLING ---
       if (isNetwork) {
         return SvgPicture.network(
           path,
           width: width,
           height: height,
           fit: fit,
-          placeholderBuilder: (_) => const Center(child: CircularProgressIndicator()),
+          placeholderBuilder: (_) => Container(
+            width: width,
+            height: height,
+            color: Colors.grey[200],
+            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
         );
       } else {
         return SvgPicture.asset(

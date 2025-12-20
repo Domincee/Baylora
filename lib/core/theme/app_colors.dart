@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-
+      static const Color black = Colors.black;
+  
       static const Color bgColor = Color(0xffFBFBFB);
 
       static const Color primaryColor = Color(0xFFFFFFFF);
@@ -22,4 +23,8 @@ class AppColors {
       static const Color sucessColor = Colors.green;
 
       static const Color textLblG = Colors.grey;
+
+
+  static const Color lavenderBlue = Color(0xFFEBEBFF);
+      
 }

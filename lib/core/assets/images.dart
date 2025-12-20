@@ -3,7 +3,7 @@ class Images {
   static const String logo = 'assets/images/logo.svg';
   static const String logoLight = 'assets/images/logo-light.svg';
 
-  static const String starRate = 'assets/images/itemcard/star_rate.svg';
+  static const String starRate = 'assets/images/itemcard/Star.svg';
   static const String statusVerified = 'assets/images/itemcard/status-verified.svg';
 
   static const String onBoardingBg1 = 'assets/images/onboarding/onboarding_bg1.png';

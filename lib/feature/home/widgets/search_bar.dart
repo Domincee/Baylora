@@ -18,7 +18,7 @@ Widget build(BuildContext context) {
       boxShadow: [
         BoxShadow(
           color: AppColors.shadowColor,
-          blurRadius: AppValuesWidget.borderRadius,
+          blurRadius: 0.5,
           offset: const Offset(0, 5),
         ),
       ],

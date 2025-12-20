@@ -1,3 +1,7 @@
+import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/util/uni_image.dart';
+import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -27,21 +31,15 @@ class ItemCard extends StatelessWidget {
   const ItemCard({
     super.key,
     required this.postedTime,
-
     required this.sellerName,
     required this.sellerImage,
-
     this.isRated = false,
     this.isVerified = false,
-
     this.rating = "0.0",
     this.totalTrade = "0.0",
-
     required this.type,
-
     this.price = "0.0",
     this.swapItem = "",
-
     required this.title,
     required this.description,
     required this.imagePath,
@@ -50,170 +48,224 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15), 
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.primaryColor,
+        borderRadius: AppValuesWidget.borderRadius,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: AppColors.shadowColor.withValues(alpha: 0.5),
+            blurRadius: 0.5,
+            offset: const Offset(0, 7),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,  
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // LEFT GROUP: Avatar + name + time
+              // --- LEFT GROUP: Avatar + Name + Time ---
               Row(
-                spacing: 20,
                 children: [
-                  CircleAvatar(
-                    radius: 16,
-                    backgroundImage: AssetImage(Images.defaultAvatar),
-                  ),
-          
+                  ProfileAvatar(
+                      imageUrl: sellerImage,
+                      size: 32,
+                    ),
+
+                  const SizedBox(width: AppValuesWidget.sizedBoxSize), // Reduced spacing slightly for tighter look
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("@ $sellerName"),
-                      Text("$postedTime ago"),
-                    ],
-                  ),
-             
-                 Row(
-                    children: [
-                      if (isVerified)
-                        Padding(
-                          padding: EdgeInsets.all(1),
-                          child: SvgPicture.asset(
-                            'assets/images/itemcard/status-verified.svg',
+                      Row(
+                        children: [
+                          Text("@$sellerName", style:
+                          Theme.of(context).textTheme.labelLarge!.copyWith(
+                            color: AppColors.black,
                           ),
+                          ),
+                          if (isVerified) ...[
+                            const SizedBox(width: 4),
+                            SvgPicture.asset(Images.statusVerified, 
+                            width: AppValuesWidget.avatarSize.width , 
+                            height: AppValuesWidget.avatarSize.height,
+                            ),
+                          ]
+                        ],
+                      ),
+                      Text(
+                        "$postedTime ago",
+                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                          color: AppColors.subTextColor
                         ),
+                      ),
                     ],
                   ),
                 ],
               ),
-              // RATING
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10 , vertical: 0),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF4F4F4),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  spacing: 20,
-                  children: [
-                       SvgPicture.asset('assets/images/itemcard/star.svg'),
-                      Text(rating),
-                      // TOTAL TRADE
-                      Text(totalTrade),
-                  ],
-                ),
-              )
-          
+              _buildRatingSection(context),
             ],
           ),
 
+          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
+          // --- CONTENT: Text Info ---
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+            padding: const EdgeInsets.symmetric(horizontal: 4), 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title
                 Text(
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style:  Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: AppColors.black,
+                  )
+                 ,
                 ),
-                Text(description),
-                _buildPriceRow(),
+                Text(
+                  description,
+                  maxLines: 1, // Optional: limit lines if desc is long
+                  overflow: TextOverflow.ellipsis,
+                 style:  Theme.of(context).textTheme.labelMedium!.copyWith(
+                    color: AppColors.subTextColor,
+                  ),
+                ), 
+                const SizedBox(height: 4),
+                _buildPriceRow(context),
               ],
             ),
           ),
-          ClipRRect(
-              borderRadius: BorderRadius.all( Radius.circular(16)),
-              child:ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 250, // limit height so it doesn't get too big
-            ),
-            child: Image.network(
-              imagePath,
-              width: double.infinity,
-              fit: BoxFit.cover,
+          
+          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
+
+          // --- MAIN IMAGE ---
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 200, //
+                ),
+               child: UniversalImage( 
+                  path: imagePath,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
-        ),
         ],
       ),
     );
   }
 
-  // This function decides what to show based on the type
-  Widget _buildPriceRow() {
-    // 1. CASH Style
+  //LOGIC TO HIDE/SHOW RATING ---
+  Widget _buildRatingSection(BuildContext context) {
+    // Parse strings to numbers safely
+    final double ratingVal = double.tryParse(rating) ?? 0.0;
+    final int tradeVal = int.tryParse(totalTrade) ?? 0;
+
+    // No rating AND No trades, hide everything.
+    if (ratingVal <= 0 && tradeVal <= 0) {
+      return const SizedBox.shrink(); 
+    }
+
+    // 2. Show only if there is data
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.lavenderBlue,
+        borderRadius: BorderRadius.circular(8), 
+      ),
+
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Rating Star + Number Only if rating > 0)
+          if (ratingVal > 0) ...[
+            SvgPicture.asset(Images.starRate, width: 15, height: 15),
+            const SizedBox(width: 4),
+            Text(
+              rating,
+              style:
+              Theme.of(context).textTheme.labelMedium!.copyWith(
+                color: AppColors.black,
+              ), 
+            ),
+          ],
+
+          // Divider Only if both exist
+          if (ratingVal > 0 && tradeVal > 0)
+            Container(
+              height: 12,
+              width: 1,
+              color: AppColors.subTextColor,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+            ),
+
+          // Total Trades Only if trades > 0
+          if (tradeVal > 0)
+            Text(
+             "$totalTrade trades",
+                style:
+              Theme.of(context).textTheme.labelMedium!.copyWith(
+                color: AppColors.black,
+              ), 
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceRow(BuildContext context) {
     if (type == 'cash') {
       return Text(
         "₱ $price",
-        style: TextStyle(
-          color: Color(0xFF8B5CF6),
-          fontWeight: FontWeight.w700,
-          fontSize: 14,
-        ),
+        style: 
+        Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: AppColors.highLightTextColor,
+        )
       );
     }
-    // 2. TRADE Style
-    else if (type == 'trade') {
+     else if (type == 'trade') {
       return Row(
         children: [
-          Icon(
-            Icons.swap_horiz,
-            size: 16,
-            color: Color(0xFF8B5CF6),
-          ), // Purple Icon
-          SizedBox(width: 4),
+          const Icon(Icons.swap_horiz, size: 16, color: Color(0xFF8B5CF6)),
+          const SizedBox(width: 4),
           Expanded(
             child: Text(
-              swapItem.isNotEmpty
-                  ? swapItem
-                  : "Trade Only", // Show item name if available
+              swapItem.isNotEmpty ? swapItem : "Trade Only",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Color(0xFF8B5CF6),
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: AppColors.highLightTextColor,
+              ) 
+              
             ),
           ),
         ],
       );
-    }
-    // 3. MIX Style (Cash OR Trade)
-    else {
+    } else {
       return Row(
         children: [
           Text(
-            "₱ ${price.replaceAll('000', 'k')}", // Shorten "45,000" to "45k" for space
-            style: TextStyle(
-              color: Color(0xFF8B5CF6),
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-            ),
+            "₱ ${price.replaceAll('000', 'k')}",
+          style:
+              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: AppColors.highLightTextColor,
+              ), 
           ),
-          SizedBox(width: 4),
-          Text("or", style: TextStyle(fontSize: 10, color: Colors.grey)),
-          SizedBox(width: 4),
-          Icon(Icons.swap_horiz, size: 16, color: Color(0xFF8B5CF6)),
+          const SizedBox(width: 4),
+           Text("or", style: 
+          Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: AppColors.subTextColor,
+          )
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.swap_horiz, size: AppValuesWidget.iconDefaultSize, color: Color(0xFF8B5CF6)),
         ],
       );
     }

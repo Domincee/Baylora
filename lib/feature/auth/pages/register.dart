@@ -142,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             boxShadow: const [
                               BoxShadow(
                                 color: AppColors.shadowColor,
-                                blurRadius: AppValuesWidget.borderRadius,
+                                blurRadius: 0.5,
                                 offset: Offset(0, 5),
                               ),
                             ],

@@ -31,7 +31,7 @@ transform: isSelected
         decoration: 
         BoxDecoration(
           color: isSelected ?  AppColors.selectedColor : AppColors.primaryColor, 
-          borderRadius: BorderRadius.all(Radius.circular(AppValuesWidget.borderRadius)),
+          borderRadius: AppValuesWidget.borderRadius,
           boxShadow: [
        
             if (!isSelected)
