@@ -1,6 +1,7 @@
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/config/routes.dart';
 import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -79,14 +80,14 @@ void _navigateTo(String routeName) {
 @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 76, 76),
+      backgroundColor: AppColors.royalBlue,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(Images.logo, width: 125),
             const SizedBox(height: AppValuesWidget.sizedBoxSize),
-            // Changed to WHITE so it is visible on your red background
+            
             const CircularProgressIndicator(color: Colors.white), 
           ],
         ),

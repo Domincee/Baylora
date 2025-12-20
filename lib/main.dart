@@ -10,7 +10,7 @@ void configLoading() {
   EasyLoading.instance
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
     ..loadingStyle = EasyLoadingStyle.dark
-    ..maskType = EasyLoadingMaskType.black // This prevents clicking while loading
+    ..maskType = EasyLoadingMaskType.black 
     ..userInteractions = false;
 }
 

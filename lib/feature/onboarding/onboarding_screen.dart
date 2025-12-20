@@ -6,6 +6,7 @@ import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/onboarding/models/onboarding_model.dart';
 import 'package:baylora_prjct/core/widgets/gradiant_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -232,19 +233,28 @@ class ButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(20)),
-      onPressed: () {
-        if (currentIndex == data.length - 1) {
-          // LAST PAGE → GO TO MAIN
-          Navigator.pushReplacementNamed(context, AppRoutes.register);
-        } else {
-          // NEXT PAGE
-          _pageController.nextPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeIn,
-          );
-        }
-      },
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(20)),
+                onPressed: () async {
+                  if (currentIndex == data.length - 1) {
+                    // LAST PAGE → GO TO MAIN
+                    await EasyLoading.show(status: 'Loading...');
+
+                    await Future.delayed(const Duration(milliseconds: 500));
+
+                    await   EasyLoading.dismiss();
+
+                    if (context.mounted) {
+                      Navigator.pushReplacementNamed(context, AppRoutes.register);
+                    }
+                    
+                  } else {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                    );
+                  }
+                },
+                    
       child: Text(currentIndex == data.length - 1 ? AppStrings.getStartedBtn : AppStrings.nextBtn),
     );
   }

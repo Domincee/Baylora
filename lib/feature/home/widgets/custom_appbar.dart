@@ -85,7 +85,8 @@ class CustomeAppBar extends StatelessWidget {
                                       // 2. Navigate back to Login Screen
                                       if (context.mounted) {
                                         await EasyLoading.show(status: 'Signing out...');
-                                     if (context.mounted) {
+                                        
+                                            if (context.mounted) {
                                               Navigator.of(context).pushAndRemoveUntil(
                                                 MaterialPageRoute(builder: (context) => const LoginScreen()), 
                                                 (route) => false
@@ -93,7 +94,7 @@ class CustomeAppBar extends StatelessWidget {
                                      }
 
                                             // 4. Hide loader
-                                    EasyLoading.dismiss();
+                                            EasyLoading.dismiss();
                                      }
                                     }
                               },

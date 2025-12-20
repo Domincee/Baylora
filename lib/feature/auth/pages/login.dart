@@ -5,6 +5,7 @@ import 'package:baylora_prjct/core/widgets/app_text_input.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/pages/register.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -26,62 +27,71 @@ class _LoginScreenState extends State<LoginScreen> {
   // --- LOGIN LOGIC ---
   Future<void> _login() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      // 1. Attempt Login
+      //Network Request
       final AuthResponse res = await Supabase.instance.client.auth.signInWithPassword(
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text.trim(),
       );
 
-      // Check if screen is still valid after network request
+    
       if (!mounted) return;
 
-      // 2. Success
       if (res.session != null) {
+        // Show Success SnackBar 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Login Successful!"),
-            backgroundColor: Colors.green,
+           SnackBar(
+            content: Text("Login Successful!", 
+            style: Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.primaryColor),),
+            backgroundColor: AppColors.sucessColor,
           ),
         );
-        
-        // --- FIX FOR ASYNC GAP ---
-        // Capture the navigator NOW, while we know context is valid
+
+        // Show Loading Overlay
+        await EasyLoading.show(status: 'Redirecting...');
+
+        // ignore: use_build_context_synchronously
         final navigator = Navigator.of(context);
-        
-        // Now wait
+
+        //Wait
         await Future.delayed(const Duration(seconds: 1));
 
-        // Use the CAPTURED 'navigator' variable, not 'context'
+        // Dismiss Loader
+        await EasyLoading.dismiss();
+
+       
         navigator.pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainWrapper()), 
+           MaterialPageRoute(builder: (context) => const MainWrapper()),
         );
       }
-      
+
     } on AuthException catch (e) {
+     
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+          SnackBar(content: Text(e.message), backgroundColor: AppColors.errorColor),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Unexpected error occurred"), backgroundColor: Colors.red),
+          const SnackBar(content: Text("Unexpected error occurred"), backgroundColor: AppColors.errorColor),
         );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
+      EasyLoading.dismiss();
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      // Same Background as Register Page
+     
       body: Stack(
         children: [
           Container(
@@ -172,6 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                   color: AppColors.primaryColor
                                  ),),
+
                           ),
 
                           const SizedBox(height: 20),
