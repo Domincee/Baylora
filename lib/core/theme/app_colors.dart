@@ -26,5 +26,7 @@ class AppColors {
 
 
   static const Color lavenderBlue = Color(0xFFEBEBFF);
+  static const Color infoCardBg = Color(0xFFC9FFE0);
+  static const Color infoCardTClr = Color(0xFF6C6C6C);
       
 }
