@@ -10,21 +10,17 @@ import 'package:flutter/material.dart';
 
 class ItemCard extends StatelessWidget {
   final String postedTime;
-  /* seller info */
+  /* user info */
   final String sellerName;
   final String sellerImage;
-
   final bool isVerified;
   final String totalTrade;
-
   final String rating;
   final bool isRated;
   /* item info */
   final String type;
-
   final String price;
   final String swapItem;
-
   final String title;
   final String description;
   final String imagePath;
@@ -49,7 +45,7 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15), 
+      padding: AppValuesWidget.padding, 
       decoration: BoxDecoration(
         color: AppColors.primaryColor,
         borderRadius: AppValuesWidget.borderRadius,
@@ -76,7 +72,7 @@ class ItemCard extends StatelessWidget {
                       size: 32,
                     ),
 
-                  const SizedBox(width: AppValuesWidget.sizedBoxSize), // Reduced spacing slightly for tighter look
+                  const SizedBox(width: AppValuesWidget.sizedBoxSize), 
                   BuildUser(sellerName: sellerName, isVerified: isVerified, postedTime: postedTime),
                 ],
               ),
@@ -119,7 +115,7 @@ class ItemCard extends StatelessWidget {
           // --- MAIN IMAGE ---
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppValuesWidget.borderRadius,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(
                   maxHeight: 200, //

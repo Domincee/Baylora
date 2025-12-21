@@ -25,7 +25,7 @@ class Category extends StatelessWidget {
         margin: const EdgeInsets.only(right: 10), 
 transform: isSelected 
     ? Matrix4.diagonal3Values(1.1, 1.1, 1.0) 
-    : Matrix4.identity(),     // 2. IMPORTANT: Scale from the center, otherwise it grows from the top-left
+    : Matrix4.identity(),     
       transformAlignment: Alignment.center,
 
         decoration: 

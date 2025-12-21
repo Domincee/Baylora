@@ -39,7 +39,7 @@ class BuildUser extends StatelessWidget {
           ],
         ),
         Text(
-          "$postedTime ago",
+          postedTime,
           style: Theme.of(context).textTheme.labelSmall!.copyWith(
             color: AppColors.subTextColor
           ),
