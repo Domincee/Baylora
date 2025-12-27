@@ -8,13 +8,6 @@ class ItemCardMapper {
   static Map<String, dynamic> map(Map<String, dynamic> item) {
     final profile = item['profiles'] ?? {};
 
-    print("--------------------------------------------------");
-    print("ITEM: ${item['title']}");
-    print("RAW PROFILE DATA: $profile"); 
-    print("AVATAR VALUE: ${profile['avatar_url']}");
-    print("--------------------------------------------------");
-
-    
     final images = item['images'] as List?;
     final firstImage = (images != null && images.isNotEmpty)
         ? images.first

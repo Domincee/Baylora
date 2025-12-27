@@ -10,7 +10,7 @@ class CustomeSearchBar extends StatelessWidget {
 @override
 Widget build(BuildContext context) {
   return Container(
-    height: AppValuesWidget.searchBarSize, // 1. OPTIONAL: Give the container a fixed height for consistency
+    height: AppValuesWidget.searchBarSize, 
     alignment: Alignment.center,
     decoration: BoxDecoration(
       color: AppColors.primaryColor,
@@ -25,7 +25,7 @@ Widget build(BuildContext context) {
     ),
     child: TextField(
       style: Theme.of(context).textTheme.bodySmall,
-      textAlignVertical: TextAlignVertical.center, // Keeps text aligned with icon
+      textAlignVertical: TextAlignVertical.center, 
       decoration: InputDecoration(
         prefixIcon: const Icon(Icons.search, color: AppColors.textLblG, size: AppValuesWidget.iconDefaultSize,),
         hintText: AppStrings.searchText,

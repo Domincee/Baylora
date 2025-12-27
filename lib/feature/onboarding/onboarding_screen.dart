@@ -1,13 +1,11 @@
 import 'package:baylora_prjct/core/assets/images.dart';
-import 'package:baylora_prjct/core/config/routes.dart';
-import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values_widget.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/onboarding/models/onboarding_model.dart';
 import 'package:baylora_prjct/core/widgets/gradiant_text.dart';
+import 'package:baylora_prjct/feature/onboarding/widgets/button_widget.dart';
+import 'package:baylora_prjct/feature/onboarding/widgets/img_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_svg/svg.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -72,8 +70,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           MainImg(item: item),
 
                           const SizedBox(height: AppValuesWidget.sizedBoxSize,),
-
-
                           Column(
                             children: [
                               Title(item: item),
@@ -114,27 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-class MainImg extends StatelessWidget {
-  const MainImg({super.key, required this.item});
 
-  final OnboardingModel item;
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: item.image.toLowerCase().endsWith('.svg')
-          ? SvgPicture.asset(
-              item.image,
-              fit: BoxFit.contain,
-              width: double.infinity,
-            )
-          : Image.asset(
-              item.image,
-              fit: BoxFit.contain,
-              width: double.infinity,
-            ),
-    );
-  }
-}
 
 
 class Title extends StatelessWidget {
@@ -218,44 +194,3 @@ class Pagination extends StatelessWidget {
   }
 }
 
-class ButtonWidget extends StatelessWidget {
-  const ButtonWidget({
-    super.key,
-    required this.currentIndex,
-    required this.data,
-    required PageController pageController,
-  }) : _pageController = pageController;
-
-  final int currentIndex;
-  final List<OnboardingModel> data;
-  final PageController _pageController;
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(20)),
-                onPressed: () async {
-                  if (currentIndex == data.length - 1) {
-                    // LAST PAGE → GO TO MAIN
-                    await EasyLoading.show(status: 'Loading...');
-
-                    await Future.delayed(const Duration(milliseconds: 500));
-
-                    await   EasyLoading.dismiss();
-
-                    if (context.mounted) {
-                      Navigator.pushReplacementNamed(context, AppRoutes.register);
-                    }
-                    
-                  } else {
-                    _pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                  }
-                },
-                    
-      child: Text(currentIndex == data.length - 1 ? AppStrings.getStartedBtn : AppStrings.nextBtn),
-    );
-  }
-}

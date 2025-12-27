@@ -58,13 +58,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       );
 
-      // --- FIX FOR ASYNC GAP & NAVIGATION ---
-      // capture the navigator BEFORE the await delay
+     
+
       final navigator = Navigator.of(context);
       
       await Future.delayed(const Duration(seconds: 1));
 
-      // Use the captured 'navigator' variable instead of 'context'
+   
       navigator.pushReplacement(
         _createRoute(const LoginScreen()), 
       );
@@ -73,13 +73,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   } on AuthException catch (e) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message), backgroundColor: Colors.red),
+        SnackBar(content: Text(e.message,
+          style: Theme.of(context).textTheme.labelSmall!.copyWith(
+          color: AppColors.primaryColor
+        )), backgroundColor: Colors.green),
       );
     }
+    
   } catch (e) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Unexpected error occurred"), backgroundColor: Colors.red),
+       SnackBar(content: Text("Unexpected error occurred", 
+        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+          color: AppColors.primaryColor
+        )), backgroundColor:AppColors.errorColor),
       );
     }
   } finally {

@@ -48,7 +48,7 @@ class ProfileAvatar extends StatelessWidget {
     );
   }
 
-  // FIXED HELPER FUNCTION
+
   Widget _buildCircle(Widget child) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(size / 2),
