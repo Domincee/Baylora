@@ -1,40 +1,45 @@
 import 'package:baylora_prjct/core/constant/app_values_widget.dart';
 import 'package:baylora_prjct/feature/home/mapper/item_card_mapper.dart';
-import 'package:baylora_prjct/feature/home/util/item_filter_util.dart'; // <--- IMPORT NEW HELPER
+import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
+import 'package:baylora_prjct/feature/home/util/item_filter_util.dart';
 import 'package:baylora_prjct/feature/home/widgets/category.dart';
 import 'package:baylora_prjct/feature/home/widgets/item_card.dart';
 import 'package:baylora_prjct/feature/home/widgets/search_bar.dart'; 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   String selectedFilter = "All";
-  late Stream<List<Map<String, dynamic>>> _itemsStream;
-
-  @override
-  void initState() {
-    super.initState();
-    // Use the helper to get the stream
-    _itemsStream = ItemFilterUtil.buildQueryStream(selectedFilter);
-  }
 
   void _onFilterChanged(String newFilter) {
     if (selectedFilter == newFilter) return;
     setState(() {
       selectedFilter = newFilter;
-      // Use the helper to update the stream
-      _itemsStream = ItemFilterUtil.buildQueryStream(selectedFilter); 
     });
+  }
+
+  Future<void> _refreshItems() async {
+    // Invalidate the provider for the current filter to force a re-fetch
+    ref.invalidate(homeItemsProvider(selectedFilter));
+    
+    // Optionally wait for the new value
+    try {
+      await ref.read(homeItemsProvider(selectedFilter).future);
+    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
+    // Watch the provider. It returns an AsyncValue<List<Map...>>
+    final itemsAsync = ref.watch(homeItemsProvider(selectedFilter));
+
     return Scaffold(
       body: Column(
         children: [
@@ -49,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    // Use the helper list instead of hardcoding it here
                     children: ItemFilterUtil.categories.map((filter) {
                       return Padding(
                         padding: const EdgeInsets.only(right: 10), 
@@ -73,28 +77,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Expanded(
-            child: StreamBuilder<List<Map<String, dynamic>>>(
-              stream: _itemsStream, 
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                   return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError) {
-                  debugPrint('Error loading items: ${snapshot.error}');
-                  return const Center(child: Text('Something went wrong.'));
-                }
-
-                final items = snapshot.data ?? []; 
-                
+            child: itemsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) {
+                debugPrint('Error loading items: $err');
+                return const Center(child: Text('Something went wrong.'));
+              },
+              data: (items) {
                 if (items.isEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () async {
-                      setState(() {
-                         _itemsStream = ItemFilterUtil.buildQueryStream(selectedFilter);
-                      });
-                      await _itemsStream.first;
-                    },
+                    onRefresh: _refreshItems,
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: SizedBox(
@@ -113,14 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                 return RefreshIndicator(
-                  onRefresh: () async {
-                    setState(() {
-                      _itemsStream = ItemFilterUtil.buildQueryStream(selectedFilter);
-                    });
-                    try { await _itemsStream.first; } catch (_) {}
-                  },
+                  onRefresh: _refreshItems,
                   child: GridView.builder(
-
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: AppValuesWidget.padding,
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -131,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     itemCount: items.length,
                     itemBuilder: (context, index) {
-
                       final item = items[index];
                       final data = ItemCardMapper.map(item);
 
@@ -150,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         totalTrade: data['totalTrade'],
                       );
                     }
-               ),
+                  ),
                 );
               },
             ),

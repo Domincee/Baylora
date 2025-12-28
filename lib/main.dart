@@ -1,6 +1,7 @@
 import 'package:baylora_prjct/core/config/routes.dart';
 import 'package:baylora_prjct/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -28,7 +29,8 @@ Future<void> main() async {
   } catch (e) {
     debugPrint("Supabase Initialization Failed: $e");
   }
-  runApp(const MyApp());
+  // Wrap the app with ProviderScope
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 //  access to Supabase 

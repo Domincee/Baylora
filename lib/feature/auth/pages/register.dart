@@ -76,6 +76,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         SnackBar(content: Text(e.message,
           style: Theme.of(context).textTheme.labelSmall!.copyWith(
           color: AppColors.primaryColor
+          
         )), backgroundColor: Colors.green),
       );
     }

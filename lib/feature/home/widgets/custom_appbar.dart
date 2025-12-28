@@ -4,55 +4,29 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
 import 'package:baylora_prjct/core/util/uni_image.dart';
+import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class CustomeAppBar extends StatefulWidget {
+class CustomeAppBar extends ConsumerWidget {
   const CustomeAppBar({
     super.key,
-    required int currentIndex,
-  }) : _currentIndex = currentIndex;
+    required this.currentIndex,
+  });
 
-  final int _currentIndex;
-
-  @override
-  State<CustomeAppBar> createState() => _CustomeAppBarState();
-}
-
-class _CustomeAppBarState extends State<CustomeAppBar> {
-  String? _avatarUrl;
+  final int currentIndex;
 
   @override
-  void initState() {
-    super.initState();
-    _fetchUserAvatar();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 1. Watch the user profile provider
+    final profileAsync = ref.watch(userProfileProvider);
+    
+    // 2. Extract avatar URL safely
+    final avatarUrl = profileAsync.valueOrNull?['avatar_url'];
 
-  Future<void> _fetchUserAvatar() async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return;
-
-    try {
-      final data = await Supabase.instance.client
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', userId)
-          .maybeSingle();
-
-      if (data != null && mounted) {
-        setState(() {
-          _avatarUrl = data['avatar_url'];
-        });
-      }
-    } catch (e) {
-      debugPrint('Error fetching avatar: $e');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
       child: Container(
@@ -72,9 +46,9 @@ class _CustomeAppBarState extends State<CustomeAppBar> {
           padding: const EdgeInsets.all(5),
           child: AppBar(
             title: Text(
-              widget._currentIndex == 0
+              currentIndex == 0
                   ? AppStrings.home
-                  : widget._currentIndex == 1
+                  : currentIndex == 1
                       ? AppStrings.home
                       : AppStrings.profile,
               style: Theme.of(context).textTheme.titleSmall!,
@@ -97,11 +71,11 @@ class _CustomeAppBarState extends State<CustomeAppBar> {
               ),
               PopupMenuButton<String>(
                 offset: const Offset(0, 60),
-                // Replaced CircleAvatar with ClipOval + UniversalImage
+                // 3. Use the watched avatarUrl here
                 icon: ClipOval(
                   child: UniversalImage(
-                    path: _avatarUrl ?? Images.defaultAvatar,
-                    width: 32, // Adjusted size to fit typical app bar icon size
+                    path: avatarUrl ?? Images.defaultAvatar,
+                    width: 32, 
                     height: 32,
                     fit: BoxFit.cover,
                   ),
@@ -123,8 +97,6 @@ class _CustomeAppBarState extends State<CustomeAppBar> {
                                 builder: (context) => const LoginScreen()),
                             (route) => false);
                       }
-
-                      // 4. Hide loader
                       EasyLoading.dismiss();
                     }
                   }
