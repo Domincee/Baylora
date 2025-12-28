@@ -26,10 +26,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _refreshItems() async {
-    // Invalidate the provider for the current filter to force a re-fetch
     ref.invalidate(homeItemsProvider(selectedFilter));
-    
-    // Optionally wait for the new value
     try {
       await ref.read(homeItemsProvider(selectedFilter).future);
     } catch (_) {}
@@ -37,7 +34,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch the provider. It returns an AsyncValue<List<Map...>>
     final itemsAsync = ref.watch(homeItemsProvider(selectedFilter));
 
     return Scaffold(
