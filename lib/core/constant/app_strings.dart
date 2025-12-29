@@ -1,15 +1,23 @@
+
 class AppStrings {
-  static const String appName = 'Baylora';
 
-
- static const String nextBtn = "Next";
-
- static const String getStartedBtn = "Get Started";
+ // Existing...
+ static const String appName = 'Baylora';
 
  static const String home = "Home";
- static const String post = "Post";
  static const String profile = "Profile";
 
- static const String searchText = "Search Item...";
- 
+ // --- New Generic Additions ---
+ static const String settings = "Settings";
+ static const String logout = "Log out";
+ static const String notifications = "Notification";
+ static const String editProfile = "Edit Profile";
+ static const String save = "Save";
+ static const String cancel = "Cancel";
+ static const String error = "Error";
+ static const String post = "Post";
+ static const String searchText = "Search item";
+ static const String getStartedBtn = "Get Started";
+ static const String nextBtn = "Next";
+
 }

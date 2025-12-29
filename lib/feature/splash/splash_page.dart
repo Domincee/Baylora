@@ -1,6 +1,6 @@
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/config/routes.dart';
-import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/main.dart';
 import 'package:flutter/material.dart';

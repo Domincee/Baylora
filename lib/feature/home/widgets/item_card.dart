@@ -1,4 +1,4 @@
-import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/uni_image.dart';
 import 'package:baylora_prjct/feature/home/widgets/build_price.dart';

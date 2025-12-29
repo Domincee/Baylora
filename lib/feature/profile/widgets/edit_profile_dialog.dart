@@ -43,13 +43,11 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       setState(() => _usernameError = "must be at least 3 characters");
       return;
     }
-    
     // VALIDATION: Only letters (a-z, A-Z) and underscores allowed. No numbers.
     if (RegExp(r'[^a-zA-Z_]').hasMatch(username)) {
       setState(() => _usernameError = "Invalid username format (@,#,.)");
       return;
     }
-
     // Reset error
     setState(() {
       _usernameError = null;
@@ -74,7 +72,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
            setState(() => _usernameError = "Invalid username format");
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("An unexpected error occurred. Please try again.")),
+             SnackBar(content: Text(errorMessage)),
           );
         }
       }

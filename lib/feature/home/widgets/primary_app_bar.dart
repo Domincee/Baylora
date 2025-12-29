@@ -1,9 +1,8 @@
 import 'package:baylora_prjct/core/assets/images.dart';
-import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart'; // Changed import
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
-import 'package:baylora_prjct/core/util/uni_image.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -11,8 +10,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class CustomeAppBar extends ConsumerWidget {
-  const CustomeAppBar({
+class PrimaryAppBar extends ConsumerWidget { // Renamed Class
+  const PrimaryAppBar({
     super.key,
     required this.currentIndex,
   });
@@ -21,11 +20,10 @@ class CustomeAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 1. Watch the user profile provider
     final profileAsync = ref.watch(userProfileProvider);
-    
-    // 2. Extract avatar URL safely
-    final avatarUrl = profileAsync.valueOrNull?['avatar_url'];
+
+    // UPDATED: Use Model property
+    final avatarUrl = profileAsync.valueOrNull?.avatarUrl;
 
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -69,22 +67,18 @@ class CustomeAppBar extends ConsumerWidget {
                     color: Color.fromARGB(255, 0, 0, 0)),
                 onPressed: () {},
               ),
+              // Inside PrimaryAppBar build method...
+
               PopupMenuButton<String>(
                 offset: const Offset(0, 60),
-                // 3. Use the watched avatarUrl here
                 icon: ClipOval(
-                  child: UniversalImage(
-                    path: avatarUrl ?? Images.defaultAvatar,
-                    width: 32, 
-                    height: 32,
-                    fit: BoxFit.cover,
-                  ),
+                  child: _buildAvatar(avatarUrl ?? Images.defaultAvatar), // Use helper method
                 ),
+                // ... rest of code
+
                 onSelected: (value) async {
                   if (value == 'my_items') {
-                    // Navigate to BottomNav index 2 (Profile)
                   } else if (value == 'settings') {
-                    // Push to Settings Page
                   } else if (value == 'logout') {
                     await Supabase.instance.client.auth.signOut();
 
@@ -109,11 +103,11 @@ class CustomeAppBar extends ConsumerWidget {
                     ),
                     const PopupMenuItem(
                       value: 'settings',
-                      child: Text('Settings'),
+                      child: Text(AppStrings.settings), // Use Constant
                     ),
                     const PopupMenuItem(
                       value: 'logout',
-                      child: Text('Logout', style: TextStyle(color: Colors.red)),
+                      child: Text(AppStrings.logout, style: TextStyle(color: Colors.red)), // Use Constant
                     ),
                   ];
                 },
@@ -125,3 +119,29 @@ class CustomeAppBar extends ConsumerWidget {
     );
   }
 }
+
+Widget _buildAvatar(String url) {
+  // 1. If it's an SVG (Network or Asset)
+  if (url.toLowerCase().endsWith('.svg')) {
+    return SvgPicture.network(
+      url,
+      width: 32,
+      height: 32,
+      fit: BoxFit.cover,
+      // Fix for "unhandled element <filter/>":
+      placeholderBuilder: (context) => const Icon(Icons.person),
+    );
+  }
+
+  // 2. If it's a standard image
+  return Image.network(
+    url,
+    width: 32,
+    height: 32,
+    fit: BoxFit.cover,
+    errorBuilder: (context, error, stackTrace) {
+      return const Icon(Icons.person); // Fallback if image fails
+    },
+  );
+}
+
