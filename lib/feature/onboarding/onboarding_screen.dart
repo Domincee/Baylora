@@ -1,11 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
-import 'package:baylora_prjct/feature/onboarding/models/onboarding_model.dart';
 import 'package:baylora_prjct/core/widgets/gradiant_text.dart';
+import 'package:baylora_prjct/feature/onboarding/models/onboarding_model.dart';
 import 'package:baylora_prjct/feature/onboarding/widgets/button_widget.dart';
 import 'package:baylora_prjct/feature/onboarding/widgets/img_widget.dart';
-import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -56,26 +56,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     final item = data[index];
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 20,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppValues.spacingM,
+                        vertical: AppValues.spacingM,
                       ),
                       child: Column(
                         children: [
-                          // LogoName
-                          LogoName(image:Images.logoLight, fromColor: Color(0xffFFFFFF),toColor: Color(0xffA293FF),),
-                          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
-
-                          // Main image
+                          const LogoName(
+                            image: Images.logoLight,
+                            fromColor: Color(0xffFFFFFF),
+                            toColor: Color(0xffA293FF),
+                          ),
+                          AppValues.gapM,
                           MainImg(item: item),
-
-                          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
+                          AppValues.gapM,
                           Column(
                             children: [
                               Title(item: item),
-
-                              const SizedBox(height: 4),
-
+                              AppValues.gapXXS,
                               Description(item: item),
                             ],
                           ),
@@ -87,12 +85,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
 
               Padding(
-                padding: const EdgeInsets.all(10),
+                padding: AppValues.paddingSmall,
                 child: Pagination(data: data, currentIndex: _currentIndex),
               ),
-              // BOTTOM BUTTON
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: AppValues.paddingScreen,
                 child: SizedBox(
                   width: double.infinity,
                   child: ButtonWidget(

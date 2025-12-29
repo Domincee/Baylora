@@ -1,5 +1,6 @@
-import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class ListingOptionCard extends StatelessWidget {
   final int index;
@@ -63,9 +64,7 @@ class ListingOptionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: isSelected ? AppColors.royalBlue : Colors.black,
                         ),
                       ),
@@ -74,15 +73,14 @@ class ListingOptionCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
+                            color: AppColors.recommendedColor.withValues(alpha: 0.1),
+                            borderRadius: AppValues.borderRadiusS,
                           ),
-                          child: const Text(
+                          child: Text(
                             "Recommended",
-                            style: TextStyle(
-                              fontSize: 10,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                              color: AppColors.recommendedColor,
                             ),
                           ),
                         ),
@@ -92,9 +90,8 @@ class ListingOptionCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.textDarkGrey,
                     ),
                   ),
                 ],

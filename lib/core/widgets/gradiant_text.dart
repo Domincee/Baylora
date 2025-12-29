@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 
 class GradientText extends StatelessWidget {
@@ -26,7 +27,7 @@ class GradientText extends StatelessWidget {
       child: Text(
         text,
        textAlign: textAlign,
-        style: style.copyWith(color: Colors.white, ),
+        style: style.copyWith(color: AppColors.white),
       ),
     );
   }

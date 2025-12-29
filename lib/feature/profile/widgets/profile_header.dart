@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String avatarUrl;
@@ -21,8 +23,11 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+      padding: AppValues.paddingCard,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: AppValues.borderRadiusXL,
+      ),
       child: Row(
         children: [
           CircleAvatar(
@@ -30,7 +35,7 @@ class ProfileHeader extends StatelessWidget {
             backgroundImage: NetworkImage(avatarUrl),
             backgroundColor: Colors.grey[200],
           ),
-          const SizedBox(width: 16),
+          AppValues.gapHM,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,17 +43,29 @@ class ProfileHeader extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(username, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text(
+                      username,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     IconButton(
                       onPressed: onEdit,
-                      icon: const Icon(Icons.edit_note, size: 20, color: Colors.grey),
+                      icon: Icon(
+                        Icons.edit_note,
+                        size: 20,
+                        color: AppColors.textGrey,
+                      ),
                       constraints: const BoxConstraints(),
                       padding: EdgeInsets.zero,
                     ),
                   ],
                 ),
-                Text(bio.isEmpty ? "No bio yet" : bio, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                const SizedBox(height: 4),
+                Text(
+                  bio.isEmpty ? "No bio yet" : bio,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppColors.textGrey,
+                  ),
+                ),
+                AppValues.gapXXS,
                 Row(children: List.generate(5, (index) => Icon(
                   Icons.star, 
                   color: index < rating ? Colors.amber : Colors.grey[300], 

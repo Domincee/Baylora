@@ -21,60 +21,73 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileProvider);
-
-    // UPDATED: Use Model property
     final avatarUrl = profileAsync.valueOrNull?.avatarUrl;
 
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowColor,
-              blurRadius: 2,
-              spreadRadius: -2,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
+      child: SafeArea(
         child: Container(
-          color: AppColors.primaryColor,
-          padding: const EdgeInsets.all(5),
-          child: AppBar(
-            title: Text(
-              currentIndex == 0
-                  ? AppStrings.home
-                  : currentIndex == 1
-                      ? AppStrings.home
-                      : AppStrings.profile,
-              style: Theme.of(context).textTheme.titleSmall!,
-            ),
-            centerTitle: true,
-            backgroundColor: AppColors.primaryColor,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            leading: Padding(
-              padding: AppValuesWidget.logoPadding,
-              child: SvgPicture.asset(Images.logo),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined,
-                    size: AppValuesWidget.iconDefaultSize,
-                    color: Color.fromARGB(255, 0, 0, 0)),
-                onPressed: () {},
-              ),
-              // Inside PrimaryAppBar build method...
-
-              PopupMenuButton<String>(
-                offset: const Offset(0, 60),
-                icon: ClipOval(
-                  child: _buildAvatar(avatarUrl ?? Images.defaultAvatar), // Use helper method
+          color: AppColors.white,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppValues.spacingM,
+            vertical: AppValues.spacingXS,
+          ),
+          child: Row(
+            children: [
+              // Logo
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF09B7FD),
+                      Color(0xFF0049DC),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
-                // ... rest of code
+                child: Center(
+                  child: SvgPicture.asset(
+                    Images.logo,
+                    width: 24,
+                    height: 24,
+                    colorFilter: ColorFilter.mode(
+                      AppColors.white,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ),
+              
+              Spacer(),
+              
+              // Notification Icon
+              IconButton(
+                icon: Icon(
+                  Icons.notifications_outlined,
+                  size: 28,
+                  color: AppColors.black,
+                ),
+                onPressed: () {},
+                padding: EdgeInsets.all(8),
+                constraints: BoxConstraints(),
+              ),
+              
+              AppValues.gapHXS,
+              
+              // Profile Avatar with Menu
+              GestureDetector(
+                onTap: () {
+                  // Show menu or navigate
+                },
+                child: PopupMenuButton<String>(
+                  offset: const Offset(0, 50),
+                  child: ClipOval(
+                    child: _buildAvatar(avatarUrl ?? Images.defaultAvatar),
+                  ),
 
                 onSelected: (value) async {
                   if (value == 'my_items') {
@@ -105,12 +118,18 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
                       value: 'settings',
                       child: Text(AppStrings.settings), // Use Constant
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'logout',
-                      child: Text(AppStrings.logout, style: TextStyle(color: Colors.red)), // Use Constant
+                      child: Text(
+                        AppStrings.logout,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.errorColor,
+                        ),
+                      ),
                     ),
                   ];
                 },
+              ),
               ),
             ],
           ),

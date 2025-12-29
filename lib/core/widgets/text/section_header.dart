@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
   final String subTitle;
-  const SectionHeader({super.key, required this.title, required this.subTitle});
+  
+  const SectionHeader({
+    super.key,
+    required this.title,
+    required this.subTitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,20 +20,46 @@ class SectionHeader extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(20)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppValues.spacingS,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.blueLight,
+                borderRadius: AppValues.borderRadiusXL,
+              ),
               child: Row(
-                children: const [
-                  Text("All", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
-                  Icon(Icons.keyboard_arrow_down, color: Colors.blue, size: 16)
+                children: [
+                  Text(
+                    "All",
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.blueText,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppColors.blueText,
+                    size: 16,
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
-        Text(subTitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+        AppValues.gapXXS,
+        Text(
+          subTitle,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppColors.subTextColor,
+          ),
+        ),
       ],
     );
   }

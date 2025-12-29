@@ -3,7 +3,6 @@ import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/uni_image.dart';
 import 'package:baylora_prjct/feature/home/widgets/build_price.dart';
 import 'package:baylora_prjct/feature/home/widgets/build_rating.dart';
-import 'package:baylora_prjct/feature/home/widgets/build_user.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
 import 'package:flutter/material.dart';
 
@@ -45,86 +44,144 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: AppValuesWidget.padding, 
       decoration: BoxDecoration(
-        color: AppColors.primaryColor,
-        borderRadius: AppValuesWidget.borderRadius,
+        color: AppColors.white,
+        borderRadius: AppValues.borderRadiusM,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowColor.withValues(alpha: 0.5),
-            blurRadius: 0.5,
-            offset: const Offset(0, 7),
+            color: AppColors.shadowColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // --- LEFT GROUP: Avatar + Name + Time ---
-              Row(
-                children: [
-                  ProfileAvatar(
-                      imageUrl: sellerImage,
-                      size: 32,
-                    ),
-
-                  const SizedBox(width: AppValuesWidget.sizedBoxSize), 
-                  BuildUser(sellerName: sellerName, isVerified: isVerified, postedTime: postedTime),
-                ],
-              ),
-              BuildRating(rating: rating, totalTrade: totalTrade, context: context),
-            ],
+          // User Info Section
+          Padding(
+            padding: AppValues.paddingCard,
+            child: Row(
+              children: [
+                ProfileAvatar(
+                  imageUrl: sellerImage,
+                  size: 40,
+                ),
+                AppValues.gapHS,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "@$sellerName",
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.black,
+                            ),
+                          ),
+                          if (isVerified) ...[
+                            AppValues.gapHXXS,
+                            Icon(
+                              Icons.verified,
+                              size: 16,
+                              color: AppColors.blueText,
+                            ),
+                          ],
+                        ],
+                      ),
+                      Text(
+                        postedTime,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.textGrey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                BuildRating(rating: rating, totalTrade: totalTrade, context: context),
+              ],
+            ),
           ),
 
-          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
-          // --- CONTENT: Text Info ---
+          // Item Details
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4), 
+            padding: EdgeInsets.symmetric(horizontal: AppValues.spacingM),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style:  Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: AppColors.black,
-                  )
-                 ,
                 ),
+                AppValues.gapXXS,
                 Text(
                   description,
-                  maxLines: 1, // Optional: limit lines if desc is long
-                  overflow: TextOverflow.ellipsis,
-                 style:  Theme.of(context).textTheme.labelMedium!.copyWith(
-                    color: AppColors.subTextColor,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textDarkGrey,
                   ),
-                ), 
-                const SizedBox(height: 4),
-                BuildPrice(type: type, price: price, swapItem: swapItem, context: context),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                AppValues.gapXS,
+                BuildPrice(
+                  type: type,
+                  price: price,
+                  swapItem: swapItem,
+                  context: context,
+                ),
+                type == 'both' ? AppValues.gapXXS : SizedBox.shrink(),
+                type == 'both'
+                    ? Row(
+                        children: [
+                          Text(
+                            "Willing to swap for:",
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: AppColors.textGrey,
+                            ),
+                          ),
+                          AppValues.gapHXXS,
+                          ...swapItem.split(',').take(2).map((item) => Container(
+                                margin: EdgeInsets.only(right: 4),
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppColors.blueLight,
+                                  borderRadius: AppValues.borderRadiusS,
+                                ),
+                                child: Text(
+                                  item.trim(),
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AppColors.blueText,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              )),
+                        ],
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
           ),
-          
-          const SizedBox(height: AppValuesWidget.sizedBoxSize,),
 
-          // --- MAIN IMAGE ---
-          Expanded(
-            child: ClipRRect(
-              borderRadius: AppValuesWidget.borderRadius,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxHeight: 200, //
-                ),
-               child: UniversalImage( 
-                  path: imagePath,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+          AppValues.gapS,
+
+          // Item Image
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(AppValues.radiusM),
+              bottomRight: Radius.circular(AppValues.radiusM),
+            ),
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: UniversalImage(
+                path: imagePath,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
           ),

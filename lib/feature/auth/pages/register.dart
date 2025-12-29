@@ -1,15 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
-import 'package:baylora_prjct/feature/auth/constant/data_strings.dart';
 import 'package:baylora_prjct/core/widgets/app_text_input.dart';
+import 'package:baylora_prjct/feature/auth/constant/data_strings.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
-import 'package:baylora_prjct/feature/auth/widget/navigate_to_login.dart';
-import 'package:baylora_prjct/feature/auth/widget/terms_agrement.dart';
-import 'package:baylora_prjct/main.dart'; 
-import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:baylora_prjct/main.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -118,10 +116,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: AppValues.paddingScreen,
               child: Column(
                 children: [
-                  // --- TOP HELP ---
                   Align(
                     alignment: Alignment.topRight,
                     child: TextButton(
@@ -129,12 +126,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Text(
                         DataStrings.helpText,
                         style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                              color: AppColors.primaryColor.withValues(alpha:  0.5),
-                            ),
+                          color: AppColors.primaryColor.withValues(alpha: 0.5),
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: AppValuesWidget.sizedBoxSize),
+                  AppValues.gapM,
 
                   // --- FORM AREA ---
                   Expanded(
@@ -143,10 +140,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fit: BoxFit.scaleDown,
                         child: Container(
                           width: size.width > 500 ? 500 : size.width - 40,
-                          padding: const EdgeInsets.all(25),
+                          padding: AppValues.paddingLarge,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha:  0.95),
-                            borderRadius: BorderRadius.circular(20),
+                            color: AppColors.white.withValues(alpha: 0.95),
+                            borderRadius: AppValues.borderRadiusXL,
                             boxShadow: const [
                               BoxShadow(
                                 color: AppColors.shadowColor,
@@ -166,16 +163,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   fromColor: Color(0xff0049DC),
                                   toColor: Color(0xff8F7EFF),
                                 ),
-                                const SizedBox(height: 10),
+                                AppValues.gapXS,
                                 Text(
                                   DataStrings.fillFormText,
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(color: AppColors.royalBlue),
+                                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                                    color: AppColors.royalBlue,
+                                  ),
                                 ),
-                                const SizedBox(height: 20),
+                                AppValues.gapM,
 
                                 // --- INPUTS ---
                                     AppTextInput(
@@ -235,28 +231,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   validator: (val) => val != _passCtrl.text ? "Mismatch" : null,
                                 ),
 
-                                const SizedBox(height: 10),
+                                AppValues.gapXS,
 
-                                // --- TERMS ---
                                 Row(
                                   children: [
                                     SizedBox(
-                                      height: 24, width: 24,
+                                      height: 24,
+                                      width: 24,
                                       child: Checkbox(
                                         value: _agreeToTerms,
                                         activeColor: const Color(0xFF512DA8),
                                         onChanged: (v) => setState(() => _agreeToTerms = v!),
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    AppValues.gapHXS,
                                     Expanded(
-                                      child: RichText(text: termsAgrement(context)),
+                                      child: RichText(text: _buildTermsAgreement(context)),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: AppValuesWidget.sizedBoxSize),
-
-                                // --- REGISTER BUTTON ---
+                                AppValues.gapM,
                                 ElevatedButton(
                                   onPressed: _isLoading ? null : () {
                                     // 1. Validate Form
@@ -289,24 +283,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF512DA8),
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
+                                      borderRadius: AppValues.borderRadiusCircular,
                                     ),
                                   ),
                                   child: _isLoading
                                     ? const SizedBox(
-                                        height: 20, width: 20,
-                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
                                       )
-                                    : const Text(
+                                    : Text(
                                         "Register",
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.white,
+                                        ),
                                       ),
                                 ),
 
-                                const SizedBox(height: AppValuesWidget.sizedBoxSize),
-                                navigateToLogin(context),
+                                AppValues.gapM,
+                                _buildNavigateToLogin(context),
                               ],
                             ),
                           ),
@@ -315,12 +316,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
 
-                  // --- FOOTER ---
                   Column(
                     children: [
-                      const SizedBox(height: AppValuesWidget.sizedBoxSize),
-                      Text("Version 1.0.0", style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.secondaryColor.withValues(alpha:  0.3))),
-                      Text("© 2024 Baylora. All rights reserved", style: Theme.of(context).textTheme.labelSmall!.copyWith(color: AppColors.secondaryColor.withValues(alpha:  0.3))),
+                      AppValues.gapM,
+                      Text(
+                        "Version 1.0.0",
+                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                          color: AppColors.secondaryColor.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      Text(
+                        "© 2024 Baylora. All rights reserved",
+                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                          color: AppColors.secondaryColor.withValues(alpha: 0.3),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -329,6 +339,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNavigateToLogin(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        text: "Already Have Account? ",
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: AppColors.textDarkGrey,
+        ),
+        children: [
+          WidgetSpan(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              child: Text(
+                "Login",
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.royalBlue,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  TextSpan _buildTermsAgreement(BuildContext context) {
+    return TextSpan(
+      text: "By registering, you agree to our ",
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        color: AppColors.textDarkGrey,
+      ),
+      children: [
+        WidgetSpan(
+          child: GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Terms & Agreements"),
+                  content: const SingleChildScrollView(
+                    child: Text("Here are the full terms & agreements..."),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Done"),
+                    ),
+                  ],
+                ),
+              );
+            },
+            child: Text(
+              "Terms & Agreements",
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: AppColors.highLightTextColor,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

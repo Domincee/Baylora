@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 
 class EditProfileDialog extends StatefulWidget {
   final String username;
@@ -98,7 +99,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
               if (_usernameError != null) setState(() => _usernameError = null);
             },
           ),
-          const SizedBox(height: 12),
+          AppValues.gapS,
           TextField(
             controller: _bioController,
             decoration: const InputDecoration(labelText: "Bio / Tagline"),
@@ -115,7 +116,11 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         ElevatedButton(
           onPressed: _isLoading ? null : _handleSave,
           child: _isLoading 
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Text("Save"),
         ),
       ],

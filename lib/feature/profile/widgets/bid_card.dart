@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class BidCard extends StatelessWidget {
   final String title;
@@ -23,8 +25,11 @@ class BidCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      padding: AppValues.paddingSmall,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: AppValues.borderRadiusL,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,36 +37,65 @@ class BidCard extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: AppColors.greyLight,
               borderRadius: BorderRadius.circular(12),
               image: imageUrl != null ? DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.cover) : null,
             ),
           ),
-          const SizedBox(width: 12),
+          AppValues.gapHS,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 RichText(text: TextSpan(
-                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppColors.textGrey,
+                    fontSize: 10,
+                  ),
                   children: [
                     const TextSpan(text: "You offered\n"),
-                    TextSpan(text: myOffer, style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600)),
+                    TextSpan(
+                      text: myOffer,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.blueText,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ]
                 )),
                 if (extraStatus != null)
                   Container(
                     margin: const EdgeInsets.only(top: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: extraStatus == "Winning" ? Colors.deepPurpleAccent : Colors.grey[200],
                       borderRadius: BorderRadius.circular(4)
                     ),
-                    child: Text(extraStatus!, style: TextStyle(fontSize: 9, color: extraStatus == "Winning" ? Colors.white : Colors.grey)),
+                    child: Text(
+                      extraStatus!,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontSize: 9,
+                        color: extraStatus == "Winning" ? AppColors.white : AppColors.textGrey,
+                      ),
+                    ),
                   ),
-                const SizedBox(height: 4),
-                Text(timer, style: const TextStyle(fontSize: 10, color: Colors.red)),
+                AppValues.gapXXS,
+                Text(
+                  timer,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontSize: 10,
+                    color: AppColors.errorColor,
+                  ),
+                ),
               ],
             ),
           ),
@@ -69,15 +103,40 @@ class BidCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(8)),
-                child: Text(status, style: TextStyle(color: Colors.blue[800], fontSize: 10, fontWeight: FontWeight.bold)),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppValues.spacingXS,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.blueLight,
+                  borderRadius: AppValues.borderRadiusS,
+                ),
+                child: Text(
+                  status,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppColors.blueDark,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              const SizedBox(height: 30),
+              AppValues.gapL,
               Container(
-                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                 decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-                 child: const Text("View Item", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                 padding: const EdgeInsets.symmetric(
+                   horizontal: 10,
+                   vertical: 6,
+                 ),
+                 decoration: BoxDecoration(
+                   color: AppColors.greyLight,
+                   borderRadius: AppValues.borderRadiusM,
+                 ),
+                 child: Text(
+                   "View Item",
+                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                     fontSize: 10,
+                     fontWeight: FontWeight.bold,
+                   ),
+                 ),
               )
             ],
           )
