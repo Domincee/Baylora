@@ -4,6 +4,7 @@ class AppColors {
       static const Color black = Colors.black;
   
       static const Color bgColor = Color(0xffFBFBFB);
+      static const Color surface = Color.fromARGB(255, 241, 150, 150);
 
       static const Color primaryColor = Color(0xFFFFFFFF);
       static const Color royalBlue = Color(0xff0049DC);

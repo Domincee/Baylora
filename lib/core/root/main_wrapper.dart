@@ -1,7 +1,7 @@
 import 'package:baylora_prjct/core/constant/app_strings.dart';
-import 'package:baylora_prjct/feature/home/widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import '../../feature/home/home_screen.dart';
+import '../../feature/home/widgets/primary_app_bar.dart';
 import '../../feature/profile/profile_screen.dart';
 
 class MainWrapper extends StatefulWidget {
@@ -26,7 +26,7 @@ class _MainWrapperState extends State<MainWrapper> {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
-        child: CustomeAppBar(currentIndex: _currentIndex),
+        child: PrimaryAppBar(currentIndex: _currentIndex),
       ),
 
       body: 

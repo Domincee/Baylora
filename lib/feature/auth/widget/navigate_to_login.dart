@@ -12,7 +12,7 @@ RichText navigateToLogin(BuildContext context) {
         TextSpan(
           text: "Login",
           style: const TextStyle(
-            color: AppColors.highLightTextColor,
+            color: AppColors.royalBlue,
             fontWeight: FontWeight.bold,
             decoration: TextDecoration.underline,
           ),

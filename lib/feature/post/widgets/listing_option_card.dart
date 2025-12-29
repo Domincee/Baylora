@@ -1,132 +1,32 @@
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class CreateListingScreen extends StatefulWidget {
-  const CreateListingScreen({super.key});
+class ListingOptionCard extends StatelessWidget {
+  final int index;
+  final int selectedIndex;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool isRecommended;
+  final ValueChanged<int> onSelect;
 
-  @override
-  State<CreateListingScreen> createState() => _CreateListingScreenState();
-}
+  const ListingOptionCard({
+    super.key,
+    required this.index,
+    required this.selectedIndex,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    this.isRecommended = false,
+    required this.onSelect,
+  });
 
-class _CreateListingScreenState extends State<CreateListingScreen> {
-  // Step 1: Selected Type (0: Sell, 1: Trade, 2: Sell or Trade)
-  // Default to -1 (none selected)
-  int _currentStep = 0;
-  int _selectedType = -1;
-  
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          // "Post" Button
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: TextButton(
-              onPressed: _selectedType != -1 
-                  ? () {
-                    setState(() {
-                     _currentStep += 1;
-
-                    });
-                    } 
-                  : null, // Disabled if no type selected
-              child: Text(
-                "Next",
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: _selectedType != -1 ? AppColors.royalBlue : Colors.grey,
-                )
-                
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            const Text(
-              "What type of listing is this?",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Choose the best option for your item.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                
-                ),
-                Text("$_currentStep/3",
-                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: AppColors.subTextColor
-                 ),),
-              ],
-            ),
-            const SizedBox(height: 30),
-
-            // Options
-            _buildOptionCard(
-              index: 0,
-              title: "Sell Item",
-              subtitle: "For cash transactions only",
-              icon: Icons.attach_money,
-            ),
-            const SizedBox(height: 16),
-            _buildOptionCard(
-              index: 1,
-              title: "Trade Item",
-              subtitle: "Exchange items with others",
-              icon: Icons.swap_horiz,
-            ),
-            const SizedBox(height: 16),
-            _buildOptionCard(
-              index: 2,
-              title: "Sell or Trade",
-              subtitle: "Open to both cash and trades (Recommended)",
-              icon: Icons.handshake_outlined, // Or Icons.check_circle_outline
-              isRecommended: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOptionCard({
-    required int index,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    bool isRecommended = false,
-  }) {
-    final isSelected = _selectedType == index;
+    final isSelected = selectedIndex == index;
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedType = index;
-        });
-      },
+      onTap: () => onSelect(index),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

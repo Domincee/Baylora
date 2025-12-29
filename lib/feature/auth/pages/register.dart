@@ -1,5 +1,5 @@
 import 'package:baylora_prjct/core/assets/images.dart';
-import 'package:baylora_prjct/core/constant/app_values_widget.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/constant/data_strings.dart';
