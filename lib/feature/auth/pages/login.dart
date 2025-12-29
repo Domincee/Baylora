@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/root/main_wrapper.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/app_text_input.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/pages/register.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -107,18 +108,18 @@ class _LoginScreenState extends State<LoginScreen> {
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: AppValues.paddingScreen,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Container(
-                    width: size.width > 500 ? 500 : size.width - 40,
-                    padding: const EdgeInsets.all(25),
+                    width: size.width > AppValues.maxContentWidth ? AppValues.maxContentWidth : size.width - 40,
+                    padding: AppValues.paddingLarge,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.95),
-                      borderRadius: BorderRadius.circular(20),
+                      color: AppColors.white.withValues(alpha: 0.95),
+                      borderRadius: AppValues.borderRadiusXL,
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black12, // Or AppColors.shadowColor
+                          color: AppColors.shadowColor,
                           blurRadius: 15,
                           offset: Offset(0, 5),
                         ),
@@ -136,13 +137,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             fromColor: Color(0xff0049DC),
                             toColor: Color(0xff8F7EFF),
                           ),
-                          const SizedBox(height: 10),
+                          AppValues.gapXS,
                           Text(
                             "Welcome Back",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          const SizedBox(height: 30),
+                          AppValues.gapL,
 
                           // --- INPUTS ---
                           AppTextInput(
@@ -152,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.emailAddress,
                             validator: (val) => (val == null || val.isEmpty) ? "Required" : null,
                           ),
-                          const SizedBox(height: 15),
+                          AppValues.gapS,
                           AppTextInput(
                             label: "Password",
                             icon: Icons.lock,
@@ -161,9 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             validator: (val) => (val == null || val.isEmpty) ? "Required" : null,
                           ),
 
-                          const SizedBox(height: 25),
-
-                          // --- LOGIN BUTTON ---
+                          AppValues.gapL,
                           ElevatedButton(
                             
                             onPressed: _isLoading ? null : () {
@@ -173,20 +172,24 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.royalBlue,
-                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
                             ),
                             child: _isLoading
-                                ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                                :  Text("Login",
-                                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                  color: AppColors.primaryColor
-                                 ),),
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : Text(
+                                    "Login",
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  ),
 
                           ),
 
-                          const SizedBox(height: 20),
-
-                          // --- GO TO REGISTER LINK ---
+                          AppValues.gapM,
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

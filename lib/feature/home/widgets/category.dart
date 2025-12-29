@@ -12,7 +12,7 @@ class Category extends StatelessWidget {
     required this.label,
     required this.isSelected,
     required this.onTap,
-  }) : super();
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,24 +20,23 @@ class Category extends StatelessWidget {
       onTap: onTap,
 
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: AppValuesWidget.animDuration),
-        padding: AppValuesWidget.boxSizeCat,
-        margin: const EdgeInsets.only(right: 10), 
-transform: isSelected 
-    ? Matrix4.diagonal3Values(1.1, 1.1, 1.0) 
-    : Matrix4.identity(),     
-      transformAlignment: Alignment.center,
-
-        decoration: 
-        BoxDecoration(
-          color: isSelected ?  AppColors.selectedColor : AppColors.primaryColor, 
-          borderRadius: AppValuesWidget.borderRadius,
+        duration: Duration(milliseconds: AppValues.durationNormal),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppValues.spacingXS,
+          vertical: 6,
+        ),
+        transform: isSelected 
+            ? Matrix4.diagonal3Values(1.1, 1.1, 1.0) 
+            : Matrix4.identity(),
+        transformAlignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.selectedColor : AppColors.primaryColor,
+          borderRadius: AppValues.borderRadiusM,
           boxShadow: [
-       
             if (!isSelected)
               BoxShadow(
                 color: AppColors.shadowColor,
-                blurRadius: 5,
+                blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
           ],
@@ -45,8 +44,8 @@ transform: isSelected
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
-            color: isSelected ? Colors.white : Colors.black87),
-        
+            color: isSelected ? Colors.white : Colors.black87,
+          ),
         ),
       ),
     );

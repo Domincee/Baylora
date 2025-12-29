@@ -43,7 +43,7 @@ class ProfileScreen extends ConsumerWidget {
       backgroundColor: AppColors.bgColor,
       body: profileAsync.when(
         data: (profile) => SingleChildScrollView(
-          padding: const EdgeInsets.all(AppValuesWidget.paddingM),
+          padding: AppValues.paddingAll,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -55,27 +55,44 @@ class ProfileScreen extends ConsumerWidget {
                 rating: profile.rating,
                 onEdit: () => _showEditProfileDialog(context, ref, profile),
               ),
-              AppValuesWidget.gapL,
+              AppValues.gapL,
 
-              const SectionHeader(title: ProfileStrings.listingsTitle, subTitle: ProfileStrings.listingsSubtitle),
-              AppValuesWidget.gapM,
+              const SectionHeader(
+                title: ProfileStrings.listingsTitle,
+                subTitle: ProfileStrings.listingsSubtitle,
+              ),
+              AppValues.gapM,
               const _ListingsList(),
 
-              AppValuesWidget.gapL,
+              AppValues.gapL,
 
-              const SectionHeader(title: ProfileStrings.bidsTitle, subTitle: ProfileStrings.bidsSubtitle),
-              AppValuesWidget.gapM,
+              const SectionHeader(
+                title: ProfileStrings.bidsTitle,
+                subTitle: ProfileStrings.bidsSubtitle,
+              ),
+              AppValues.gapM,
               const _BidsList(),
 
-              AppValuesWidget.gapL,
+              AppValues.gapL,
 
-              Text(AppStrings.settings, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-              Text(ProfileStrings.settingsSubtitle, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.subTextColor)),
+              Text(
+                AppStrings.settings,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(
+                ProfileStrings.settingsSubtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.subTextColor,
+                ),
+              ),
 
-              AppValuesWidget.gapM,
+              AppValues.gapM,
 
               Container(
-                decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(AppValuesWidget.radiusM)),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: AppValues.borderRadiusM,
+                ),
                 child: Column(
                   children: [
                     AppListTile(
@@ -86,11 +103,15 @@ class ProfileScreen extends ConsumerWidget {
                     const Divider(height: 1, indent: 16, endIndent: 16),
                     const AppListTile(title: AppStrings.notifications, subtitle: ProfileStrings.notificationSubtitle),
                     const Divider(height: 1, indent: 16, endIndent: 16),
-                    const AppListTile(title: AppStrings.logout, hideSubtitle: true, titleColor: AppColors.errorColor),
+                    const AppListTile(
+                      title: AppStrings.logout,
+                      hideSubtitle: true,
+                      titleColor: AppColors.errorColor,
+                    ),
                   ],
                 ),
               ),
-              AppValuesWidget.gapXL,
+              AppValues.gapXXL,
             ],
           ),
         ),
@@ -115,7 +136,7 @@ class _ListingsList extends ConsumerWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: listings.length,
-          separatorBuilder: (context, index) => AppValuesWidget.gapM,
+          separatorBuilder: (context, index) => AppValues.gapM,
           itemBuilder: (context, index) {
             final item = listings[index];
             final images = item['images'] as List?;
@@ -155,7 +176,7 @@ class _BidsList extends ConsumerWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: bids.length,
-          separatorBuilder: (context, index) => AppValuesWidget.gapM,
+          separatorBuilder: (context, index) => AppValues.gapM,
           itemBuilder: (context, index) {
             final bid = bids[index];
 

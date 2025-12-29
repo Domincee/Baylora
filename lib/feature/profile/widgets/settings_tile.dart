@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class SettingsTile extends StatelessWidget {
   final String title;
@@ -20,13 +21,27 @@ class SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   if (!hideSubtitle && subtitle != null)
-                    Text(subtitle!, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text(
+                      subtitle!,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.textGrey,
+                      ),
+                    ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: AppColors.textGrey,
+            ),
           ],
         ),
       ),

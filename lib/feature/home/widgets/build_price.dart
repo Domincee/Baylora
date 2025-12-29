@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:flutter/material.dart';
+
 class BuildPrice extends StatelessWidget {
   const BuildPrice({
     super.key,
@@ -20,17 +21,15 @@ class BuildPrice extends StatelessWidget {
     if (type == 'cash') {
       return Text(
         "₱ $price",
-        style: 
-        Theme.of(context).textTheme.bodyLarge!.copyWith(
+        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: AppColors.highLightTextColor,
-        )
+        ),
       );
-    }
-     else if (type == 'trade') {
+    } else if (type == 'trade') {
       return Row(
         children: [
-          const Icon(Icons.swap_horiz, size: 16, color: Color(0xFF8B5CF6)),
-          const SizedBox(width: 4),
+          Icon(Icons.swap_horiz, size: AppValues.iconS, color: const Color(0xFF8B5CF6)),
+          AppValues.gapHXXS,
           Expanded(
             child: Text(
               swapItem.isNotEmpty ? swapItem : "Trade Only",
@@ -38,8 +37,7 @@ class BuildPrice extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: AppColors.highLightTextColor,
-              ) 
-              
+              ),
             ),
           ),
         ],
@@ -49,19 +47,19 @@ class BuildPrice extends StatelessWidget {
         children: [
           Text(
             "₱ ${price.replaceAll('000', 'k')}",
-          style:
-              Theme.of(context).textTheme.bodyLarge!.copyWith(
-                color: AppColors.highLightTextColor,
-              ), 
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              color: AppColors.highLightTextColor,
+            ),
           ),
-          const SizedBox(width: 4),
-           Text("or", style: 
-          Theme.of(context).textTheme.bodyMedium!.copyWith(
-            color: AppColors.subTextColor,
-          )
+          AppValues.gapHXXS,
+          Text(
+            "or",
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: AppColors.subTextColor,
+            ),
           ),
-          const SizedBox(width: 4),
-          const Icon(Icons.swap_horiz, size: AppValuesWidget.iconDefaultSize, color: Color(0xFF8B5CF6)),
+          AppValues.gapHXXS,
+          Icon(Icons.swap_horiz, size: AppValues.iconM, color: const Color(0xFF8B5CF6)),
         ],
       );
     }

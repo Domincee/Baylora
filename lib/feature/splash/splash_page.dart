@@ -86,9 +86,9 @@ void _navigateTo(String routeName) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(Images.logo, width: 125),
-            const SizedBox(height: AppValuesWidget.sizedBoxSize),
+            AppValues.gapM,
             
-            const CircularProgressIndicator(color: Colors.white), 
+            CircularProgressIndicator(color: AppColors.white),
           ],
         ),
       ),

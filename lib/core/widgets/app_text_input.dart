@@ -1,5 +1,5 @@
-import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class AppTextInput extends StatefulWidget {
@@ -9,8 +9,7 @@ class AppTextInput extends StatefulWidget {
   final bool isPassword;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
-  // Added suffixIcon to constructor since it was referenced in your code
-  final Widget? suffixIcon; 
+  final Widget? suffixIcon;
 
   const AppTextInput({
     super.key,
@@ -50,7 +49,7 @@ class _AppTextInputState extends State<AppTextInput> {
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 color: AppColors.bgColor,
-                borderRadius: AppValuesWidget.borderRadius,
+                borderRadius: AppValues.borderRadiusM,
                 border: Border.all(
                   color: hasError ? AppColors.errorColor : AppColors.shadowColor,
                 ),
@@ -77,10 +76,10 @@ class _AppTextInputState extends State<AppTextInput> {
                   prefixIcon: Icon(
                     widget.icon,
                     color: AppColors.deepBlue,
-                    size: AppValuesWidget.iconDefaultSize,
+                    size: AppValues.iconM,
                   ),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  contentPadding: AppValues.paddingSmall,
                   
                 
                   suffixIcon: _buildSuffixIcon(hasError, hasText),

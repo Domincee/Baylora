@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class UniversalImage extends StatelessWidget {
   final String path;
@@ -41,7 +42,7 @@ class UniversalImage extends StatelessWidget {
           placeholderBuilder: (_) => Container(
             width: width,
             height: height,
-            color: Colors.grey[200],
+            color: AppColors.greyLight,
             child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
         );
@@ -64,10 +65,10 @@ class UniversalImage extends StatelessWidget {
           errorBuilder: (context, error, stackTrace) {
              // Fallback if network image fails
             return Container(
-              color: Colors.grey[200],
+              color: AppColors.greyLight,
               width: width,
               height: height,
-              child: const Icon(Icons.broken_image, color: Colors.grey),
+              child: Icon(Icons.broken_image, color: AppColors.textGrey),
             );
           },
         );
@@ -78,7 +79,7 @@ class UniversalImage extends StatelessWidget {
           height: height,
           fit: fit,
           errorBuilder: (context, error, stackTrace) {
-            return Container(color: Colors.grey);
+            return Container(color: AppColors.greyLight);
           },
         );
       }

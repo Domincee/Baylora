@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class AppListTile extends StatelessWidget {
   final String title;
@@ -22,20 +23,19 @@ class AppListTile extends StatelessWidget {
       onTap: onTap,
       title: Text(
         title,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          fontWeight: FontWeight.w600,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
           color: titleColor,
         ),
       ),
       subtitle: (hideSubtitle || subtitle == null)
           ? null
           : Text(
-        subtitle!,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Colors.grey,
-        ),
-      ),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              subtitle!,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textGrey,
+              ),
+            ),
+      trailing: Icon(Icons.chevron_right, color: AppColors.textGrey),
     );
   }
 }

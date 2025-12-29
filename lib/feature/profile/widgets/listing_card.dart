@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class ListingCard extends StatelessWidget {
   final String title;
@@ -28,8 +30,11 @@ class ListingCard extends StatelessWidget {
     Color statusTextColor = status == 'Accepted' ? Colors.white : (status == 'Sold' ? Colors.white : Colors.blue[800]!);
 
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      padding: AppValues.paddingSmall,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: AppValues.borderRadiusL,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -38,36 +43,74 @@ class ListingCard extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: AppColors.greyLight,
               borderRadius: BorderRadius.circular(12),
               image: imageUrl != null ? DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.cover) : null,
             ),
           ),
-          const SizedBox(width: 12),
+          AppValues.gapHS,
           // Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 if (price != null) ...[
-                   Text("Price: $price", style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                   Text(
+                     "Price: $price",
+                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                       color: AppColors.textGrey,
+                     ),
+                   ),
                 ] else if (subtitle != null) ...[
-                   Text("Looking for: $subtitle", style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                   Text(
+                     "Looking for: $subtitle",
+                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                       color: AppColors.textGrey,
+                     ),
+                   ),
                    if (tags.isNotEmpty) 
                      Wrap(
                        spacing: 4,
                        children: tags.map((t) => Container(
                          margin: const EdgeInsets.only(top: 4),
-                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                         decoration: BoxDecoration(color: Colors.teal[50], borderRadius: BorderRadius.circular(4)),
-                         child: Text(t, style: const TextStyle(fontSize: 9, color: Colors.teal)),
+                         padding: const EdgeInsets.symmetric(
+                           horizontal: 6,
+                           vertical: 2,
+                         ),
+                         decoration: BoxDecoration(
+                           color: AppColors.tealLight,
+                           borderRadius: AppValues.borderRadiusS,
+                         ),
+                         child: Text(
+                           t,
+                           style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                             color: AppColors.tealText,
+                             fontSize: 9,
+                           ),
+                         ),
                        )).toList(),
                      )
                 ],
-                const SizedBox(height: 8),
-                Text(offers, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500)),
-                Text(postedTime, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                AppValues.gapXS,
+                Text(
+                  offers,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  postedTime,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppColors.textGrey,
+                    fontSize: 10,
+                  ),
+                ),
               ],
             ),
           ),
@@ -76,15 +119,40 @@ class ListingCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(8)),
-                child: Text(status, style: TextStyle(color: statusTextColor, fontSize: 10, fontWeight: FontWeight.bold)),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppValues.spacingXS,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  borderRadius: AppValues.borderRadiusS,
+                ),
+                child: Text(
+                  status,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: statusTextColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
+              AppValues.gapM,
               Container(
-                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                 decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(12)),
-                 child: const Text("Manage", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                 padding: const EdgeInsets.symmetric(
+                   horizontal: 10,
+                   vertical: 6,
+                 ),
+                 decoration: BoxDecoration(
+                   color: AppColors.greyLight,
+                   borderRadius: AppValues.borderRadiusM,
+                 ),
+                 child: Text(
+                   "Manage",
+                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                     fontSize: 10,
+                     fontWeight: FontWeight.bold,
+                   ),
+                 ),
               )
             ],
           )

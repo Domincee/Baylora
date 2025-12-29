@@ -40,7 +40,7 @@ class ProfileAvatar extends StatelessWidget {
           return Container(
             width: size,
             height: size,
-            color: Colors.grey[200],
+            color: AppColors.greyLight,
             child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
           );
         },

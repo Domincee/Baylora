@@ -1,5 +1,6 @@
-import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
@@ -17,18 +18,17 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: const Icon(Icons.close, color: AppColors.black),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // "Post" Button
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: AppValues.spacingM),
             child: TextButton(
               onPressed: _selectedType != -1 
                   ? () {
@@ -50,31 +50,24 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: AppValues.paddingH,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
-            const Text(
+            Text(
               "What type of listing is this?",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(height: 8),
+            AppValues.gapXS,
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Choose the best option for your item.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textGrey,
                   ),
-                
                 ),
                 Text("$_currentStep/3",
                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
@@ -82,23 +75,22 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                  ),),
               ],
             ),
-            const SizedBox(height: 30),
+            AppValues.gapL,
 
-            // Options
             _buildOptionCard(
               index: 0,
               title: "Sell Item",
               subtitle: "For cash transactions only",
               icon: Icons.attach_money,
             ),
-            const SizedBox(height: 16),
+            AppValues.gapM,
             _buildOptionCard(
               index: 1,
               title: "Trade Item",
               subtitle: "Exchange items with others",
               icon: Icons.swap_horiz,
             ),
-            const SizedBox(height: 16),
+            AppValues.gapM,
             _buildOptionCard(
               index: 2,
               title: "Sell or Trade",
@@ -128,33 +120,31 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: AppValues.paddingCard,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.royalBlue.withValues(alpha: 0.05) : Colors.white,
+          color: isSelected ? AppColors.royalBlue.withValues(alpha: 0.05) : AppColors.white,
           border: Border.all(
-            color: isSelected ? AppColors.royalBlue : Colors.grey.shade300,
+            color: isSelected ? AppColors.royalBlue : AppColors.greyMedium,
             width: isSelected ? 2 : 1,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppValues.borderRadiusM,
         ),
         child: Row(
           children: [
             // Icon Container
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: AppValues.paddingSmall,
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.royalBlue : Colors.grey.shade100,
+                color: isSelected ? AppColors.royalBlue : AppColors.greyLight,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: isSelected ? Colors.white : Colors.grey.shade600,
-                size: 24,
+                color: isSelected ? AppColors.white : AppColors.textDarkGrey,
+                size: AppValues.iconM,
               ),
             ),
-            const SizedBox(width: 16),
-            
-            // Text Content
+            AppValues.gapHM,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,38 +153,34 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? AppColors.royalBlue : Colors.black,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: isSelected ? AppColors.royalBlue : AppColors.black,
                         ),
                       ),
                       if (isRecommended) ...[
-                        const SizedBox(width: 8),
+                        AppValues.gapHXS,
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
+                            color: AppColors.recommendedColor.withValues(alpha: 0.1),
+                            borderRadius: AppValues.borderRadiusS,
                           ),
-                          child: const Text(
+                          child: Text(
                             "Recommended",
-                            style: TextStyle(
-                              fontSize: 10,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                              color: AppColors.recommendedColor,
                             ),
                           ),
                         ),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  AppValues.gapXXS,
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.textDarkGrey,
                     ),
                   ),
                 ],
@@ -208,7 +194,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? AppColors.royalBlue : Colors.grey.shade400,
+                  color: isSelected ? AppColors.royalBlue : AppColors.greyDisabled,
                   width: 2,
                 ),
               ),
