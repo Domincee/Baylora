@@ -5,25 +5,7 @@ import 'package:baylora_prjct/core/theme/app_colors.dart';
 /// Defines all text styles, colors, and component themes.
 class AppTheme {
   static ThemeData themeData = ThemeData(
-    // ============================================
-    // COLOR SCHEME
-    // ============================================
-    scaffoldBackgroundColor: AppColors.bgColor,
-    primaryColor: AppColors.royalBlue,
-    colorScheme: ColorScheme.light(
-      primary: AppColors.royalBlue,
-      secondary: AppColors.selectedColor,
-      surface: AppColors.surface,
-      error: AppColors.errorColor,
-      onPrimary: AppColors.primaryColor,
-      onSecondary: AppColors.primaryColor,
-      onSurface: AppColors.black,
-      onError: AppColors.primaryColor,
-    ),
 
-    // ============================================
-    // TEXT THEME - Complete typography system
-    // ============================================
     textTheme: const TextTheme(
       // Display styles - Large decorative text
       displayLarge: TextStyle(
@@ -66,12 +48,12 @@ class AppTheme {
         fontWeight: FontWeight.w400,
       ),
       titleMedium: TextStyle(
-        fontFamily: 'NunitoSans',
+        fontFamily: 'Poppins',
         fontSize: 18,
         fontWeight: FontWeight.w600,
       ),
       titleSmall: TextStyle(
-        fontFamily: 'NunitoSans',
+        fontFamily: 'Poppins',
         fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
@@ -84,12 +66,12 @@ class AppTheme {
       ),
       bodyMedium: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: FontWeight.w600,
       ),
       bodySmall: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: FontWeight.w400,
       ),
 
@@ -117,17 +99,17 @@ class AppTheme {
     
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.royalBlue,
-        foregroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.primaryColor,
         elevation: 2,
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(30),
         ),
         textStyle: const TextStyle(
           fontFamily: 'NunitoSans',
           fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w800,
+          color: AppColors.royalBlue,
         ),
       ),
     ),

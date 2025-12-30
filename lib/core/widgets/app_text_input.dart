@@ -31,69 +31,55 @@ class _AppTextInputState extends State<AppTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    return FormField<String>(
-      validator: widget.validator,
-      initialValue: widget.controller.text,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      builder: (FormFieldState<String> state) {
-        
-        final bool hasError = state.hasError;
-        final String? errorText = state.errorText;
-       
-        final bool hasText = widget.controller.text.isNotEmpty; 
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: AppColors.bgColor,
-                borderRadius: AppValues.borderRadiusM,
-                border: Border.all(
-                  color: hasError ? AppColors.errorColor : AppColors.shadowColor,
-                ),
-              ),
-              child: TextField(
-                controller: widget.controller,
-                obscureText: widget.isPassword ? _obscureText : false,
-                keyboardType: widget.keyboardType,
-                style: Theme.of(context).textTheme.labelSmall,
-                onChanged: (val) {
-                  state.didChange(val);
-                  
-                  setState(() {}); 
-                },
-                decoration: InputDecoration(
-                  labelText: hasError ? errorText : widget.label,
-                  labelStyle: hasError
-                      ? Theme.of(context).textTheme.labelSmall!.copyWith(
-                            color: AppColors.errorColor,
-                          )
-                      : Theme.of(context).textTheme.labelSmall!.copyWith(
-                            color: AppColors.subTextColor,
-                          ),
-                  prefixIcon: Icon(
-                    widget.icon,
-                    color: AppColors.deepBlue,
-                    size: AppValues.iconM,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: AppValues.paddingSmall,
-                  
-                
-                  suffixIcon: _buildSuffixIcon(hasError, hasText),
-                ),
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          controller: widget.controller,
+          obscureText: widget.isPassword ? _obscureText : false,
+          keyboardType: widget.keyboardType,
+          style: Theme.of(context).textTheme.labelSmall,
+          validator: widget.validator,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          decoration: InputDecoration(
+            labelText: widget.label,
+            prefixIcon: Icon(
+              widget.icon,
+              color: AppColors.deepBlue,
+              size: AppValues.iconM,
             ),
-          ],
-        );
-      },
+            filled: true,
+            fillColor: AppColors.bgColor,
+            contentPadding: AppValues.paddingSmall,
+            border: OutlineInputBorder(
+              borderRadius: AppValues.borderRadiusM,
+              borderSide: const BorderSide(color: AppColors.shadowColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: AppValues.borderRadiusM,
+              borderSide: const BorderSide(color: AppColors.shadowColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: AppValues.borderRadiusM,
+              borderSide: const BorderSide(color: AppColors.royalBlue, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: AppValues.borderRadiusM,
+              borderSide: const BorderSide(color: AppColors.errorColor),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: AppValues.borderRadiusM,
+              borderSide: const BorderSide(color: AppColors.errorColor, width: 2),
+            ),
+            suffixIcon: _buildSuffixIcon(),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 
-  Widget? _buildSuffixIcon(bool hasError, bool hasText) {
-  
+  Widget? _buildSuffixIcon() {
     if (widget.isPassword) {
       return IconButton(
         icon: Icon(
@@ -103,25 +89,6 @@ class _AppTextInputState extends State<AppTextInput> {
         onPressed: () => setState(() => _obscureText = !_obscureText),
       );
     }
-
- 
-    if (hasError) {
-      return const Icon(
-        Icons.error_outline,
-        color: AppColors.errorColor,
-      );
-    }
-
-  
-
-    if (hasText) {
-      return const Icon(
-        Icons.check_circle,
-        color: AppColors.sucessColor,
-      );
-    }
-
-
     return widget.suffixIcon;
   }
 }

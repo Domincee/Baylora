@@ -326,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       Text(
-                        "© 2024 Baylora. All rights reserved",
+                        "© 2025 Baylora. All rights reserved",
                         style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: AppColors.secondaryColor.withValues(alpha: 0.3),
                         ),

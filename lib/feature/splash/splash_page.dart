@@ -85,7 +85,7 @@ void _navigateTo(String routeName) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(Images.logo, width: 125),
+            SvgPicture.asset(Images.logoLight, width: 125),
             AppValues.gapM,
             
             CircularProgressIndicator(color: AppColors.white),

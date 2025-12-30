@@ -12,9 +12,9 @@ class ButtonWidget extends StatelessWidget {
     required PageController pageController,
   }) : _pageController = pageController;
 
-  final int currentIndex;
-  final List<OnboardingModel> data;
-  final PageController _pageController;
+    final int currentIndex;
+    final List<OnboardingModel> data;
+    final PageController _pageController;
 
   @override
   Widget build(BuildContext context) {
