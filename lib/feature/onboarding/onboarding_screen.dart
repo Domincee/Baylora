@@ -121,7 +121,7 @@ class Title extends StatelessWidget {
       alignment: Alignment.center,
       child: GradientText(
         item.title,
-        style: Theme.of(context).textTheme.titleSmall!,
+        style: Theme.of(context).textTheme.titleMedium!,
 
         gradient: const LinearGradient(
           colors: [Color(0xffFFFFFF), Color(0xffA293FF)],
