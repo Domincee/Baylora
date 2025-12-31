@@ -40,7 +40,6 @@ class LoginForm extends StatelessWidget {
           // Email input
           AppTextInput(
             label: AuthStrings.emailLabel,
-            
             icon: Icons.email,
             controller: form.emailCtrl,
             keyboardType: TextInputType.emailAddress,
@@ -75,7 +74,7 @@ class LoginForm extends StatelessWidget {
                     ),
                   )
                 : Text(
-                    AuthStrings.loginButton,
+                    AuthStrings.loginText,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.primaryColor,
                     ),
@@ -95,7 +94,7 @@ class LoginForm extends StatelessWidget {
               TextButton(
                 onPressed: onSignUpTap,
                 child: Text(
-                  AuthStrings.signUpButton,
+                  AuthStrings.signUpText,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.highLightTextColor,
                     fontWeight: FontWeight.bold,

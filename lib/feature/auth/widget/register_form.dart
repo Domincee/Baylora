@@ -36,39 +36,39 @@ class RegisterForm extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           AppTextInput(
-            label: "Username",
+            label: AuthStrings.usernameLabel,
             icon: Icons.person,
             controller: form.userNameCtrl,
             validator: AppValidators.lettersOnly,
           ),
           AppTextInput(
-            label: "First Name",
+            label: AuthStrings.firstNameLabel,
             icon: Icons.person,
             controller: form.firstNameCtrl,
             validator: AppValidators.lettersOnly,
           ),
           AppTextInput(
-            label: "Last Name",
+            label: AuthStrings.lastNameLabel,
             icon: Icons.person,
             controller: form.lastNameCtrl,
             validator: AppValidators.lettersOnly,
           ),
           AppTextInput(
-            label: "Email",
+            label: AuthStrings.emailLabel,
             icon: Icons.email,
             controller: form.emailCtrl,
             keyboardType: TextInputType.emailAddress,
             validator: AppValidators.email,
           ),
           AppTextInput(
-            label: "Enter password",
+            label: AuthStrings.passwordLabel,
             icon: Icons.lock,
             controller: form.passCtrl,
             isPassword: true,
             validator: AppValidators.password,
           ),
           AppTextInput(
-            label: "Re-enter password",
+            label: AuthStrings.confirmPasswordLabel,
             icon: Icons.lock,
             controller: form.confirmPassCtrl,
             isPassword: true,
@@ -139,7 +139,7 @@ class RegisterForm extends StatelessWidget {
                     ),
                   )
                 : Text(
-                    "Register",
+                    AuthStrings.signUpText,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.primaryColor,
                         ),
@@ -150,13 +150,13 @@ class RegisterForm extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Already have an account?",
+                AuthStrings.haveAccountText,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               TextButton(
                 onPressed: onLoginTap,
                 child: Text(
-                  "Login",
+                  AuthStrings.loginText,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.highLightTextColor,
                         fontWeight: FontWeight.bold,

@@ -4,18 +4,27 @@ class AuthStrings {
   static const String fillFormText = "Let's start filling this form";
   static const String copyRightText = "2025 Baylora @Copyright";
 
-  // Login screen strings
-  static const String loginTitle = "Welcome Back";
-  static const String loginButton = "Login";
-  static const String noAccountText = "Don't have an account?";
-  static const String signUpButton = "Sign Up";
+  // Shared strings
+  static const String emailLabel = "Email";
+  static const String passwordLabel = "Password";
+  static const String loginText = "Login";
+  static const String signUpText = "Sign Up";
 
-  // Register screen strings
+  // Login screen specific
+  static const String loginTitle = "Welcome Back";
+  static const String noAccountText = "Don't have an account?";
+
+  // Register screen specific
   static const String registerTitle = "Create Account";
-  static const String registerButton = "Sign Up";
   static const String haveAccountText = "Already have an account?";
   static const String agreeTermsText = "I agree to Terms & Agreements";
   static const String acceptTermsRequired = "Accept terms & agreements";
+
+  // Form field labels
+  static const String usernameLabel = "Username";
+  static const String firstNameLabel = "First Name";
+  static const String lastNameLabel = "Last Name";
+  static const String confirmPasswordLabel = "Re-enter password";
 
   // Terms Dialog
   static const String termsTitle = "Terms & Agreements";
@@ -23,13 +32,6 @@ class AuthStrings {
       "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
       "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
   static const String termsClose = "Close";
-
-  // Form field labels
-  static const String emailLabel = "Email";
-  static const String passwordLabel = "Password";
-  static const String usernameLabel = "Username";
-  static const String firstNameLabel = "First Name";
-  static const String lastNameLabel = "Last Name";
 
   // Error/Success messages
   static const String fillAllFieldsError = "Please fill empty field";
