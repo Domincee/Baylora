@@ -42,9 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (res.session != null) {
-        AppFeedback.success(context, "Login Successful!");
+        AppFeedback.success(context, AuthStrings.loginSuccess);
 
-        await AppFeedback.showLoading(status: 'Redirecting...');
+        await AppFeedback.showLoading(status: AuthStrings.redirectMess);
         await Future.delayed(const Duration(seconds: 1));
 
         if (!mounted) return;

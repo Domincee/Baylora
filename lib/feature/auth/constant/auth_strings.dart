@@ -39,4 +39,13 @@ class AuthStrings {
   static const String registrationSuccess = "Registration successful!";
   static const String registrationFailed = "Registration failed";
   static const String unexpectedError = "Unexpected error occurred";
+
+  //Login succesful
+  static const String loginSuccess = "Login Successful!";
+  
+ //redirect messs
+  static const String redirectMess = "Redirecting...";
+ 
+
+
 }
