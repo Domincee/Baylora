@@ -7,14 +7,23 @@ class AppValues {
   // SPACING - Padding & Margins (8px grid)
   // ============================================
   
+  /// 5px spacing
+  static const double spacing5 = 5.0;
+
   /// Extra small spacing - 8px
   static const double spacingXS = 8.0;
+  
+  /// 10px spacing - (Custom)
+  static const double spacing10 = 10.0;
   
   /// Small spacing - 12px
   static const double spacingS = 12.0;
   
   /// Medium spacing - 16px
   static const double spacingM = 16.0;
+  
+  /// 20px spacing - (Custom)
+  static const double spacing20 = 20.0;
   
   /// Large spacing - 24px
   static const double spacingL = 24.0;
@@ -37,6 +46,9 @@ class AppValues {
   
   /// All sides - 16px
   static const EdgeInsets paddingAll = EdgeInsets.all(spacingM);
+  
+  /// All sides - 12px
+  static const EdgeInsets paddingS = EdgeInsets.all(spacingS);
   
   /// Screen padding - 20px horizontal, 16px vertical
   static const EdgeInsets paddingScreen = EdgeInsets.symmetric(
@@ -63,11 +75,17 @@ class AppValues {
   /// 8px gap
   static const Widget gapXS = SizedBox(height: spacingXS);
   
+  /// 10px gap
+  static const Widget gap10 = SizedBox(height: spacing10);
+  
   /// 12px gap
   static const Widget gapS = SizedBox(height: spacingS);
   
   /// 16px gap
   static const Widget gapM = SizedBox(height: spacingM);
+  
+  /// 20px gap
+  static const Widget gap20 = SizedBox(height: spacing20);
   
   /// 24px gap
   static const Widget gapL = SizedBox(height: spacingL);
@@ -151,6 +169,9 @@ class AppValues {
   // COMPONENT SIZES
   // ============================================
   
+  /// Loading indicator size
+  static const double loadingIndicatorSize = 20.0;
+
   /// Avatar size - 14px (small badge/verification)
   static const Size avatarSizeSmall = Size(14, 14);
   
@@ -159,6 +180,9 @@ class AppValues {
   
   /// Avatar size - 48px (profile)
   static const Size avatarSizeLarge = Size(48, 48);
+
+  /// Avatar Radius Profile - 35px (70px dia)
+  static const double avatarRadiusProfile = 35.0;
   
   /// Search bar height
   static const double searchBarHeight = 50.0;
