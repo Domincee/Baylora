@@ -17,6 +17,13 @@ class AuthStrings {
   static const String agreeTermsText = "I agree to Terms & Agreements";
   static const String acceptTermsRequired = "Accept terms & agreements";
 
+  // Terms Dialog
+  static const String termsTitle = "Terms & Agreements";
+  static const String termsContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+  static const String termsClose = "Close";
+
   // Form field labels
   static const String emailLabel = "Email";
   static const String passwordLabel = "Password";

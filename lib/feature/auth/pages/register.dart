@@ -25,6 +25,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _authService = AuthService(supabase);
 
   bool _isLoading = false;
+  bool _agreeToTerms = false;
+  bool _showTermsError = false;
+
+  void _showTermsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(AuthStrings.termsTitle),
+        content: const SingleChildScrollView(
+          child: Text(AuthStrings.termsContent),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(AuthStrings.termsClose),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> _handleRegister() async {
     // 1. Check for empty fields first
@@ -37,7 +57,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _form.confirmPassCtrl.text.trim().isEmpty;
 
     if (hasEmptyFields) {
-      // Trigger validation to show visual errors on fields
       _form.validate();
       AppFeedback.error(context, AuthStrings.fillAllFieldsError);
       return;
@@ -45,7 +64,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     // 2. Check for password mismatch
     if (_form.passCtrl.text != _form.confirmPassCtrl.text) {
-      // Trigger validation to show visual errors on fields
       _form.validate();
       AppFeedback.error(context, AuthStrings.passwordMismatchError);
       return;
@@ -53,14 +71,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     // 3. Final validation check (email format etc.)
     if (!_form.validate()) {
-      // Generic error fallback or specific field error
-      // Ideally validator messages handle this, but for snackbar:
-      // We already handled empty and password match.
-      // If it fails here, it's likely email format or other specific rule.
-      // But user requested: "Do NOT show 'empty field' error when no field is empty"
-      // Since we checked empty fields manually above, we are safe.
       return; 
     }
+
+    // 4. Check Terms & Agreement (Only if all fields valid)
+    if (!_agreeToTerms) {
+      setState(() => _showTermsError = true);
+      AppFeedback.error(context, AuthStrings.acceptTermsRequired);
+      return;
+    }
+
+    // Clear terms error if valid
+    if (_showTermsError) setState(() => _showTermsError = false);
 
     setState(() => _isLoading = true);
 
@@ -143,6 +165,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         isLoading: _isLoading,
                         onRegister: _handleRegister,
                         onLoginTap: _navigateToLogin,
+                        agreeToTerms: _agreeToTerms,
+                        onAgreeChanged: (val) {
+                          setState(() {
+                            _agreeToTerms = val;
+                            if (val) _showTermsError = false;
+                          });
+                        },
+                        onTermsTap: _showTermsDialog,
+                        showTermsError: _showTermsError,
                       ),
                     ],
                   ),

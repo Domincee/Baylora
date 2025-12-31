@@ -11,6 +11,10 @@ class RegisterForm extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onRegister;
   final VoidCallback? onLoginTap;
+  final bool agreeToTerms;
+  final ValueChanged<bool> onAgreeChanged;
+  final VoidCallback onTermsTap;
+  final bool showTermsError;
 
   const RegisterForm({
     super.key,
@@ -18,6 +22,10 @@ class RegisterForm extends StatelessWidget {
     required this.isLoading,
     required this.onRegister,
     this.onLoginTap,
+    required this.agreeToTerms,
+    required this.onAgreeChanged,
+    required this.onTermsTap,
+    this.showTermsError = false,
   });
 
   @override
@@ -67,7 +75,53 @@ class RegisterForm extends StatelessWidget {
             validator: (v) =>
                 AppValidators.confirmPassword(v, form.passCtrl.text),
           ),
-          AppValues.gapL,
+          
+          // Terms & Conditions Checkbox
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: Checkbox(
+                    value: agreeToTerms,
+                    onChanged: (v) => onAgreeChanged(v ?? false),
+                    activeColor: AppColors.royalBlue,
+                    side: BorderSide(
+                      color: showTermsError ? AppColors.errorColor : AppColors.greyMedium,
+                      width: showTermsError ? 2 : 1,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: onTermsTap,
+                    child: RichText(
+                      text: TextSpan(
+                        text: "I agree to ",
+                        style: Theme.of(context).textTheme.bodySmall,
+                        children: [
+                          TextSpan(
+                            text: "Terms & Agreements",
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.highLightTextColor,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          AppValues.gapM,
+          
           ElevatedButton(
             onPressed: isLoading ? null : onRegister,
             style: ElevatedButton.styleFrom(
