@@ -10,8 +10,14 @@ class AppColors {
   /// Pure black
   static const Color black = Colors.black;
   
+  /// Black with 87% opacity
+  static const Color black87 = Colors.black87;
+  
   /// Pure white - main background
   static const Color white = Colors.white;
+
+  /// White with 38% opacity
+  static const Color white38 = Colors.white38;
   
   /// Primary color (white)
   static const Color primaryColor = Color(0xFFFFFFFF);
@@ -35,6 +41,15 @@ class AppColors {
   /// Selected/active color - light blue
   static const Color selectedColor = Color(0xFF09B7FD);
 
+  /// Logo Gradient End Color - Periwinkle
+  static const Color logoGradientEnd = Color(0xff8F7EFF);
+
+  /// Onboarding Gradient End - Lavender Accent
+  static const Color lavenderAccent = Color(0xffA293FF);
+
+  /// Trade Icon Color - Purple
+  static const Color tradeIconColor = Color(0xFF8B5CF6);
+
   // ============================================
   // TEXT COLORS
   // ============================================
@@ -56,10 +71,22 @@ class AppColors {
   // ============================================
   
   /// Light grey for backgrounds
-  static const Color greyLight = Color(0xFFF5F5F5);
+  static const Color greyLight = Color(0xFFF5F5F5); // ~Grey 100/200
+
+  /// Grey 200
+  static const Color grey200 = Color(0xFFEEEEEE);
   
   /// Medium grey for borders/dividers
-  static const Color greyMedium = Color(0xFFE0E0E0);
+  static const Color greyMedium = Color(0xFFE0E0E0); // ~Grey 300
+
+  /// Grey 300
+  static const Color grey300 = Color(0xFFE0E0E0);
+
+  /// Grey 400
+  static const Color grey400 = Color(0xFFBDBDBD);
+
+  /// Grey 600
+  static const Color grey600 = Color(0xFF757575);
   
   /// Grey for disabled states
   static const Color greyDisabled = Color(0xFFBDBDBD);
@@ -82,6 +109,31 @@ class AppColors {
   
   /// Recommended/featured color - green
   static const Color recommendedColor = Color(0xFF4CAF50);
+
+  /// Star/Rating Color
+  static const Color starColor = Colors.amber;
+
+  /// Winning Bid Color
+  static const Color winningBid = Colors.deepPurpleAccent;
+
+  // ============================================
+  // STATUS COLORS
+  // ============================================
+  
+  /// Status Accepted Text
+  static const Color statusAcceptedText = Color(0xFF1565C0);
+  
+  /// Status Accepted Background
+  static const Color statusAcceptedBg = Colors.blue;
+  
+  /// Status Sold Text
+  static const Color statusSoldText = white;
+  
+  /// Status Sold Background
+  static const Color statusSoldBg = Colors.grey;
+  
+  /// Status Pending Background
+  static const Color statusPendingBg = Color(0x3340C4FF); // Light Blue Accent 0.2
 
   // ============================================
   // ACCENT COLORS

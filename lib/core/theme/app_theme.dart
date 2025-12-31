@@ -61,34 +61,34 @@ class AppTheme {
       // Body styles - Main content text
       bodyLarge: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: FontWeight.w600,
       ),
       bodyMedium: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: FontWeight.w600,
       ),
       bodySmall: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: FontWeight.w400,
       ),
 
       // Label styles - Buttons, chips, small UI elements
       labelLarge: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
       labelMedium: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 13,
+        fontSize: 12,
         fontWeight: FontWeight.w500,
       ),
       labelSmall: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 12,
+        fontSize: 8,
         fontWeight: FontWeight.w400,
       ),
     ),
@@ -142,18 +142,22 @@ class AppTheme {
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.shadowColor),
       ),
+
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.shadowColor),
       ),
+
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.royalBlue, width: 2),
       ),
+
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.errorColor),
       ),
+
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     ),
 
