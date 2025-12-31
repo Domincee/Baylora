@@ -5,6 +5,7 @@ import 'package:baylora_prjct/core/widgets/app_text_input.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/constant/auth_strings.dart';
+import 'package:baylora_prjct/feature/auth/widget/auth_checkbox.dart';
 
 class RegisterForm extends StatelessWidget {
   final RegisterFormController form;
@@ -76,47 +77,16 @@ class RegisterForm extends StatelessWidget {
                 AppValidators.confirmPassword(v, form.passCtrl.text),
           ),
           
-          // Terms & Conditions Checkbox
+          // Reusable Auth Checkbox for Terms
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Row(
-              children: [
-                SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: Checkbox(
-                    value: agreeToTerms,
-                    onChanged: (v) => onAgreeChanged(v ?? false),
-                    activeColor: AppColors.royalBlue,
-                    side: BorderSide(
-                      color: showTermsError ? AppColors.errorColor : AppColors.greyMedium,
-                      width: showTermsError ? 2 : 1,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: onTermsTap,
-                    child: RichText(
-                      text: TextSpan(
-                        text: "I agree to ",
-                        style: Theme.of(context).textTheme.bodySmall,
-                        children: [
-                          TextSpan(
-                            text: "Terms & Agreements",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.highLightTextColor,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            child: AuthCheckbox(
+              label: "I agree to ",
+              value: agreeToTerms,
+              onChanged: (v) => onAgreeChanged(v ?? false),
+              showError: showTermsError,
+              onLabelTap: onTermsTap,
+              linkText: "Terms & Agreements",
             ),
           ),
 
