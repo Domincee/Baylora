@@ -18,7 +18,7 @@ class UniversalImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Check if it is an SVG file (handling query parameters like ?token=...)
+
     bool isSvg = false;
     try {
       final uri = Uri.parse(path);

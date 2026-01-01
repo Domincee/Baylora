@@ -9,6 +9,7 @@ import 'package:baylora_prjct/feature/home/util/item_filter_util.dart';
 import 'package:baylora_prjct/feature/home/widgets/category.dart';
 import 'package:baylora_prjct/feature/home/widgets/item_card.dart';
 import 'package:baylora_prjct/feature/home/widgets/search_bar.dart';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -49,22 +50,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
 
             // Category Filters
-            SizedBox(
-              height: 50,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: AppValues.spacingM),
-                children: ItemFilterUtil.categories.map((filter) {
-                  return Padding(
-                    padding: EdgeInsets.only(right: AppValues.spacingXS),
-                    child: Category(
-                      label: filter,
-                      isSelected: selectedFilter == filter,
-                      onTap: () => _onFilterChanged(filter),
-                    ),
-                  );
-                }).toList(),
-              ),
+            CategoryFilter(
+              categories: ItemFilterUtil.categories,
+              selectedCategory: selectedFilter,
+              onSelect: _onFilterChanged,
             ),
 
             AppValues.gapXS,
@@ -86,7 +75,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: SizedBox(
                           height: MediaQuery.of(context).size.height * 0.5,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Icon(
                                 Icons.inbox_outlined,
