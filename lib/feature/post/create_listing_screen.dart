@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/post/constants/listing_constants.dart';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
@@ -13,7 +15,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   int _currentStep = 0;
   int _selectedType = -1;
   int _selectedCondition = 1; // 0: New, 1: Used, 2: Broken
-  bool _isNegotiable = true;
+  
+  bool _isDurationEnabled = false;
+  String? _selectedCategory;
 
   final _titleController = TextEditingController();
   final _durationController = TextEditingController(text: '1');
@@ -27,6 +31,22 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     _priceController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  void _incrementDuration() {
+    int current = int.tryParse(_durationController.text) ?? 0;
+    setState(() {
+      _durationController.text = (current + 1).toString();
+    });
+  }
+
+  void _decrementDuration() {
+    int current = int.tryParse(_durationController.text) ?? 0;
+    if (current > 1) {
+      setState(() {
+        _durationController.text = (current - 1).toString();
+      });
+    }
   }
 
   PreferredSizeWidget _buildAppBar() {
@@ -58,6 +78,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         ],
       );
     } else {
+      final isStep3 = _currentStep == 2;
       return AppBar(
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -67,12 +88,37 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         ),
         centerTitle: true,
         title: Text(
-          _getStep2Title(),
+          isStep3 ? "Review" : _getStep2Title(),
           style: Theme.of(context)
               .textTheme
               .titleMedium
               ?.copyWith(fontWeight: FontWeight.bold, color: AppColors.black),
         ),
+        actions: [
+          Center(
+            child: Text(
+              isStep3 ? "3/3" : "2/3",
+              style: Theme.of(context)
+                  .textTheme
+                  .labelMedium
+                  ?.copyWith(color: AppColors.subTextColor),
+            ),
+          ),
+          AppValues.gapS,
+          if (!isStep3) ...[
+            TextButton(
+              onPressed: () => setState(() => _currentStep++),
+              child: Text(
+                "Next",
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(color: AppColors.royalBlue),
+              ),
+            ),
+            AppValues.gapS,
+          ],
+        ],
       );
     }
   }
@@ -100,6 +146,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         children: [
           _buildStep1UI(),
           _buildStep2UI(),
+          _buildStep3UI(),
         ],
       ),
     );
@@ -305,19 +352,84 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               ),
               AppValues.gapHM,
               SizedBox(
-                width: 100,
+                width: 150,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionHeader("Set Duration"),
-                    AppValues.gapS,
-                    TextFormField(
-                      controller: _durationController,
-                      textAlign: TextAlign.center,
-                      decoration: const InputDecoration(
-                        suffixText: "hr +",
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Duration", 
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        Transform.scale(
+                          scale: 0.7,
+                          child: Switch(
+                            value: _isDurationEnabled,
+                            onChanged: (val) => setState(() => _isDurationEnabled = val),
+                          ),
+                        ),
+                      ],
                     ),
+                    AppValues.gapXS,
+                    if (_isDurationEnabled)
+                      Container(
+                         decoration: BoxDecoration(
+                           border: Border.all(color: AppColors.greyMedium),
+                           borderRadius: AppValues.borderRadiusS,
+                         ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: _decrementDuration,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(Icons.remove, size: 16),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _durationController,
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  border: InputBorder.none,
+                                  suffixText: "hr",
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: _incrementDuration,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(Icons.add, size: 16),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                           color: AppColors.greyLight,
+                           borderRadius: AppValues.borderRadiusS,
+                         ),
+                        child: Text(
+                          "No limit",
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textGrey,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               )
@@ -335,7 +447,24 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   children: [
                     _buildSectionHeader("Category"),
                     AppValues.gapS,
-                    _buildCategorySelector(),
+                    DropdownButtonFormField<String>(
+                      value: _selectedCategory,
+                      hint: const Text("Select"),
+                      items: ListingConstants.categories
+                          .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                          .toList(),
+                      onChanged: (val) => setState(() => _selectedCategory = val),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppColors.greyLight,
+                        border: OutlineInputBorder(
+                          borderRadius: AppValues.borderRadiusM,
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      ),
+                      icon: const Icon(Icons.arrow_drop_down, color: AppColors.textGrey),
+                    ),
                   ],
                 ),
               ),
@@ -346,12 +475,13 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   children: [
                     _buildSectionHeader("Condition"),
                     AppValues.gapS,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        _buildConditionChip("New", 0),
-                        _buildConditionChip("Used", 1),
-                        _buildConditionChip("Broken", 2),
+                         _buildConditionChip("New", 0),
+                         _buildConditionChip("Used", 1),
+                         _buildConditionChip("Broken", 2),
                       ],
                     ),
                   ],
@@ -382,18 +512,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   ),
                   keyboardType: TextInputType.number,
                 ),
-                AppValues.gapS,
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text("Price is negotiable"),
-                    Switch(
-                      value: _isNegotiable,
-                      onChanged: (val) => setState(() => _isNegotiable = val),
-                    )
-                  ],
-                )
               ],
             ),
           ),
@@ -412,6 +530,13 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  // ====== Step 3 Placeholder ======
+  Widget _buildStep3UI() {
+    return const Center(
+      child: Text("Review"),
     );
   }
 
@@ -464,23 +589,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             borderRadius: AppValues.borderRadiusM,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCategorySelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.greyLight,
-        borderRadius: AppValues.borderRadiusM,
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("Select Category"),
-          Icon(Icons.arrow_drop_down, color: AppColors.textGrey),
-        ],
       ),
     );
   }
