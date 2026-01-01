@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/feature/post/constants/listing_constants.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_step_3.dart';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
@@ -14,7 +15,7 @@ class CreateListingScreen extends StatefulWidget {
 class _CreateListingScreenState extends State<CreateListingScreen> {
   int _currentStep = 0;
   int _selectedType = -1;
-  int _selectedCondition = 1; // 0: New, 1: Used, 2: Broken
+  int _selectedCondition = 1; // 0: New, 1: Used, 2: Broken, 3: Fair
 
   bool _isDurationEnabled = false;
   String? _selectedCategory;
@@ -23,6 +24,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   final _durationController = TextEditingController(text: '1');
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
+
+  final List<String> _wishlistTags = [];
 
   @override
   void dispose() {
@@ -63,587 +66,62 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
-  // ====== Main Build & AppBar ======
+  void _handlePublish() {
+    // Dummy publish logic
+    debugPrint("Listing Published!");
+    debugPrint("Title: ${_titleController.text}");
+    debugPrint("Type: $_selectedType");
+    Navigator.pop(context);
+  }
+
+  // ====== Main Build ======
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: _buildAppBar(),
+      appBar: ListingAppBar(
+        currentStep: _currentStep,
+        step2Title: _getStep2Title(),
+        isNextEnabled: _selectedType != -1,
+        onNext: () => setState(() => _currentStep++),
+        onBack: () => setState(() => _currentStep--),
+        onClose: () => Navigator.pop(context),
+      ),
       body: IndexedStack(
         index: _currentStep,
         children: [
-          _buildStep1UI(),
-          _buildStep2UI(),
-          _buildStep3UI(),
-        ],
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    if (_currentStep == 0) {
-      return AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: AppValues.spacingM),
-            child: TextButton(
-              onPressed: _selectedType != -1
-                  ? () => setState(() => _currentStep++)
-                  : null,
-              child: Text(
-                "Next",
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      color: _selectedType != -1
-                          ? AppColors.royalBlue
-                          : Colors.grey,
-                    ),
-              ),
-            ),
+          ListingStep1(
+            selectedType: _selectedType,
+            onTypeSelected: (val) => setState(() => _selectedType = val),
+          ),
+          ListingStep2(
+            selectedType: _selectedType,
+            titleController: _titleController,
+            durationController: _durationController,
+            isDurationEnabled: _isDurationEnabled,
+            onToggleDuration: (val) => setState(() => _isDurationEnabled = val),
+            onIncrementDuration: _incrementDuration,
+            onDecrementDuration: _decrementDuration,
+            selectedCategory: _selectedCategory,
+            onCategoryChanged: (val) => setState(() => _selectedCategory = val),
+            selectedCondition: _selectedCondition,
+            onConditionChanged: (val) => setState(() => _selectedCondition = val),
+            priceController: _priceController,
+            descriptionController: _descriptionController,
+            wishlistTags: _wishlistTags,
+            onTagAdded: (tag) => setState(() => _wishlistTags.add(tag)),
+            onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
+          ),
+          ListingStep3(
+            selectedType: _selectedType,
+            title: _titleController.text,
+            price: _priceController.text,
+            description: _descriptionController.text,
+            selectedCondition: _selectedCondition,
+            wishlistTags: _wishlistTags,
+            onPublish: _handlePublish,
           ),
         ],
-      );
-    } else {
-      final isStep3 = _currentStep == 2;
-      return AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.black),
-          onPressed: () => setState(() => _currentStep--),
-        ),
-        centerTitle: true,
-        title: Text(
-          isStep3 ? "Review" : _getStep2Title(),
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium
-              ?.copyWith(fontWeight: FontWeight.bold, color: AppColors.black),
-        ),
-        actions: [
-          Center(
-            child: Text(
-              isStep3 ? "3/3" : "2/3",
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: AppColors.subTextColor),
-            ),
-          ),
-          AppValues.gapS,
-          if (!isStep3) ...[
-            TextButton(
-              onPressed: () => setState(() => _currentStep++),
-              child: Text(
-                "Next",
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(color: AppColors.royalBlue),
-              ),
-            ),
-            AppValues.gapS,
-          ],
-        ],
-      );
-    }
-  }
-
-  // ====== Step 1 UI ======
-  Widget _buildStep1UI() {
-    return Padding(
-      padding: AppValues.paddingH,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "What type of listing is this?",
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          AppValues.gapXS,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Choose the best option for your item.",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textGrey,
-                    ),
-              ),
-              Text(
-                "1/3",
-                style: Theme.of(context)
-                    .textTheme
-                    .labelMedium!
-                    .copyWith(color: AppColors.subTextColor),
-              ),
-            ],
-          ),
-          AppValues.gapL,
-          _buildOptionCard(
-            index: 0,
-            title: "Sell Item",
-            subtitle: "For cash transactions only",
-            icon: Icons.attach_money,
-          ),
-          AppValues.gapM,
-          _buildOptionCard(
-            index: 1,
-            title: "Trade Item",
-            subtitle: "Exchange items with others",
-            icon: Icons.swap_horiz,
-          ),
-          AppValues.gapM,
-          _buildOptionCard(
-            index: 2,
-            title: "Sell or Trade",
-            subtitle: "Open to both cash and trades (Recommended)",
-            icon: Icons.handshake_outlined,
-            isRecommended: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOptionCard({
-    required int index,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    bool isRecommended = false,
-  }) {
-    final isSelected = _selectedType == index;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedType = index),
-      child: Container(
-        padding: AppValues.paddingCard,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.royalBlue.withOpacity(0.05)
-              : AppColors.white,
-          border: Border.all(
-            color: isSelected ? AppColors.royalBlue : AppColors.greyMedium,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: AppValues.borderRadiusM,
-        ),
-        child: Row(children: [
-          Container(
-              padding: AppValues.paddingSmall,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.royalBlue : AppColors.greyLight,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon,
-                  color: isSelected ? AppColors.white : AppColors.textDarkGrey,
-                  size: AppValues.iconM)),
-          AppValues.gapHM,
-          Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                Row(children: [
-                  Text(title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: isSelected
-                              ? AppColors.royalBlue
-                              : AppColors.black)),
-                  if (isRecommended) ...[
-                    AppValues.gapHXS,
-                    Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                            color: AppColors.recommendedColor.withOpacity(0.1),
-                            borderRadius: AppValues.borderRadiusS),
-                        child: Text("Recommended",
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.recommendedColor)))
-                  ]
-                ]),
-                AppValues.gapXXS,
-                Text(subtitle,
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(color: AppColors.textDarkGrey))
-              ])),
-          Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                      color: isSelected
-                          ? AppColors.royalBlue
-                          : AppColors.greyDisabled,
-                      width: 2)),
-              child: isSelected
-                  ? Center(
-                      child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: const BoxDecoration(
-                              color: AppColors.royalBlue,
-                              shape: BoxShape.circle)))
-                  : null)
-        ]),
-      ),
-    );
-  }
-
-  // ====== Step 2 UI ======
-  Widget _buildStep2UI() {
-    switch (_selectedType) {
-      case 0:
-        return _buildSellItemForm();
-      case 1:
-      case 2:
-        return Center(child: Text(_getStep2Title()));
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildSellItemForm() {
-    return SingleChildScrollView(
-      padding: AppValues.paddingH.copyWith(bottom: AppValues.spacingXXL),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildPhotosSection(),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: _buildBasicInfoSection()),
-              AppValues.gapHM,
-              SizedBox(width: 150, child: _buildDurationSection()),
-            ],
-          ),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: _buildCategorySection()),
-              AppValues.gapHM,
-              Expanded(child: _buildConditionSection()),
-            ],
-          ),
-          AppValues.gapL,
-          _buildPricingSection(),
-          AppValues.gapL,
-          _buildDescriptionSection(),
-        ],
-      ),
-    );
-  }
-
-  // -- Step 2 Components --
-
-  Widget _buildPhotosSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader("Photos", "2/3"),
-        AppValues.gapS,
-        Row(
-          children: [
-            _buildPhotoUploader(),
-            AppValues.gapHS,
-            _buildPhotoPlaceholder(),
-            AppValues.gapHS,
-            _buildPhotoPlaceholder(),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBasicInfoSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader("Basic info"),
-        AppValues.gapS,
-        TextFormField(
-          controller: _titleController,
-          decoration: const InputDecoration(hintText: "What are you selling?"),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDurationSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Duration",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            Transform.scale(
-              scale: 0.7,
-              child: Switch(
-                value: _isDurationEnabled,
-                onChanged: (val) => setState(() => _isDurationEnabled = val),
-              ),
-            ),
-          ],
-        ),
-        AppValues.gapXS,
-        if (_isDurationEnabled)
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.greyMedium),
-              borderRadius: AppValues.borderRadiusS,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                InkWell(
-                  onTap: _decrementDuration,
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.remove, size: 16),
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    controller: _durationController,
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                      border: InputBorder.none,
-                      suffixText: "hr",
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: _incrementDuration,
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.add, size: 16),
-                  ),
-                ),
-              ],
-            ),
-          )
-        else
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AppColors.greyLight,
-              borderRadius: AppValues.borderRadiusS,
-            ),
-            child: Text(
-              "No limit",
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textGrey,
-                  ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildCategorySection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader("Category"),
-        AppValues.gapS,
-        DropdownButtonFormField<String>(
-          value: _selectedCategory,
-          hint:  Text("Select", style: Theme.of(context).textTheme.bodyMedium),
-          items: ListingConstants.categories
-              .map((c) => DropdownMenuItem(
-                  value: c,
-                  child: Text(c,
-                      style: Theme.of(context).textTheme.bodyMedium)))
-              .toList(),
-          onChanged: (val) => setState(() => _selectedCategory = val),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: AppColors.greyLight,
-            border: OutlineInputBorder(
-              borderRadius: AppValues.borderRadiusM,
-              borderSide: BorderSide.none,
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-          ),
-          icon: const Icon(Icons.arrow_drop_down, color: AppColors.textGrey),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildConditionSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader("Condition"),
-        AppValues.gapS,
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _buildConditionChip("New", 0),
-            _buildConditionChip("Used", 1),
-            _buildConditionChip("Broken", 2),
-            _buildConditionChip("Fair", 3),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPricingSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader("Pricing"),
-        AppValues.gapS,
-        Container(
-          padding: AppValues.paddingCard,
-          decoration: BoxDecoration(
-            color: AppColors.greyLight,
-            borderRadius: AppValues.borderRadiusM,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Asking Price"),
-              TextFormField(
-                controller: _priceController,
-                decoration: const InputDecoration(
-                  prefixText: "₱ ",
-                  hintText: "Enter asking price",
-                ),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDescriptionSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader("Description & Details"),
-        AppValues.gapS,
-        TextFormField(
-          controller: _descriptionController,
-          decoration: const InputDecoration(
-            hintText:
-                "Describe the item, its condition and what buyers should know...",
-          ),
-          maxLines: 5,
-        ),
-      ],
-    );
-  }
-
-  // ====== Step 3 Placeholder ======
-  Widget _buildStep3UI() {
-    return const Center(
-      child: Text("Review"),
-    );
-  }
-
-  // ====== Shared Widgets ======
-  Widget _buildSectionHeader(String title, [String? trailing]) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleSmall),
-        if (trailing != null)
-          Text(
-            trailing,
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(color: AppColors.textGrey),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildPhotoUploader() {
-    return Expanded(
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.royalBlue.withOpacity(0.05),
-            borderRadius: AppValues.borderRadiusM,
-            border: Border.all(color: AppColors.royalBlue.withOpacity(0.2)),
-          ),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.camera_alt, color: AppColors.royalBlue),
-              Text("Add photos", style: TextStyle(color: AppColors.royalBlue)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPhotoPlaceholder() {
-    return Expanded(
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.greyLight,
-            borderRadius: AppValues.borderRadiusM,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildConditionChip(String label, int index) {
-    final isSelected = _selectedCondition == index;
-    return GestureDetector(
-      onTap: () => setState(() => _selectedCondition = index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.royalBlue : AppColors.greyLight,
-          borderRadius: AppValues.borderRadiusCircular,
-        ),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: isSelected ? AppColors.white : AppColors.textDarkGrey,
-              ),
-        ),
       ),
     );
   }
