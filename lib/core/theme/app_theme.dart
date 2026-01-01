@@ -71,7 +71,7 @@ class AppTheme {
       ),
       bodySmall: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 10,
+        fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
 
@@ -88,7 +88,7 @@ class AppTheme {
       ),
       labelSmall: TextStyle(
         fontFamily: 'NunitoSans',
-        fontSize: 8,
+        fontSize: 12,
         fontWeight: FontWeight.w400,
       ),
     ),
