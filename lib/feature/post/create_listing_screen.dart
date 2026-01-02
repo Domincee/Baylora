@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
+import 'package:baylora_prjct/feature/post/widgets/listing_step_3.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
@@ -10,209 +16,230 @@ class CreateListingScreen extends StatefulWidget {
 }
 
 class _CreateListingScreenState extends State<CreateListingScreen> {
-  // Step 1: Selected Type (0: Sell, 1: Trade, 2: Sell or Trade)
-  // Default to -1 (none selected)
   int _currentStep = 0;
   int _selectedType = -1;
+  int _selectedCondition = 1; // 0: New, 1: Used, 2: Broken, 3: Fair
+
+  bool _isDurationEnabled = false;
+  String? _selectedCategory;
+  bool _isLoading = false;
+
+  final _titleController = TextEditingController();
+  final _durationController = TextEditingController(text: '1');
+  final _priceController = TextEditingController();
+  final _descriptionController = TextEditingController();
+
+  final List<String> _wishlistTags = [];
   
+  // Image selection
+  final ImagePicker _picker = ImagePicker();
+  final List<File> _selectedImages = [];
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: AppValues.spacingM),
-            child: TextButton(
-              onPressed: _selectedType != -1 
-                  ? () {
-                    setState(() {
-                     _currentStep += 1;
-
-                    });
-                    } 
-                  : null, // Disabled if no type selected
-              child: Text(
-                "Next",
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  color: _selectedType != -1 ? AppColors.royalBlue : Colors.grey,
-                )
-                
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: AppValues.paddingH,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "What type of listing is this?",
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            AppValues.gapXS,
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Choose the best option for your item.",
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textGrey,
-                  ),
-                ),
-                Text("$_currentStep/3",
-                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: AppColors.subTextColor
-                 ),),
-              ],
-            ),
-            AppValues.gapL,
-
-            _buildOptionCard(
-              index: 0,
-              title: "Sell Item",
-              subtitle: "For cash transactions only",
-              icon: Icons.attach_money,
-            ),
-            AppValues.gapM,
-            _buildOptionCard(
-              index: 1,
-              title: "Trade Item",
-              subtitle: "Exchange items with others",
-              icon: Icons.swap_horiz,
-            ),
-            AppValues.gapM,
-            _buildOptionCard(
-              index: 2,
-              title: "Sell or Trade",
-              subtitle: "Open to both cash and trades (Recommended)",
-              icon: Icons.handshake_outlined, // Or Icons.check_circle_outline
-              isRecommended: true,
-            ),
-          ],
-        ),
-      ),
-    );
+  void dispose() {
+    _titleController.dispose();
+    _durationController.dispose();
+    _priceController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
-  Widget _buildOptionCard({
-    required int index,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    bool isRecommended = false,
-  }) {
-    final isSelected = _selectedType == index;
+  // ====== Logic Helpers ======
+  void _incrementDuration() {
+    int current = int.tryParse(_durationController.text) ?? 0;
+    setState(() {
+      _durationController.text = (current + 1).toString();
+    });
+  }
 
-    return GestureDetector(
-      onTap: () {
+  void _decrementDuration() {
+    int current = int.tryParse(_durationController.text) ?? 0;
+    if (current > 1) {
+      setState(() {
+        _durationController.text = (current - 1).toString();
+      });
+    }
+  }
+  
+  Future<void> _pickImage() async {
+    if (_selectedImages.length >= 3) return;
+    
+    try {
+      debugPrint("Picking image...");
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        debugPrint("Image picked: ${image.path}");
         setState(() {
-          _selectedType = index;
+          _selectedImages.add(File(image.path));
         });
-      },
-      child: Container(
-        padding: AppValues.paddingCard,
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.royalBlue.withValues(alpha: 0.05) : AppColors.white,
-          border: Border.all(
-            color: isSelected ? AppColors.royalBlue : AppColors.greyMedium,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: AppValues.borderRadiusM,
-        ),
-        child: Row(
-          children: [
-            // Icon Container
-            Container(
-              padding: AppValues.paddingSmall,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.royalBlue : AppColors.greyLight,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: isSelected ? AppColors.white : AppColors.textDarkGrey,
-                size: AppValues.iconM,
-              ),
-            ),
-            AppValues.gapHM,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: isSelected ? AppColors.royalBlue : AppColors.black,
-                        ),
-                      ),
-                      if (isRecommended) ...[
-                        AppValues.gapHXS,
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.recommendedColor.withValues(alpha: 0.1),
-                            borderRadius: AppValues.borderRadiusS,
-                          ),
-                          child: Text(
-                            "Recommended",
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.recommendedColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  AppValues.gapXXS,
-                  Text(
-                    subtitle,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.textDarkGrey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      } else {
+        debugPrint("Image picking canceled");
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+    }
+  }
 
-            // Radio Indicator
-            Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? AppColors.royalBlue : AppColors.greyDisabled,
-                  width: 2,
-                ),
-              ),
-              child: isSelected
-                  ? Center(
-                      child: Container(
-                        width: 10,
-                        height: 10,
-                        decoration: const BoxDecoration(
-                          color: AppColors.royalBlue,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    )
-                  : null,
-            ),
-          ],
-        ),
+  String _getStep2Title() {
+    switch (_selectedType) {
+      case 0:
+        return "Sell Item";
+      case 1:
+        return "Trade Item";
+      case 2:
+        return "Sell or Trade";
+      default:
+        return "";
+    }
+  }
+
+  Future<void> _handlePublish() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User not logged in")),
+      );
+      return;
+    }
+
+    if (_titleController.text.trim().isEmpty) {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Title is required")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Map Type
+      String typeStr = 'sell';
+      if (_selectedType == 1) typeStr = 'trade';
+      if (_selectedType == 2) typeStr = 'both';
+
+      // Map Condition
+      String conditionStr = 'used';
+      switch (_selectedCondition) {
+        case 0:
+          conditionStr = 'new';
+          break;
+        case 1:
+          conditionStr = 'used';
+          break;
+        case 2:
+          conditionStr = 'broken';
+          break;
+        case 3:
+          conditionStr = 'fair';
+          break;
+      }
+
+      // Parse Price
+      double? priceVal;
+      if (_selectedType != 1 && _priceController.text.isNotEmpty) {
+        priceVal = double.tryParse(_priceController.text.replaceAll(',', ''));
+      }
+
+      // Calculate End Time
+      final durationHours = int.tryParse(_durationController.text) ?? 24;
+      final endTime = DateTime.now().add(Duration(hours: durationHours));
+
+      // Swap Preference
+      final swapPref = _wishlistTags.join(', ');
+
+      await Supabase.instance.client.from('items').insert({
+        'owner_id': user.id,
+        'title': _titleController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        'type': typeStr,
+        'price': priceVal,
+        'swap_preference': swapPref,
+        'images': [], // Sending empty list for now
+        'condition': conditionStr,
+        'category': _selectedCategory,
+        'end_time': endTime.toIso8601String(),
+        'status': 'active', // Assuming active status on creation
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Listing Published!")),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error publishing listing: $e")),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  // ====== Main Build ======
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      appBar: ListingAppBar(
+        currentStep: _currentStep,
+        step2Title: _getStep2Title(),
+        isNextEnabled: _selectedType != -1,
+        onNext: () => setState(() => _currentStep++),
+        onBack: () => setState(() => _currentStep--),
+        onClose: () => Navigator.pop(context),
+      ),
+      body: IndexedStack(
+        index: _currentStep,
+        children: [
+          ListingStep1(
+            selectedType: _selectedType,
+            onTypeSelected: (val) => setState(() => _selectedType = val),
+          ),
+          ListingStep2(
+            selectedType: _selectedType,
+            titleController: _titleController,
+            durationController: _durationController,
+            isDurationEnabled: _isDurationEnabled,
+            onToggleDuration: (val) => setState(() => _isDurationEnabled = val),
+            onIncrementDuration: _incrementDuration,
+            onDecrementDuration: _decrementDuration,
+            selectedCategory: _selectedCategory,
+            onCategoryChanged: (val) => setState(() => _selectedCategory = val),
+            selectedCondition: _selectedCondition,
+            onConditionChanged: (val) => setState(() => _selectedCondition = val),
+            priceController: _priceController,
+            descriptionController: _descriptionController,
+            wishlistTags: _wishlistTags,
+            onTagAdded: (tag) => setState(() => _wishlistTags.add(tag)),
+            onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
+            images: _selectedImages,
+            onAddPhoto: _pickImage,
+          ),
+          ListingStep3(
+            selectedType: _selectedType,
+            title: _titleController.text,
+            price: _priceController.text,
+            description: _descriptionController.text,
+            selectedCondition: _selectedCondition,
+            wishlistTags: _wishlistTags,
+            onPublish: _handlePublish,
+          ),
+        ],
       ),
     );
   }

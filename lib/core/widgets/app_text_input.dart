@@ -40,7 +40,10 @@ class _AppTextInputState extends State<AppTextInput> {
           controller: widget.controller,
           obscureText: widget.isPassword ? _obscureText : false,
           keyboardType: widget.keyboardType,
-          style: Theme.of(context).textTheme.labelSmall,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.black,
+          ),
           validator: (value) {
             // Must return the error string for Form.validate() to work correctly
             if (widget.validator != null) {

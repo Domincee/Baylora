@@ -18,6 +18,19 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
 
   final int currentIndex;
 
+  String _getTitle() {
+    switch (currentIndex) {
+      case 0:
+        return AppStrings.home;
+      case 1:
+        return "Post Item"; // Placeholder until string is added or if it's dynamic
+      case 2:
+        return AppStrings.profile;
+      default:
+        return "";
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileProvider);
@@ -32,104 +45,112 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
             horizontal: AppValues.spacingM,
             vertical: AppValues.spacingXS,
           ),
-          child: Row(
+          child: Stack( // Changed Row to Stack for centering
+            alignment: Alignment.center,
             children: [
-              // Logo
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF09B7FD),
-                      Color(0xFF0049DC),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              // Logo (Left)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
                   ),
-                ),
-                child: Center(
-                  child: SvgPicture.asset(
-                    Images.logo,
-                    width: 24,
-                    height: 24,
-                    colorFilter: ColorFilter.mode(
-                      AppColors.white,
-                      BlendMode.srcIn,
+                  child: Center(
+                    child: SvgPicture.asset(
+                      Images.logo,
                     ),
                   ),
                 ),
               ),
-              
-              Spacer(),
-              
-              // Notification Icon
-              IconButton(
-                icon: Icon(
-                  Icons.notifications_outlined,
-                  size: 28,
-                  color: AppColors.black,
+
+              // Title (Center)
+              Text(
+                _getTitle(),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                onPressed: () {},
-                padding: EdgeInsets.all(8),
-                constraints: BoxConstraints(),
               ),
-              
-              AppValues.gapHXS,
-              
-              // Profile Avatar with Menu
-              GestureDetector(
-                onTap: () {
-                  // Show menu or navigate
-                },
-                child: PopupMenuButton<String>(
-                  offset: const Offset(0, 50),
-                  child: ClipOval(
-                    child: _buildAvatar(avatarUrl ?? Images.defaultAvatar),
-                  ),
 
-                onSelected: (value) async {
-                  if (value == 'my_items') {
-                  } else if (value == 'settings') {
-                  } else if (value == 'logout') {
-                    await Supabase.instance.client.auth.signOut();
-
-                    if (context.mounted) {
-                      await EasyLoading.show(status: 'Signing out...');
-
-                      if (context.mounted) {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()),
-                            (route) => false);
-                      }
-                      EasyLoading.dismiss();
-                    }
-                  }
-                },
-                itemBuilder: (BuildContext context) {
-                  return [
-                    const PopupMenuItem(
-                      value: 'my_items',
-                      child: Text('My Items'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'settings',
-                      child: Text(AppStrings.settings), // Use Constant
-                    ),
-                    PopupMenuItem(
-                      value: 'logout',
-                      child: Text(
-                        AppStrings.logout,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.errorColor,
-                        ),
+              // Actions (Right)
+              Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Notification Icon
+                    IconButton(
+                      icon: const Icon(
+                        Icons.notifications_outlined,
+                        size: 28,
+                        color: AppColors.black,
                       ),
+                      onPressed: () {
+
+
+                      },
+                      padding: const EdgeInsets.all(8),
+                      constraints: const BoxConstraints(),
                     ),
-                  ];
-                },
-              ),
+                    
+                    AppValues.gapHXS,
+                    
+                    // Profile Avatar with Menu
+                    GestureDetector(
+                      onTap: () {
+                        // Show menu or navigate
+                      },
+                      child: PopupMenuButton<String>(
+                        offset: const Offset(0, 50),
+                        child: ClipOval(
+                          child: _buildAvatar(avatarUrl ?? Images.defaultAvatar),
+                        ),
+
+                      onSelected: (value) async {
+                        if (value == 'my_items') {
+                        } else if (value == 'settings') {
+                        } else if (value == 'logout') {
+                          await Supabase.instance.client.auth.signOut();
+
+                          if (context.mounted) {
+                            await EasyLoading.show(status: 'Signing out...');
+
+                            if (context.mounted) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginScreen()),
+                                  (route) => false);
+                            }
+                            EasyLoading.dismiss();
+                          }
+                        }
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          const PopupMenuItem(
+                            value: 'my_items',
+                            child: Text('My Items'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'settings',
+                            child: Text(AppStrings.settings), // Use Constant
+                          ),
+                          PopupMenuItem(
+                            value: 'logout',
+                            child: Text(
+                              AppStrings.logout,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.errorColor,
+                              ),
+                            ),
+                          ),
+                        ];
+                      },
+                    ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -163,4 +184,3 @@ Widget _buildAvatar(String url) {
     },
   );
 }
-

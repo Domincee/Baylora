@@ -74,11 +74,15 @@ class ItemCard extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text(
-                            "@$sellerName",
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.black,
+                          Flexible(
+                            child: Text(
+                              "@${sellerName.length > 15 ? '${sellerName.substring(0, 15)}...' : sellerName}",
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.black,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           if (isVerified) ...[
@@ -190,4 +194,3 @@ class ItemCard extends StatelessWidget {
     );
   }
 }
-
