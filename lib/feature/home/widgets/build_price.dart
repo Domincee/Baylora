@@ -28,7 +28,7 @@ class BuildPrice extends StatelessWidget {
     } else if (type == 'trade') {
       return Row(
         children: [
-          Icon(Icons.swap_horiz, size: AppValues.iconS, color: const Color(0xFF8B5CF6)),
+          Icon(Icons.swap_horiz, size: AppValues.iconS, color: AppColors.highLightTextColor),
           AppValues.gapHXXS,
           Expanded(
             child: Text(
@@ -37,6 +37,7 @@ class BuildPrice extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: AppColors.highLightTextColor,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -49,6 +50,7 @@ class BuildPrice extends StatelessWidget {
             "₱ ${price.replaceAll('000', 'k')}",
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
               color: AppColors.highLightTextColor,
+              fontWeight: FontWeight.w700,
             ),
           ),
           AppValues.gapHXXS,
@@ -56,10 +58,11 @@ class BuildPrice extends StatelessWidget {
             "or",
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: AppColors.subTextColor,
+              fontWeight: FontWeight.w700,
             ),
           ),
           AppValues.gapHXXS,
-          Icon(Icons.swap_horiz, size: AppValues.iconM, color: const Color(0xFF8B5CF6)),
+          Icon(Icons.swap_horiz, size: AppValues.iconM, color: AppColors.highLightTextColor),
         ],
       );
     }

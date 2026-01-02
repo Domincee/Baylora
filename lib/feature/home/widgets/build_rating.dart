@@ -29,19 +29,20 @@ class BuildRating extends StatelessWidget {
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: AppColors.infoCardBg,
+        color: AppColors.lavenderBlue,
         borderRadius: AppValues.borderRadiusS,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (ratingVal > 0) ...[
-            const Icon(Icons.star, color: Color(0xffFBFFB3), size: 16),
+            const Icon(Icons.star, color: AppColors.yellowAcc, size: 22),
             AppValues.gapHXXS,
             Text(
               rating,
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              style: Theme.of(context).textTheme.labelSmall!.copyWith(
                 color: AppColors.infoCardTClr,
+                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -55,8 +56,9 @@ class BuildRating extends StatelessWidget {
           if (tradeVal > 0)
             Text(
               "$totalTrade trades",
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              style: Theme.of(context).textTheme.labelSmall!.copyWith(
                 color: AppColors.infoCardTClr,
+               fontWeight: FontWeight.w600,
               ),
             ),
         ],

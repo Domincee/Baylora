@@ -31,7 +31,9 @@ class AppColors {
   // ============================================
   // BRAND COLORS
   // ============================================
-  
+  // Yellow
+  static const Color yellowAcc = Colors.yellowAccent;
+
   /// Royal blue - primary brand color
   static const Color royalBlue = Color(0xff0049DC);
   

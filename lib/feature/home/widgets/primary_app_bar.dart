@@ -3,6 +3,7 @@ import 'package:baylora_prjct/core/constant/app_values.dart'; // Changed import
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
+import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -103,8 +104,9 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
                       },
                       child: PopupMenuButton<String>(
                         offset: const Offset(0, 50),
-                        child: ClipOval(
-                          child: _buildAvatar(avatarUrl ?? Images.defaultAvatar),
+                        child: ProfileAvatar(
+                          imageUrl: avatarUrl ?? "",
+                          size: 32,
                         ),
 
                       onSelected: (value) async {
@@ -158,29 +160,4 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
       ),
     );
   }
-}
-
-Widget _buildAvatar(String url) {
-  // 1. If it's an SVG (Network or Asset)
-  if (url.toLowerCase().endsWith('.svg')) {
-    return SvgPicture.network(
-      url,
-      width: 32,
-      height: 32,
-      fit: BoxFit.cover,
-      // Fix for "unhandled element <filter/>":
-      placeholderBuilder: (context) => const Icon(Icons.person),
-    );
-  }
-
-  // 2. If it's a standard image
-  return Image.network(
-    url,
-    width: 32,
-    height: 32,
-    fit: BoxFit.cover,
-    errorBuilder: (context, error, stackTrace) {
-      return const Icon(Icons.person); // Fallback if image fails
-    },
-  );
 }
