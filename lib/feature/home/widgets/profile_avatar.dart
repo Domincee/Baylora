@@ -50,12 +50,16 @@ class ProfileAvatar extends StatelessWidget {
 
 
   Widget _buildCircle(Widget child) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(size / 2),
-      child: Container(
-        width: size,
-        height: size,
+    return Container(
+      width: size,
+      height: size,
+      padding: const EdgeInsets.all(2.0),
+      decoration: BoxDecoration(
         color: AppColors.lavenderBlue,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.royalBlue, width: 2.0),
+      ),
+      child: ClipOval(
         child: child,
       ),
     );

@@ -56,22 +56,25 @@ class ListingCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
+
                   ),
                 ),
                 if (price != null) ...[
                    Text(
                      "Price: $price",
-                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                       color: AppColors.textGrey,
+                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                       color: AppColors.subTextColor,
+                       fontWeight: FontWeight.w600,
                      ),
                    ),
                 ] else if (subtitle != null) ...[
                    Text(
-                     "Looking for: $subtitle",
-                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                       color: AppColors.textGrey,
+                     "$subtitle",
+                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                       color: AppColors.subTextColor,
+                       fontWeight: FontWeight.w600,
                      ),
                    ),
                    if (tags.isNotEmpty) 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String avatarUrl;
@@ -30,10 +31,9 @@ class ProfileHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 35,
-            backgroundImage: NetworkImage(avatarUrl),
-            backgroundColor: Colors.grey[200],
+          ProfileAvatar(
+            imageUrl: avatarUrl,
+            size: 70, // Matches the previous CircleAvatar radius * 2
           ),
           AppValues.gapHM,
           Expanded(

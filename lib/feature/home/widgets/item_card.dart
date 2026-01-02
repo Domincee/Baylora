@@ -77,8 +77,8 @@ class ItemCard extends StatelessWidget {
                           Flexible(
                             child: Text(
                               "@${sellerName.length > 15 ? '${sellerName.substring(0, 15)}...' : sellerName}",
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
                                 color: AppColors.black,
                               ),
                               maxLines: 1,
@@ -99,6 +99,7 @@ class ItemCard extends StatelessWidget {
                         postedTime,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: AppColors.textGrey,
+                          fontWeight: FontWeight.w600
                         ),
                       ),
                     ],
@@ -117,7 +118,7 @@ class ItemCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                   maxLines: 1,
@@ -127,7 +128,8 @@ class ItemCard extends StatelessWidget {
                 Text(
                   description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textDarkGrey,
+                    color: AppColors.subTextColor,
+                    fontWeight: FontWeight.w600,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
