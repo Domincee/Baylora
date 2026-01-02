@@ -81,16 +81,14 @@ class ProfileScreen extends ConsumerWidget {
               ),
               Text(
                 ProfileStrings.settingsSubtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.subTextColor,
                 ),
               ),
-
               AppValues.gapM,
-
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: AppColors.lavenderBlue,
                   borderRadius: AppValues.borderRadiusM,
                 ),
                 child: Column(

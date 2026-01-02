@@ -23,15 +23,16 @@ class SettingsTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   if (!hideSubtitle && subtitle != null)
                     Text(
                       subtitle!,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textGrey,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                 ],
