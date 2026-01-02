@@ -52,7 +52,6 @@ class ListingStep3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTradeOnly = selectedType == 1;
     final isSellOrMix = selectedType == 0 || selectedType == 2;
 
     return Column(

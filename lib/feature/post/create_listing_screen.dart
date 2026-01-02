@@ -4,6 +4,9 @@ import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_3.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
@@ -19,6 +22,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   bool _isDurationEnabled = false;
   String? _selectedCategory;
+  bool _isLoading = false;
 
   final _titleController = TextEditingController();
   final _durationController = TextEditingController(text: '1');
@@ -26,6 +30,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   final _descriptionController = TextEditingController();
 
   final List<String> _wishlistTags = [];
+  
+  // Image selection
+  final ImagePicker _picker = ImagePicker();
+  final List<File> _selectedImages = [];
 
   @override
   void dispose() {
@@ -52,6 +60,25 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       });
     }
   }
+  
+  Future<void> _pickImage() async {
+    if (_selectedImages.length >= 3) return;
+    
+    try {
+      debugPrint("Picking image...");
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        debugPrint("Image picked: ${image.path}");
+        setState(() {
+          _selectedImages.add(File(image.path));
+        });
+      } else {
+        debugPrint("Image picking canceled");
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+    }
+  }
 
   String _getStep2Title() {
     switch (_selectedType) {
@@ -66,17 +93,106 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
-  void _handlePublish() {
-    // Dummy publish logic
-    debugPrint("Listing Published!");
-    debugPrint("Title: ${_titleController.text}");
-    debugPrint("Type: $_selectedType");
-    Navigator.pop(context);
+  Future<void> _handlePublish() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User not logged in")),
+      );
+      return;
+    }
+
+    if (_titleController.text.trim().isEmpty) {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Title is required")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Map Type
+      String typeStr = 'sell';
+      if (_selectedType == 1) typeStr = 'trade';
+      if (_selectedType == 2) typeStr = 'both';
+
+      // Map Condition
+      String conditionStr = 'used';
+      switch (_selectedCondition) {
+        case 0:
+          conditionStr = 'new';
+          break;
+        case 1:
+          conditionStr = 'used';
+          break;
+        case 2:
+          conditionStr = 'broken';
+          break;
+        case 3:
+          conditionStr = 'fair';
+          break;
+      }
+
+      // Parse Price
+      double? priceVal;
+      if (_selectedType != 1 && _priceController.text.isNotEmpty) {
+        priceVal = double.tryParse(_priceController.text.replaceAll(',', ''));
+      }
+
+      // Calculate End Time
+      final durationHours = int.tryParse(_durationController.text) ?? 24;
+      final endTime = DateTime.now().add(Duration(hours: durationHours));
+
+      // Swap Preference
+      final swapPref = _wishlistTags.join(', ');
+
+      await Supabase.instance.client.from('items').insert({
+        'owner_id': user.id,
+        'title': _titleController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        'type': typeStr,
+        'price': priceVal,
+        'swap_preference': swapPref,
+        'images': [], // Sending empty list for now
+        'condition': conditionStr,
+        'category': _selectedCategory,
+        'end_time': endTime.toIso8601String(),
+        'status': 'active', // Assuming active status on creation
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Listing Published!")),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error publishing listing: $e")),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   // ====== Main Build ======
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: ListingAppBar(
@@ -111,6 +227,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             wishlistTags: _wishlistTags,
             onTagAdded: (tag) => setState(() => _wishlistTags.add(tag)),
             onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
+            images: _selectedImages,
+            onAddPhoto: _pickImage,
           ),
           ListingStep3(
             selectedType: _selectedType,

@@ -44,6 +44,11 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       setState(() => _usernameError = "must be at least 3 characters");
       return;
     }
+    // VALIDATION: Max length check
+    if (username.length > 15) {
+      setState(() => _usernameError = "Username cannot exceed 15 characters");
+      return;
+    }
     // VALIDATION: Only letters (a-z, A-Z) and underscores allowed. No numbers.
     if (RegExp(r'[^a-zA-Z_]').hasMatch(username)) {
       setState(() => _usernameError = "Invalid username format (@,#,.)");
@@ -91,6 +96,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         children: [
           TextField(
             controller: _usernameController,
+            maxLength: 15,
             decoration: InputDecoration(
               labelText: "Username",
               errorText: _usernameError, // Show error text here

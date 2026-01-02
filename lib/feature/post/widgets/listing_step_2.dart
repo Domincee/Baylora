@@ -8,6 +8,7 @@ import 'package:baylora_prjct/feature/post/widgets/sections/duration_section.dar
 import 'package:baylora_prjct/feature/post/widgets/sections/exchange_preference_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/photos_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/pricing_section.dart';
+import 'dart:io';
 
 class ListingStep2 extends StatelessWidget {
   final int selectedType;
@@ -26,6 +27,8 @@ class ListingStep2 extends StatelessWidget {
   final List<String> wishlistTags;
   final ValueChanged<String> onTagAdded;
   final ValueChanged<String> onTagRemoved;
+  final List<File> images;
+  final VoidCallback onAddPhoto;
 
   const ListingStep2({
     super.key,
@@ -45,6 +48,8 @@ class ListingStep2 extends StatelessWidget {
     required this.wishlistTags,
     required this.onTagAdded,
     required this.onTagRemoved,
+    required this.images,
+    required this.onAddPhoto,
   });
 
   @override
@@ -67,7 +72,10 @@ class ListingStep2 extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const PhotosSection(),
+          PhotosSection(
+            images: images,
+            onAddPhoto: onAddPhoto,
+          ),
           AppValues.gapL,
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +128,10 @@ class ListingStep2 extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const PhotosSection(),
+          PhotosSection(
+            images: images,
+            onAddPhoto: onAddPhoto,
+          ),
           AppValues.gapL,
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +190,10 @@ class ListingStep2 extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const PhotosSection(),
+          PhotosSection(
+            images: images,
+            onAddPhoto: onAddPhoto,
+          ),
           AppValues.gapL,
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,

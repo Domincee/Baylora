@@ -1,6 +1,6 @@
 class ProfileStrings {
   // Headers
-  static const String listingsTitle = "Listings";
+  static const String listingsTitle = "Lings";
   static const String listingsSubtitle = "Items you are selling";
   static const String bidsTitle = "Bids";
   static const String bidsSubtitle = "Items you are Bidding on";
