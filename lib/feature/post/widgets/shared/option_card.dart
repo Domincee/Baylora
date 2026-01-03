@@ -52,11 +52,13 @@ class OptionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Row(children: [
-                  Text(title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: isSelected
-                              ? AppColors.royalBlue
-                              : AppColors.black)),
+                  Flexible(
+                    child: Text(title,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: isSelected
+                                ? AppColors.royalBlue
+                                : AppColors.black)),
+                  ),
                   if (isRecommended) ...[
                     AppValues.gapHXS,
                     Container(
