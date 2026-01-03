@@ -93,6 +93,21 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
+  String _getConditionLabel(int conditionIndex) {
+    switch (conditionIndex) {
+      case 0:
+        return "New";
+      case 1:
+        return "Used";
+      case 2:
+        return "Broken";
+      case 3:
+        return "Fair";
+      default:
+        return "Used";
+    }
+  }
+
   Future<void> _handlePublish() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
@@ -119,7 +134,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       if (_selectedType == 1) typeStr = 'trade';
       if (_selectedType == 2) typeStr = 'both';
 
-      // Map Condition
+      // Map Condition (for DB - lowercase)
       String conditionStr = 'used';
       switch (_selectedCondition) {
         case 0:
@@ -156,11 +171,11 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'type': typeStr,
         'price': priceVal,
         'swap_preference': swapPref,
-        'images': [], // Sending empty list for now
+        'images': [], // Sending empty list for now, image upload logic to be added
         'condition': conditionStr,
         'category': _selectedCategory,
         'end_time': endTime.toIso8601String(),
-        'status': 'active', // Assuming active status on creation
+        'status': 'active', 
       });
 
       if (mounted) {
@@ -231,13 +246,16 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             onAddPhoto: _pickImage,
           ),
           ListingStep3(
-            selectedType: _selectedType,
+            images: _selectedImages,
             title: _titleController.text,
-            price: _priceController.text,
+            category: _selectedCategory ?? "N/A",
+            condition: _getConditionLabel(_selectedCondition),
+            duration: _isDurationEnabled ? "${_durationController.text} hrs" : null,
             description: _descriptionController.text,
-            selectedCondition: _selectedCondition,
+            price: _priceController.text,
             wishlistTags: _wishlistTags,
-            onPublish: _handlePublish,
+            selectedType: _selectedType,
+            onPost: _handlePublish,
           ),
         ],
       ),
