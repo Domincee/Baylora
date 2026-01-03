@@ -2,7 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ItemFilterUtil {
   // 1. The list of filter categories
-  static const List<String> categories = ["All", "Hot", "New", "Ending"];
+  static const List<String> categories = ["All", "For Sale", "For Trade", "Ending"];
 
   // 2. The logic to build the database query
   static Stream<List<Map<String, dynamic>>> buildQueryStream(String filter) {
@@ -19,12 +19,21 @@ class ItemFilterUtil {
             .order('end_time', ascending: true)
             .asStream();
       
-      case 'Hot':
-        // Sort by highest price (You can change this logic later)
-        return query.order('price', ascending: false).asStream();
+      case 'For Sale':
+        // Fetch items where type is 'cash' (0) or 'mix' (2)
+        // Using 'in' filter for multiple values
+        return query
+            .inFilter('type', ['cash', 'mix'])
+            .order('created_at', ascending: false)
+            .asStream();
 
+      case 'For Trade':
+        // Fetch items where type is 'trade' (1) or 'mix' (2)
+        return query
+            .inFilter('type', ['trade', 'mix'])
+            .order('created_at', ascending: false)
+            .asStream();
 
-      case 'New':
       case 'All':
       default:
         // Default: Newest items first
