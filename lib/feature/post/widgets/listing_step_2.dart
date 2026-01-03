@@ -30,6 +30,19 @@ class ListingStep2 extends StatelessWidget {
   final List<File> images;
   final VoidCallback onAddPhoto;
 
+  // Validation Flags
+  final bool showImageError;
+  final bool showTitleError;
+  final bool showCategoryError;
+  final bool showDescriptionError;
+  final bool showPriceError;
+  final bool showWishlistError;
+
+  // Real-time Validation Callbacks
+  final ValueChanged<String>? onTitleChanged;
+  final ValueChanged<String>? onDescriptionChanged;
+  final ValueChanged<String>? onPriceChanged;
+
   const ListingStep2({
     super.key,
     required this.selectedType,
@@ -50,6 +63,15 @@ class ListingStep2 extends StatelessWidget {
     required this.onTagRemoved,
     required this.images,
     required this.onAddPhoto,
+    this.showImageError = false,
+    this.showTitleError = false,
+    this.showCategoryError = false,
+    this.showDescriptionError = false,
+    this.showPriceError = false,
+    this.showWishlistError = false,
+    this.onTitleChanged,
+    this.onDescriptionChanged,
+    this.onPriceChanged,
   });
 
   @override
@@ -75,12 +97,19 @@ class ListingStep2 extends StatelessWidget {
           PhotosSection(
             images: images,
             onAddPhoto: onAddPhoto,
+            showError: showImageError,
           ),
           AppValues.gapL,
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: BasicInfoSection(titleController: titleController)),
+              Expanded(
+                child: BasicInfoSection(
+                  titleController: titleController,
+                  showError: showTitleError,
+                  onChanged: onTitleChanged,
+                ),
+              ),
               AppValues.gapHM,
               SizedBox(
                 width: 150,
@@ -102,6 +131,7 @@ class ListingStep2 extends StatelessWidget {
                 child: CategorySection(
                   selectedCategory: selectedCategory,
                   onChanged: onCategoryChanged,
+                  showError: showCategoryError,
                 ),
               ),
               AppValues.gapHM,
@@ -114,9 +144,17 @@ class ListingStep2 extends StatelessWidget {
             ],
           ),
           AppValues.gapL,
-          PricingSection(priceController: priceController),
+          PricingSection(
+            priceController: priceController,
+            showError: showPriceError,
+            onChanged: onPriceChanged,
+          ),
           AppValues.gapL,
-          DescriptionSection(descriptionController: descriptionController),
+          DescriptionSection(
+            descriptionController: descriptionController,
+            showError: showDescriptionError,
+            onChanged: onDescriptionChanged,
+          ),
         ],
       ),
     );
@@ -131,12 +169,19 @@ class ListingStep2 extends StatelessWidget {
           PhotosSection(
             images: images,
             onAddPhoto: onAddPhoto,
+            showError: showImageError,
           ),
           AppValues.gapL,
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: BasicInfoSection(titleController: titleController)),
+              Expanded(
+                child: BasicInfoSection(
+                  titleController: titleController,
+                  showError: showTitleError,
+                  onChanged: onTitleChanged,
+                ),
+              ),
               AppValues.gapHM,
               SizedBox(
                 width: 150,
@@ -158,6 +203,7 @@ class ListingStep2 extends StatelessWidget {
                 child: CategorySection(
                   selectedCategory: selectedCategory,
                   onChanged: onCategoryChanged,
+                  showError: showCategoryError,
                 ),
               ),
               AppValues.gapHM,
@@ -176,9 +222,14 @@ class ListingStep2 extends StatelessWidget {
             onTagAdded: onTagAdded,
             onTagRemoved: onTagRemoved,
             showPriceInput: false,
+            showWishlistError: showWishlistError,
           ),
           AppValues.gapL,
-          DescriptionSection(descriptionController: descriptionController),
+          DescriptionSection(
+            descriptionController: descriptionController,
+            showError: showDescriptionError,
+            onChanged: onDescriptionChanged,
+          ),
         ],
       ),
     );
@@ -193,12 +244,19 @@ class ListingStep2 extends StatelessWidget {
           PhotosSection(
             images: images,
             onAddPhoto: onAddPhoto,
+            showError: showImageError,
           ),
           AppValues.gapL,
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: BasicInfoSection(titleController: titleController)),
+              Expanded(
+                child: BasicInfoSection(
+                  titleController: titleController,
+                  showError: showTitleError,
+                  onChanged: onTitleChanged,
+                ),
+              ),
               AppValues.gapHM,
               SizedBox(
                 width: 150,
@@ -220,6 +278,7 @@ class ListingStep2 extends StatelessWidget {
                 child: CategorySection(
                   selectedCategory: selectedCategory,
                   onChanged: onCategoryChanged,
+                  showError: showCategoryError,
                 ),
               ),
               AppValues.gapHM,
@@ -237,9 +296,16 @@ class ListingStep2 extends StatelessWidget {
             wishlistTags: wishlistTags,
             onTagAdded: onTagAdded,
             onTagRemoved: onTagRemoved,
+            showPriceError: showPriceError,
+            showWishlistError: showWishlistError,
+            onPriceChanged: onPriceChanged,
           ),
           AppValues.gapL,
-          DescriptionSection(descriptionController: descriptionController),
+          DescriptionSection(
+            descriptionController: descriptionController,
+            showError: showDescriptionError,
+            onChanged: onDescriptionChanged,
+          ),
         ],
       ),
     );

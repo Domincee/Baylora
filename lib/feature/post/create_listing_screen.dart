@@ -37,6 +37,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   final ImagePicker _picker = ImagePicker();
   final List<File> _selectedImages = [];
 
+  // Validation State
+  bool _showImageError = false;
+  bool _showTitleError = false;
+  bool _showCategoryError = false;
+  bool _showDescriptionError = false;
+  bool _showPriceError = false;
+  bool _showWishlistError = false;
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -73,6 +81,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         debugPrint("Image picked: ${image.path}");
         setState(() {
           _selectedImages.add(File(image.path));
+          if (_selectedImages.isNotEmpty && _showImageError) {
+            _showImageError = false;
+          }
         });
       } else {
         debugPrint("Image picking canceled");
@@ -200,26 +211,44 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           break;
       }
 
+      // --- DATA SANITIZATION START ---
+
       // Parse Price
       double? priceVal;
-      if (_selectedType != 1 && _priceController.text.isNotEmpty) {
-        priceVal = double.tryParse(_priceController.text.replaceAll(',', ''));
+      // ONLY parse price if type is NOT Trade-only (so 0 or 2)
+      if (_selectedType != 1) { 
+        if (_priceController.text.isNotEmpty) {
+           priceVal = double.tryParse(_priceController.text.replaceAll(',', ''));
+        }
+      } else {
+        // Force null if it's Trade Only
+        priceVal = null;
       }
+
+      // Swap Preference
+      String? swapPref;
+      // ONLY use swap tags if type is NOT Cash-only (so 1 or 2)
+      if (_selectedType != 0) {
+        swapPref = _wishlistTags.join(', ');
+      } else {
+        // Force null/empty if it's Cash Only
+        swapPref = null; 
+      }
+      
+      // --- DATA SANITIZATION END ---
 
       // Calculate End Time
       final durationHours = int.tryParse(_durationController.text) ?? 24;
       final endTime = DateTime.now().add(Duration(hours: durationHours));
 
-      // Swap Preference
-      final swapPref = _wishlistTags.join(', ');
 
       final response = await Supabase.instance.client.from('items').insert({
         'owner_id': user.id,
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'type': typeStr,
-        'price': priceVal,
-        'swap_preference': swapPref,
+        'price': priceVal, // Uses sanitized value
+        'swap_preference': swapPref, // Uses sanitized value
         'images': imageUrls, 
         'condition': conditionStr,
         'category': _selectedCategory,
@@ -252,6 +281,72 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
+  void _validateStep2() {
+    bool hasError = false;
+
+    // Reset errors
+    setState(() {
+      _showImageError = false;
+      _showTitleError = false;
+      _showCategoryError = false;
+      _showDescriptionError = false;
+      _showPriceError = false;
+      _showWishlistError = false;
+    });
+
+    // Images
+    if (_selectedImages.isEmpty) {
+      _showImageError = true;
+      hasError = true;
+    }
+
+    // Title
+    if (_titleController.text.trim().isEmpty) {
+      _showTitleError = true;
+      hasError = true;
+    }
+
+    // Category
+    if (_selectedCategory == null) {
+      _showCategoryError = true;
+      hasError = true;
+    }
+
+    // Description
+    if (_descriptionController.text.trim().isEmpty) {
+      _showDescriptionError = true;
+      hasError = true;
+    }
+
+    // Price (Sell or Both)
+    if (_selectedType == 0 || _selectedType == 2) {
+      double? priceVal;
+      if (_priceController.text.isNotEmpty) {
+        priceVal = double.tryParse(_priceController.text.replaceAll(',', ''));
+      }
+      if (priceVal == null || priceVal == 0) {
+        _showPriceError = true;
+        hasError = true;
+      }
+    }
+
+    // Wishlist (Trade or Both)
+    if (_selectedType == 1 || _selectedType == 2) {
+      if (_wishlistTags.isEmpty) {
+        _showWishlistError = true;
+        hasError = true;
+      }
+    }
+
+    if (hasError) {
+      setState(() {}); // Trigger rebuild to show errors
+      return;
+    }
+
+    // Proceed to Step 3
+    setState(() => _currentStep++);
+  }
+
   // ====== Main Build ======
   @override
   Widget build(BuildContext context) {
@@ -263,7 +358,13 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             currentStep: _currentStep,
             step2Title: _getStep2Title(),
             isNextEnabled: _selectedType != -1,
-            onNext: () => setState(() => _currentStep++),
+            onNext: () {
+              if (_currentStep == 1) {
+                _validateStep2();
+              } else {
+                setState(() => _currentStep++);
+              }
+            },
             onBack: () => setState(() => _currentStep--),
             onClose: () => Navigator.pop(context),
           ),
@@ -283,16 +384,51 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                 onIncrementDuration: _incrementDuration,
                 onDecrementDuration: _decrementDuration,
                 selectedCategory: _selectedCategory,
-                onCategoryChanged: (val) => setState(() => _selectedCategory = val),
+                onCategoryChanged: (val) {
+                  setState(() {
+                    _selectedCategory = val;
+                    if (_selectedCategory != null && _showCategoryError) {
+                      _showCategoryError = false;
+                    }
+                  });
+                },
                 selectedCondition: _selectedCondition,
                 onConditionChanged: (val) => setState(() => _selectedCondition = val),
                 priceController: _priceController,
                 descriptionController: _descriptionController,
                 wishlistTags: _wishlistTags,
-                onTagAdded: (tag) => setState(() => _wishlistTags.add(tag)),
+                onTagAdded: (tag) {
+                  setState(() {
+                    _wishlistTags.add(tag);
+                    if (_wishlistTags.isNotEmpty && _showWishlistError) {
+                      _showWishlistError = false;
+                    }
+                  });
+                },
                 onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
                 images: _selectedImages,
                 onAddPhoto: _pickImage,
+                showImageError: _showImageError,
+                showTitleError: _showTitleError,
+                showCategoryError: _showCategoryError,
+                showDescriptionError: _showDescriptionError,
+                showPriceError: _showPriceError,
+                showWishlistError: _showWishlistError,
+                onTitleChanged: (val) {
+                  if (val.trim().isNotEmpty && _showTitleError) {
+                    setState(() => _showTitleError = false);
+                  }
+                },
+                onDescriptionChanged: (val) {
+                  if (val.trim().isNotEmpty && _showDescriptionError) {
+                    setState(() => _showDescriptionError = false);
+                  }
+                },
+                onPriceChanged: (val) {
+                  if (val.trim().isNotEmpty && _showPriceError) {
+                    setState(() => _showPriceError = false);
+                  }
+                },
               ),
               ListingStep3(
                 images: _selectedImages,

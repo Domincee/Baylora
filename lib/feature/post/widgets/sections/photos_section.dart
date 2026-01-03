@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/feature/post/widgets/shared/photo_placeholder.dart';
-import 'package:baylora_prjct/feature/post/widgets/shared/photo_uploader.dart';
 import 'package:baylora_prjct/feature/post/widgets/shared/section_header.dart';
 import 'dart:io';
 
 class PhotosSection extends StatelessWidget {
-  final VoidCallback onAddPhoto;
   final List<File> images;
+  final VoidCallback onAddPhoto;
+  final bool showError;
 
   const PhotosSection({
     super.key,
-    required this.onAddPhoto,
     required this.images,
+    required this.onAddPhoto,
+    this.showError = false,
   });
 
   @override
@@ -21,68 +21,60 @@ class PhotosSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(title: "Photos", trailing: "${images.length}/3"),
+        const SectionHeader(title: "Photos"),
         AppValues.gapS,
-        Row(
-          children: [
-            if (images.isEmpty) ...[
-              PhotoUploader(onTap: () {
-                debugPrint("Add Photo Clicked");
-                onAddPhoto();
-              }),
-              AppValues.gapHS,
-              const PhotoPlaceholder(),
-              AppValues.gapHS,
-              const PhotoPlaceholder(),
-            ] else if (images.length == 1) ...[
-              _buildImageSlot(images[0]),
-              AppValues.gapHS,
-              PhotoUploader(onTap: () {
-                debugPrint("Add Photo Clicked");
-                onAddPhoto();
-              }),
-              AppValues.gapHS,
-              const PhotoPlaceholder(),
-            ] else if (images.length == 2) ...[
-              _buildImageSlot(images[0]),
-              AppValues.gapHS,
-              _buildImageSlot(images[1]),
-              AppValues.gapHS,
-              PhotoUploader(onTap: () {
-                debugPrint("Add Photo Clicked");
-                onAddPhoto();
-              }),
-            ] else ...[
-              _buildImageSlot(images[0]),
-              AppValues.gapHS,
-              _buildImageSlot(images[1]),
-              AppValues.gapHS,
-              _buildImageSlot(images[2]),
+        SizedBox(
+          height: 100,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              ...images.map(
+                (file) => Container(
+                  width: 100,
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.greyLight,
+                    borderRadius: AppValues.borderRadiusM,
+                    image: DecorationImage(
+                      image: FileImage(file),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+              if (images.length < 3)
+                GestureDetector(
+                  onTap: onAddPhoto,
+                  child: Container(
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: AppColors.greyLight,
+                      borderRadius: AppValues.borderRadiusM,
+                      border: Border.all(
+                        color: AppColors.greyMedium,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.add_a_photo,
+                      color: AppColors.textGrey,
+                    ),
+                  ),
+                ),
             ],
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildImageSlot(File file) {
-    return Expanded(
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: AppValues.borderRadiusM,
-            border: Border.all(color: AppColors.greyMedium),
           ),
-          child: ClipRRect(
-            borderRadius: AppValues.borderRadiusM,
-            child: Image.file(
-              file,
-              fit: BoxFit.cover,
+        ),
+        if (showError) ...[
+          const SizedBox(height: 4),
+          const Text(
+            "You need to upload at least 1 image",
+            style: TextStyle(
+              color: AppColors.errorColor,
+              fontSize: 12,
             ),
           ),
-        ),
-      ),
+        ],
+      ],
     );
   }
 }

@@ -5,10 +5,14 @@ import 'package:baylora_prjct/feature/post/widgets/shared/section_header.dart';
 
 class PricingSection extends StatelessWidget {
   final TextEditingController priceController;
+  final bool showError;
+  final ValueChanged<String>? onChanged;
 
   const PricingSection({
     super.key,
     required this.priceController,
+    this.showError = false,
+    this.onChanged,
   });
 
   @override
@@ -27,9 +31,9 @@ class PricingSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Asking Price"),
               TextFormField(
                 controller: priceController,
+                onChanged: onChanged,
                 decoration: const InputDecoration(
                   prefixText: "₱ ",
                   hintText: "Enter asking price",
@@ -39,6 +43,16 @@ class PricingSection extends StatelessWidget {
             ],
           ),
         ),
+        if (showError) ...[
+          const SizedBox(height: 4),
+          const Text(
+            "This is required",
+            style: TextStyle(
+              color: AppColors.errorColor,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ],
     );
   }
