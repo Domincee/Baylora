@@ -1,6 +1,5 @@
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
 import 'package:baylora_prjct/feature/auth/pages/register.dart';
-import 'package:baylora_prjct/feature/details/item_details_screen.dart';
 import 'package:baylora_prjct/feature/onboarding/onboarding_screen.dart';
 import 'package:baylora_prjct/feature/post/create_listing_screen.dart';
 import 'package:baylora_prjct/core/root/main_wrapper.dart';
@@ -13,7 +12,6 @@ class AppRoutes {
   static const String register = '/register';
   static const String login = '/login';
   static const String main = '/main';
-  static const String itemDetailScreen = '/item_details';
   static const String createListing = '/create_listing';
 
   static Map<String, WidgetBuilder> routes = {
@@ -23,6 +21,6 @@ class AppRoutes {
     main: (context) => MainWrapper(),
     splash: (context) => SplashPage(),
     createListing: (context) => CreateListingScreen(),
-    itemDetailScreen: (context) => ItemDetailsScreen(),
+    // itemDetailScreen route removed; use Navigator.push or onGenerateRoute instead
   };
 }

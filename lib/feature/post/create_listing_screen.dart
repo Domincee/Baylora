@@ -4,6 +4,7 @@ import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_3.dart';
+import 'package:baylora_prjct/feature/post/screens/post_success_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -211,7 +212,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       // Swap Preference
       final swapPref = _wishlistTags.join(', ');
 
-      await Supabase.instance.client.from('items').insert({
+      final response = await Supabase.instance.client.from('items').insert({
         'owner_id': user.id,
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
@@ -223,13 +224,17 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'category': _selectedCategory,
         'end_time': endTime.toIso8601String(),
         'status': 'active', 
-      });
+      }).select().single();
+
+      final newItemId = response['id'];
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Listing Published!")),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PostSuccessScreen(newItemId: newItemId),
+          ),
         );
-        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
