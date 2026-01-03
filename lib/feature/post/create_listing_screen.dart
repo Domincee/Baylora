@@ -130,9 +130,20 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
     try {
       // Map Type
-      String typeStr = 'sell';
-      if (_selectedType == 1) typeStr = 'trade';
-      if (_selectedType == 2) typeStr = 'both';
+      String typeStr;
+      switch (_selectedType) {
+        case 0:
+          typeStr = 'cash';
+          break;
+        case 1:
+          typeStr = 'trade';
+          break;
+        case 2:
+          typeStr = 'mix';
+          break;
+        default:
+          typeStr = 'cash';
+      }
 
       // Map Condition (for DB - lowercase)
       String conditionStr = 'used';
@@ -147,7 +158,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           conditionStr = 'broken';
           break;
         case 3:
-          conditionStr = 'fair';
+          conditionStr = 'fair'; // Changed from 'good' to 'fair'
           break;
       }
 
@@ -171,7 +182,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'type': typeStr,
         'price': priceVal,
         'swap_preference': swapPref,
-        'images': [], // Sending empty list for now, image upload logic to be added
+        'images': [], // Images are currently sent as an empty list []. Image upload logic must be implemented in the next step.
         'condition': conditionStr,
         'category': _selectedCategory,
         'end_time': endTime.toIso8601String(),
