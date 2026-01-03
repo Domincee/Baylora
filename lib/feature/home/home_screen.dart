@@ -115,6 +115,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           sellerImage: data['sellerImage'],
                           rating: data['rating'],
                           totalTrade: data['totalTrade'],
+                          endTime: data['endTime'],
                         );
                       },
                     ),

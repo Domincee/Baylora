@@ -26,6 +26,7 @@ class ItemCardMapper {
       'sellerImage': profile['avatar_url'] ?? 'https://i.pravatar.cc/150',
       'rating': (profile['rating'] ?? 0.0).toString(),
       'totalTrade': (profile['total_trades'] ?? 0).toString(),
+      'endTime': item['end_time'],
     };
   }
 }

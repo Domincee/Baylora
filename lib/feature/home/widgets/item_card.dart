@@ -23,6 +23,8 @@ class ItemCard extends StatelessWidget {
   final String title;
   final String description;
   final String imagePath;
+  // New field for end time
+  final String? endTime;
 
   const ItemCard({
     super.key,
@@ -39,7 +41,63 @@ class ItemCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.imagePath,
+    this.endTime,
   });
+
+  Widget _buildDurationBadge(BuildContext context, String? endTimeStr) {
+    if (endTimeStr == null) return const SizedBox.shrink();
+
+    try {
+      final end = DateTime.parse(endTimeStr);
+      final now = DateTime.now();
+      final difference = end.difference(now);
+
+      if (difference.isNegative) {
+        return const SizedBox.shrink(); // Or show "Expired" if needed
+      }
+
+      final isUrgent = difference.inHours < 24;
+      String text;
+      Color color;
+
+      if (isUrgent) {
+        final hours = difference.inHours;
+        final mins = difference.inMinutes % 60;
+        if (hours > 0) {
+          text = "Ends in ${hours} hr";
+        } else {
+           text = "Ends in ${mins}m";
+        }
+        color = AppColors.errorColor;
+      } else {
+        final days = difference.inDays;
+        text = "Ends in $days days";
+        color = AppColors.textGrey;
+      }
+
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.access_time,
+            size: 14,
+            color: color,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 10, 
+            ),
+          ),
+        ],
+      );
+    } catch (e) {
+      return const SizedBox.shrink();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,13 +174,23 @@ class ItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                // Title Row with Duration Badge
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _buildDurationBadge(context, endTime),
+                  ],
                 ),
                 AppValues.gapXXS,
                 Text(
