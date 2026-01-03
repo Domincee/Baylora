@@ -9,6 +9,9 @@ class ExchangePreferenceSection extends StatefulWidget {
   final ValueChanged<String> onTagAdded;
   final ValueChanged<String> onTagRemoved;
   final bool showPriceInput;
+  final bool showPriceError;
+  final bool showWishlistError;
+  final ValueChanged<String>? onPriceChanged;
 
   const ExchangePreferenceSection({
     super.key,
@@ -17,6 +20,9 @@ class ExchangePreferenceSection extends StatefulWidget {
     required this.onTagAdded,
     required this.onTagRemoved,
     this.showPriceInput = true,
+    this.showPriceError = false,
+    this.showWishlistError = false,
+    this.onPriceChanged,
   });
 
   @override
@@ -74,6 +80,7 @@ class _ExchangePreferenceSectionState extends State<ExchangePreferenceSection> {
                   ),
                   child: TextFormField(
                     controller: widget.cashController,
+                    onChanged: widget.onPriceChanged,
                     decoration: const InputDecoration(
                       prefixText: "₱ ",
                       hintText: "0.00",
@@ -84,6 +91,16 @@ class _ExchangePreferenceSectionState extends State<ExchangePreferenceSection> {
                     keyboardType: TextInputType.number,
                   ),
                 ),
+                if (widget.showPriceError) ...[
+                  const SizedBox(height: 4),
+                  const Text(
+                    "This is required",
+                    style: TextStyle(
+                      color: AppColors.errorColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
                 AppValues.gapM,
 
                 // Divider
@@ -180,6 +197,16 @@ class _ExchangePreferenceSectionState extends State<ExchangePreferenceSection> {
                   ],
                 ),
               ),
+              if (widget.showWishlistError) ...[
+                const SizedBox(height: 4),
+                const Text(
+                  "This is required",
+                  style: TextStyle(
+                    color: AppColors.errorColor,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
               AppValues.gapXS,
               Text(
                 "Enter what you are looking for. Leave empty to see all items.",

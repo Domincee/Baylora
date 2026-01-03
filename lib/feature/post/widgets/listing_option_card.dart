@@ -62,10 +62,15 @@ class ListingOptionCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: isSelected ? AppColors.royalBlue : Colors.black,
+                      Flexible(
+                        child: Text(
+                          title,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: isSelected ? AppColors.royalBlue : Colors.black,
+                          ),
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (isRecommended) ...[
@@ -97,6 +102,8 @@ class ListingOptionCard extends StatelessWidget {
                 ],
               ),
             ),
+
+            const SizedBox(width: 8), // Added spacing before radio for safety
 
             // Radio Indicator
             Container(
