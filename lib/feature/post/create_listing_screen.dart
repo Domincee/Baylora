@@ -4,6 +4,7 @@ import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_3.dart';
+import 'package:baylora_prjct/feature/post/screens/post_success_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -108,6 +109,39 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
+  Future<List<String>> _uploadImages(List<File> images) async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return [];
+
+    List<String> uploadedUrls = [];
+
+    for (var image in images) {
+      try {
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final name = image.path.split(Platform.pathSeparator).last;
+        final path = '${user.id}/${timestamp}_$name';
+
+        await Supabase.instance.client.storage
+            .from('item_images')
+            .upload(path, image);
+
+        final url = Supabase.instance.client.storage
+            .from('item_images')
+            .getPublicUrl(path);
+
+        uploadedUrls.add(url);
+      } catch (e) {
+        debugPrint("Error uploading image: $e");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Failed to upload an image: $e")),
+          );
+        }
+      }
+    }
+    return uploadedUrls;
+  }
+
   Future<void> _handlePublish() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
@@ -129,6 +163,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     });
 
     try {
+      // 1. Upload Images
+      final imageUrls = await _uploadImages(_selectedImages);
+
       // Map Type
       String typeStr;
       switch (_selectedType) {
@@ -175,25 +212,29 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       // Swap Preference
       final swapPref = _wishlistTags.join(', ');
 
-      await Supabase.instance.client.from('items').insert({
+      final response = await Supabase.instance.client.from('items').insert({
         'owner_id': user.id,
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
         'type': typeStr,
         'price': priceVal,
         'swap_preference': swapPref,
-        'images': [], // Images are currently sent as an empty list []. Image upload logic must be implemented in the next step.
+        'images': imageUrls, 
         'condition': conditionStr,
         'category': _selectedCategory,
         'end_time': endTime.toIso8601String(),
         'status': 'active', 
-      });
+      }).select().single();
+
+      final newItemId = response['id'];
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Listing Published!")),
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PostSuccessScreen(newItemId: newItemId),
+          ),
         );
-        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
