@@ -42,8 +42,6 @@ class AppValues {
   static const EdgeInsets paddingH = EdgeInsets.symmetric(horizontal: spacingM);
   
   /// Vertical padding - 16px top/bottom
-  static const EdgeInsets paddingV = EdgeInsets.symmetric(vertical: spacingM);
-  
   /// All sides - 16px
   static const EdgeInsets paddingAll = EdgeInsets.all(spacingM);
   

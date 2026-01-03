@@ -26,8 +26,11 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color statusColor = status == 'Accepted' ? Colors.blue : (status == 'Sold' ? Colors.grey : Colors.lightBlueAccent.withValues(alpha:  0.2));
-    Color statusTextColor = status == 'Accepted' ? Colors.white : (status == 'Sold' ? Colors.white : Colors.blue[800]!);
+    Color statusColor = status == 'Accepted' ?
+    Colors.blue : (status == 'Sold' ? Colors.grey : Colors.lightBlueAccent.withValues(alpha:  0.2));
+
+    Color statusTextColor = status == 'Accepted' ?
+    Colors.white : (status == 'Sold' ? Colors.white : Colors.blue[800]!);
 
     return Container(
       padding: AppValues.paddingSmall,

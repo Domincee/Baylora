@@ -93,6 +93,21 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
+  String _getConditionLabel(int conditionIndex) {
+    switch (conditionIndex) {
+      case 0:
+        return "New";
+      case 1:
+        return "Used";
+      case 2:
+        return "Broken";
+      case 3:
+        return "Fair";
+      default:
+        return "Used";
+    }
+  }
+
   Future<void> _handlePublish() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
@@ -115,11 +130,22 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
     try {
       // Map Type
-      String typeStr = 'sell';
-      if (_selectedType == 1) typeStr = 'trade';
-      if (_selectedType == 2) typeStr = 'both';
+      String typeStr;
+      switch (_selectedType) {
+        case 0:
+          typeStr = 'cash';
+          break;
+        case 1:
+          typeStr = 'trade';
+          break;
+        case 2:
+          typeStr = 'mix';
+          break;
+        default:
+          typeStr = 'cash';
+      }
 
-      // Map Condition
+      // Map Condition (for DB - lowercase)
       String conditionStr = 'used';
       switch (_selectedCondition) {
         case 0:
@@ -132,7 +158,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           conditionStr = 'broken';
           break;
         case 3:
-          conditionStr = 'fair';
+          conditionStr = 'fair'; // Changed from 'good' to 'fair'
           break;
       }
 
@@ -156,11 +182,11 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'type': typeStr,
         'price': priceVal,
         'swap_preference': swapPref,
-        'images': [], // Sending empty list for now
+        'images': [], // Images are currently sent as an empty list []. Image upload logic must be implemented in the next step.
         'condition': conditionStr,
         'category': _selectedCategory,
         'end_time': endTime.toIso8601String(),
-        'status': 'active', // Assuming active status on creation
+        'status': 'active', 
       });
 
       if (mounted) {
@@ -231,13 +257,16 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             onAddPhoto: _pickImage,
           ),
           ListingStep3(
-            selectedType: _selectedType,
+            images: _selectedImages,
             title: _titleController.text,
-            price: _priceController.text,
+            category: _selectedCategory ?? "N/A",
+            condition: _getConditionLabel(_selectedCondition),
+            duration: _isDurationEnabled ? "${_durationController.text} hrs" : null,
             description: _descriptionController.text,
-            selectedCondition: _selectedCondition,
+            price: _priceController.text,
             wishlistTags: _wishlistTags,
-            onPublish: _handlePublish,
+            selectedType: _selectedType,
+            onPost: _handlePublish,
           ),
         ],
       ),

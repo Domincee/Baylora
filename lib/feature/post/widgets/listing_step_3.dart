@@ -1,230 +1,321 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class ListingStep3 extends StatelessWidget {
-  final int selectedType;
+  final List<File> images;
   final String title;
-  final String price;
+  final String category;
+  final String condition;
+  final String? duration;
   final String description;
-  final int selectedCondition;
+  final String price;
   final List<String> wishlistTags;
-  final VoidCallback onPublish;
+  final int selectedType; // 0: Sell, 1: Trade, 2: Both
+  final VoidCallback onPost;
 
   const ListingStep3({
     super.key,
-    required this.selectedType,
+    required this.images,
     required this.title,
-    required this.price,
+    required this.category,
+    required this.condition,
+    this.duration,
     required this.description,
-    required this.selectedCondition,
+    required this.price,
     required this.wishlistTags,
-    required this.onPublish,
+    required this.selectedType,
+    required this.onPost,
   });
-
-  String _getConditionLabel(int condition) {
-    switch (condition) {
-      case 0:
-        return "New";
-      case 1:
-        return "Used";
-      case 2:
-        return "Broken";
-      case 3:
-        return "Fair";
-      default:
-        return "Unknown";
-    }
-  }
-
-  String _getTypeLabel(int type) {
-    switch (type) {
-      case 0:
-        return "Sell";
-      case 1:
-        return "Trade";
-      case 2:
-        return "Sell & Trade";
-      default:
-        return "Unknown";
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final isSellOrMix = selectedType == 0 || selectedType == 2;
+    return SingleChildScrollView(
+      padding: AppValues.paddingAll,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
 
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: AppValues.paddingH.copyWith(bottom: AppValues.spacingXXL),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header (Images Placeholder)
-                SizedBox(
-                  height: 100,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 3,
-                    separatorBuilder: (_, __) => AppValues.gapS,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        width: 100,
-                        decoration: BoxDecoration(
-                          color: AppColors.greyLight,
-                          borderRadius: AppValues.borderRadiusM,
-                        ),
-                        child: const Icon(Icons.image, color: Colors.grey),
-                      );
-                    },
-                  ),
-                ),
-                AppValues.gapL,
+          AppValues.gapL,
 
-                // Main Info: Title
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                AppValues.gapS,
-
-                // Price
-                if (isSellOrMix)
-                  Text(
-                    price.isEmpty ? "₱ 0.00" : "₱ $price",
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.royalBlue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  )
-                else
-                  Text(
-                    "Trade Only",
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColors.royalBlue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                AppValues.gapM,
-
-                // Badges Row
-                Row(
-                  children: [
-                    _buildBadge(context, _getConditionLabel(selectedCondition)),
-                    AppValues.gapS,
-                    _buildBadge(context, _getTypeLabel(selectedType)),
-                  ],
-                ),
-                AppValues.gapL,
-
-                // Exchange Preferences (Logic)
-                if (selectedType == 1 || selectedType == 2) ...[
-                  Text(
-                    "Looking For:",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  AppValues.gapS,
-                  if (wishlistTags.isEmpty)
-                    Text(
-                      "Open to any trade",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textGrey,
-                          ),
-                    )
-                  else
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: wishlistTags
-                          .map(
-                            (tag) => Chip(
-                              label: Text(
-                                tag,
-                                style: const TextStyle(
-                                  color: AppColors.royalBlue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              backgroundColor:
-                                  AppColors.royalBlue.withValues(alpha: 0.1),
-                              side: BorderSide(
-                                color: AppColors.royalBlue.withValues(alpha: 0.3),
-                                width: 1,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: AppValues.borderRadiusCircular,
-                              ),
-                            ),
-                          )
-                          .toList(),
+          // Photos Section
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Photos",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
-                  AppValues.gapL,
-                ],
+              ),
+              Text(
+                "${images.length}/3",
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textGrey,
+                    ),
+              ),
+            ],
+          ),
+          AppValues.gapS,
+          if (images.isNotEmpty)
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: images.length,
+                separatorBuilder: (context, index) => AppValues.gapM,
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: AppColors.greyLight,
+                      borderRadius: AppValues.borderRadiusM,
+                      border: Border.all(color: AppColors.greyMedium),
+                      image: DecorationImage(
+                        image: FileImage(images[index]),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          else
+            Container(
+              height: 100,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.greyLight,
+                borderRadius: AppValues.borderRadiusM,
+              ),
+              child: const Center(child: Text("No images uploaded")),
+            ),
 
-                // Description
-                Text(
-                  "Description",
+          AppValues.gapL,
+
+          // Basic Info Header
+          Text(
+            "Basic info",
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          AppValues.gapM,
+
+          // Title
+          _buildLabel("Title"),
+          _buildReadOnlyField(context, title.isNotEmpty ? title : "No Title"),
+          AppValues.gapM,
+
+          // Category
+          _buildLabel("Category"),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: _buildReadOnlyChip(context, category),
+          ),
+          AppValues.gapM,
+
+          // Condition
+          _buildLabel("Condition"),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.royalBlue,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                condition,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          AppValues.gapM,
+
+          // Duration (Optional)
+          if (duration != null) ...[
+            _buildLabel("Duration"),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _buildReadOnlyChip(context, duration!),
+            ),
+            AppValues.gapM,
+          ],
+
+          // Description
+          _buildLabel("Description & Details"),
+          Container(
+            width: double.infinity,
+            padding: AppValues.paddingAll,
+            decoration: BoxDecoration(
+              color: AppColors.greyLight,
+              borderRadius: AppValues.borderRadiusM,
+            ),
+            constraints: const BoxConstraints(minHeight: 100),
+            child: Text(
+              description.isNotEmpty
+                  ? description
+                  : "Description of the item....",
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textDarkGrey,
+                  ),
+            ),
+          ),
+          AppValues.gapL,
+
+          // Price Section (Sell or Both)
+          if (selectedType == 0 || selectedType == 2) ...[
+            _buildLabel("Price ₱ "),
+            Container(
+              width: double.infinity,
+              padding: AppValues.paddingAll,
+              decoration: BoxDecoration(
+                color: AppColors.greyLight,
+                borderRadius: AppValues.borderRadiusM,
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  price.isNotEmpty ? price: "₱ 0.00",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
-                AppValues.gapS,
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
+            AppValues.gapM,
+          ],
 
-        // Bottom Action Button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
+          // Wishlist Section (Trade or Both)
+          if (selectedType == 1 || selectedType == 2) ...[
+            _buildLabel("Wishlist"),
+            Container(
+              width: double.infinity,
+              padding: AppValues.paddingAll,
+              decoration: BoxDecoration(
+                color: AppColors.greyLight,
+                borderRadius: AppValues.borderRadiusM,
+              ),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: wishlistTags.isNotEmpty
+                    ? Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: wishlistTags.map((tag) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.blueLight,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              tag,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.blueText,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            ),
+                          );
+                        }).toList(),
+                      )
+                    : const Text("No wishlist items added"),
+              ),
+            ),
+            AppValues.gapL,
+          ],
+
+          // Post Button
+          SizedBox(
             width: double.infinity,
+            height: 50,
             child: ElevatedButton(
-              onPressed: onPublish,
+              onPressed: onPost,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.royalBlue,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: AppValues.borderRadiusM,
+                  borderRadius: BorderRadius.circular(30),
                 ),
+                elevation: 0,
               ),
               child: const Text(
-                "Publish Listing",
+                "Post",
                 style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
                   fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-        ),
-      ],
+          AppValues.gapXL,
+        ],
+      ),
     );
   }
 
-  Widget _buildBadge(BuildContext context, String label) {
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: AppColors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyField(BuildContext context, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: AppColors.greyLight,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyChip(BuildContext context, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.greyLight,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        label,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
+        text,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
             ),
       ),
     );
