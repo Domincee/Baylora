@@ -5,11 +5,15 @@ import 'package:baylora_prjct/core/theme/app_colors.dart';
 class SectionHeader extends StatelessWidget {
   final String title;
   final String subTitle;
-  
+  final VoidCallback? onSeeAll;
+  final bool showSeeAll;
+
   const SectionHeader({
     super.key,
     required this.title,
     required this.subTitle,
+    this.onSeeAll,
+    this.showSeeAll = false,
   });
 
   @override
@@ -24,33 +28,37 @@ class SectionHeader extends StatelessWidget {
               title,
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppValues.spacingS,
-                vertical: 4,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.blueLight,
-                borderRadius: AppValues.borderRadiusXL,
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    "All",
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.blueText,
-                      fontWeight: FontWeight.bold,
-                    ),
+            if (showSeeAll)
+              GestureDetector(
+                onTap: onSeeAll,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppValues.spacingS,
+                    vertical: 4,
                   ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    color: AppColors.blueText,
-                    size: 16,
+                  decoration: BoxDecoration(
+                    color: AppColors.blueLight,
+                    borderRadius: AppValues.borderRadiusXL,
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      Text(
+                        "See All",
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.blueText,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: AppColors.blueText,
+                        size: 12,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
           ],
         ),
         AppValues.gapXXS,

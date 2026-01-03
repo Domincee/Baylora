@@ -9,13 +9,16 @@ class ItemFilterUtil {
     var query = Supabase.instance.client
         .from('items')
         .select('*, profiles:owner_id(username, avatar_url, rating, total_trades)');
+    
+    // Global filter: Hide items that have ended
+    query = query.gt('end_time', DateTime.now().toIso8601String());
 
     switch (filter) {
       case 'Ending':
         // Shows items ending soonest (ignoring ones that already ended)
         return query
             .not('end_time', 'is', null)
-            .gt('end_time', DateTime.now().toIso8601String())
+            // .gt check is already applied globally above
             .order('end_time', ascending: true)
             .asStream();
       
