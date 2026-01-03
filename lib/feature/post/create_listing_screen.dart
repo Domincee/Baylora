@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
@@ -226,7 +227,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'status': 'active', 
       }).select().single();
 
-      final newItemId = response['id'];
+      final newItemId = response['id'].toString();
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -254,63 +255,88 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   // ====== Main Build ======
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppColors.white,
+          appBar: ListingAppBar(
+            currentStep: _currentStep,
+            step2Title: _getStep2Title(),
+            isNextEnabled: _selectedType != -1,
+            onNext: () => setState(() => _currentStep++),
+            onBack: () => setState(() => _currentStep--),
+            onClose: () => Navigator.pop(context),
+          ),
+          body: IndexedStack(
+            index: _currentStep,
+            children: [
+              ListingStep1(
+                selectedType: _selectedType,
+                onTypeSelected: (val) => setState(() => _selectedType = val),
+              ),
+              ListingStep2(
+                selectedType: _selectedType,
+                titleController: _titleController,
+                durationController: _durationController,
+                isDurationEnabled: _isDurationEnabled,
+                onToggleDuration: (val) => setState(() => _isDurationEnabled = val),
+                onIncrementDuration: _incrementDuration,
+                onDecrementDuration: _decrementDuration,
+                selectedCategory: _selectedCategory,
+                onCategoryChanged: (val) => setState(() => _selectedCategory = val),
+                selectedCondition: _selectedCondition,
+                onConditionChanged: (val) => setState(() => _selectedCondition = val),
+                priceController: _priceController,
+                descriptionController: _descriptionController,
+                wishlistTags: _wishlistTags,
+                onTagAdded: (tag) => setState(() => _wishlistTags.add(tag)),
+                onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
+                images: _selectedImages,
+                onAddPhoto: _pickImage,
+              ),
+              ListingStep3(
+                images: _selectedImages,
+                title: _titleController.text,
+                category: _selectedCategory ?? "N/A",
+                condition: _getConditionLabel(_selectedCondition),
+                duration: _isDurationEnabled ? "${_durationController.text} hrs" : null,
+                description: _descriptionController.text,
+                price: _priceController.text,
+                wishlistTags: _wishlistTags,
+                selectedType: _selectedType,
+                onPost: _handlePublish,
+              ),
+            ],
+          ),
+        ),
 
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: ListingAppBar(
-        currentStep: _currentStep,
-        step2Title: _getStep2Title(),
-        isNextEnabled: _selectedType != -1,
-        onNext: () => setState(() => _currentStep++),
-        onBack: () => setState(() => _currentStep--),
-        onClose: () => Navigator.pop(context),
-      ),
-      body: IndexedStack(
-        index: _currentStep,
-        children: [
-          ListingStep1(
-            selectedType: _selectedType,
-            onTypeSelected: (val) => setState(() => _selectedType = val),
+        // Loading Overlay
+        if (_isLoading)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.5),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: AppColors.royalBlue,
+                    ),
+                    AppValues.gapS,
+                    const Text(
+                      "Publishing your listing...",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          ListingStep2(
-            selectedType: _selectedType,
-            titleController: _titleController,
-            durationController: _durationController,
-            isDurationEnabled: _isDurationEnabled,
-            onToggleDuration: (val) => setState(() => _isDurationEnabled = val),
-            onIncrementDuration: _incrementDuration,
-            onDecrementDuration: _decrementDuration,
-            selectedCategory: _selectedCategory,
-            onCategoryChanged: (val) => setState(() => _selectedCategory = val),
-            selectedCondition: _selectedCondition,
-            onConditionChanged: (val) => setState(() => _selectedCondition = val),
-            priceController: _priceController,
-            descriptionController: _descriptionController,
-            wishlistTags: _wishlistTags,
-            onTagAdded: (tag) => setState(() => _wishlistTags.add(tag)),
-            onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
-            images: _selectedImages,
-            onAddPhoto: _pickImage,
-          ),
-          ListingStep3(
-            images: _selectedImages,
-            title: _titleController.text,
-            category: _selectedCategory ?? "N/A",
-            condition: _getConditionLabel(_selectedCondition),
-            duration: _isDurationEnabled ? "${_durationController.text} hrs" : null,
-            description: _descriptionController.text,
-            price: _priceController.text,
-            wishlistTags: _wishlistTags,
-            selectedType: _selectedType,
-            onPost: _handlePublish,
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
