@@ -88,6 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      // Ensure the keyboard pushes content up
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           // Background image
@@ -103,84 +105,96 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
 
           SafeArea(
-            child: Padding(
-              padding: AppValues.paddingScreen,
-              child: Column(
-                children: [
-                  // Help button
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        AuthStrings.helpText,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppColors.primaryColor.withValues(alpha: 0.5),
-                        ),
-                      ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                  ),
-                  AppValues.gapM,
+                    child: IntrinsicHeight(
+                      child: Padding(
+                        padding: AppValues.paddingScreen,
+                        child: Column(
+                          children: [
+                            // Help button
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: TextButton(
+                                onPressed: () {},
+                                child: Text(
+                                  AuthStrings.helpText,
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AppColors.primaryColor.withValues(alpha: 0.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            AppValues.gapM,
 
-                  // Login form card
-                  Expanded(
-                    child: Center(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Container(
-                          width: size.width > AppValues.maxContentWidth
-                              ? AppValues.maxContentWidth
-                              : size.width - AppValues.spacingXXL,
-                          padding: AppValues.paddingLarge,
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withValues(alpha: 0.95),
-                            borderRadius: AppValues.borderRadiusXL,
-                            boxShadow: const [
-                              BoxShadow(
-                                color: AppColors.shadowColor,
-                                blurRadius: 15,
-                                offset: Offset(0, 5),
+                            // Login form card
+                            Expanded(
+                              child: Center(
+                                child: Container(
+                                  width: size.width > AppValues.maxContentWidth
+                                      ? AppValues.maxContentWidth
+                                      : double.infinity,
+                                  padding: AppValues.paddingLarge,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.white.withValues(alpha: 0.95),
+                                    borderRadius: AppValues.borderRadiusXL,
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: AppColors.shadowColor,
+                                        blurRadius: 15,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      const LogoName(
+                                        image: Images.logo,
+                                        fromColor: AppColors.royalBlue,
+                                        toColor: AppColors.logoGradientEnd,
+                                      ),
+                                      AppValues.gapXS,
+                                      LoginForm(
+                                        form: _form,
+                                        isLoading: _isLoading,
+                                        onLogin: _handleLogin,
+                                        onSignUpTap: _navigateToRegister,
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const LogoName(
-                                image: Images.logo,
-                                fromColor: AppColors.royalBlue,
-                                toColor: AppColors.logoGradientEnd,
-                              ),
-                              AppValues.gapXS,
-                              LoginForm(
-                                form: _form,
-                                isLoading: _isLoading,
-                                onLogin: _handleLogin,
-                                onSignUpTap: _navigateToRegister,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                            ),
 
-                  // Copyright textz
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: AppValues.spacing10),
-                      child: Text(
-                        AuthStrings.copyRightText,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppColors.primaryColor.withValues(alpha: 0.5),
+                            AppValues.gapM,
+
+                            // Copyright text
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: AppValues.spacing10),
+                                child: Text(
+                                  AuthStrings.copyRightText,
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: AppColors.primaryColor.withValues(alpha: 0.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],

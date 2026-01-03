@@ -141,8 +141,8 @@ class ItemCard extends StatelessWidget {
                   swapItem: swapItem,
                   context: context,
                 ),
-                type == 'both' ? AppValues.gapXXS : SizedBox.shrink(),
-                type == 'both'
+                type == 'mix' ? AppValues.gapXXS : SizedBox.shrink(),
+                type == 'mix'
                     ? Row(
                         children: [
                           Text(
