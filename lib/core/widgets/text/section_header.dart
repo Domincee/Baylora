@@ -44,7 +44,7 @@ class SectionHeader extends StatelessWidget {
                     children: [
                       Text(
                         "See All",
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.blueText,
                           fontWeight: FontWeight.bold,
                         ),
@@ -64,7 +64,7 @@ class SectionHeader extends StatelessWidget {
         AppValues.gapXXS,
         Text(
           subTitle,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppColors.subTextColor,
           ),
         ),

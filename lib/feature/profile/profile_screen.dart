@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
@@ -50,13 +51,17 @@ class ProfileScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ProfileHeader(
-                avatarUrl: profile.avatarUrl ?? 'https://i.pravatar.cc/150?img=12',
+                avatarUrl: (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty)
+                    ? profile.avatarUrl!
+                    : Images.defaultAvatar,
                 name: profile.fullName,
                 username: profile.username.isNotEmpty ? profile.username : ProfileStrings.defaultUsername,
                 bio: profile.bio ?? ProfileStrings.noBio,
                 rating: profile.rating,
                 onEdit: () => _showEditProfileDialog(context, ref, profile),
               ),
+              AppValues.gapL,
+              SectionHeader(title: ProfileStrings.listingsTitle, subTitle: ProfileStrings.listingsSubtitle),
               AppValues.gapL,
 
               const _ListingsSection(),

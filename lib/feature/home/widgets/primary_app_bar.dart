@@ -1,5 +1,5 @@
 import 'package:baylora_prjct/core/assets/images.dart';
-import 'package:baylora_prjct/core/constant/app_values.dart'; // Changed import
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class PrimaryAppBar extends ConsumerWidget { // Renamed Class
+class PrimaryAppBar extends ConsumerWidget {
   const PrimaryAppBar({
     super.key,
     required this.currentIndex,
@@ -24,7 +24,7 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
       case 0:
         return AppStrings.home;
       case 1:
-        return "Post Item"; // Placeholder until string is added or if it's dynamic
+        return "Post Item";
       case 2:
         return AppStrings.profile;
       default:
@@ -46,7 +46,7 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
             horizontal: AppValues.spacingM,
             vertical: AppValues.spacingXS,
           ),
-          child: Stack( // Changed Row to Stack for centering
+          child: Stack(
             alignment: Alignment.center,
             children: [
               // Logo (Left)
@@ -88,8 +88,7 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
                         color: AppColors.black,
                       ),
                       onPressed: () {
-
-
+                        // Handle notifications
                       },
                       padding: const EdgeInsets.all(8),
                       constraints: const BoxConstraints(),
@@ -108,48 +107,58 @@ class PrimaryAppBar extends ConsumerWidget { // Renamed Class
                           imageUrl: avatarUrl ?? "",
                           size: 32,
                         ),
-
-                      onSelected: (value) async {
-                        if (value == 'my_items') {
-                        } else if (value == 'settings') {
-                        } else if (value == 'logout') {
-                          await Supabase.instance.client.auth.signOut();
-
-                          if (context.mounted) {
+                        onSelected: (value) async {
+                          if (value == 'my_items') {
+                            // Navigate to My Items
+                          } else if (value == 'settings') {
+                            // Navigate to Settings
+                          } else if (value == 'logout') {
+                            // 1. Show Loading first
                             await EasyLoading.show(status: 'Signing out...');
+                            
+                            // 2. Clear Supabase Session
+                            await Supabase.instance.client.auth.signOut();
+                            
+                            // 3. Clear Local State (Riverpod)
+                            // Note: Since we added .autoDispose to the providers, 
+                            // they will reset automatically when the widget tree is disposed.
+                            // But strictly invalidating them here ensures they are cleared immediately.
+                            // ref.invalidate(userProfileProvider); // Optional but safe
 
                             if (context.mounted) {
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginScreen()),
-                                  (route) => false);
+                              await EasyLoading.dismiss();
+                              
+                              if (context.mounted) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (context) => const LoginScreen()),
+                                    (route) => false);
+                              }
                             }
-                            EasyLoading.dismiss();
                           }
-                        }
-                      },
-                      itemBuilder: (BuildContext context) {
-                        return [
-                          const PopupMenuItem(
-                            value: 'my_items',
-                            child: Text('My Items'),
-                          ),
-                          const PopupMenuItem(
-                            value: 'settings',
-                            child: Text(AppStrings.settings), // Use Constant
-                          ),
-                          PopupMenuItem(
-                            value: 'logout',
-                            child: Text(
-                              AppStrings.logout,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.errorColor,
+                        },
+                        itemBuilder: (BuildContext context) {
+                          return [
+                            const PopupMenuItem(
+                              value: 'my_items',
+                              child: Text('My Items'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'settings',
+                              child: Text(AppStrings.settings),
+                            ),
+                            PopupMenuItem(
+                              value: 'logout',
+                              child: Text(
+                                AppStrings.logout,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.errorColor,
+                                ),
                               ),
                             ),
-                          ),
-                        ];
-                      },
-                    ),
+                          ];
+                        },
+                      ),
                     ),
                   ],
                 ),
