@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/details/item_details_screen.dart';
 import 'package:baylora_prjct/feature/home/mapper/item_card_mapper.dart';
 import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
 import 'package:baylora_prjct/feature/home/util/item_filter_util.dart';
@@ -102,20 +103,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final item = items[index];
                         final data = ItemCardMapper.map(item);
 
-                        return ItemCard(
-                          title: data['title'],
-                          description: data['description'],
-                          price: data['price'],
-                          type: data['type'],
-                          swapItem: data['swapItem'],
-                          imagePath: data['imagePath'],
-                          postedTime: data['postedTime'],
-                          isVerified: data['isVerified'],
-                          sellerName: data['sellerName'],
-                          sellerImage: data['sellerImage'],
-                          rating: data['rating'],
-                          totalTrade: data['totalTrade'],
-                          endTime: data['endTime'],
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ItemDetailsScreen(
+                                  itemId: item['id'].toString(),
+                                ),
+                              ),
+                            );
+                          },
+                          child: ItemCard(
+                            title: data['title'],
+                            description: data['description'],
+                            price: data['price'],
+                            type: data['type'],
+                            swapItem: data['swapItem'],
+                            imagePath: data['imagePath'],
+                            postedTime: data['postedTime'],
+                            isVerified: data['isVerified'],
+                            sellerName: data['sellerName'],
+                            sellerImage: data['sellerImage'],
+                            rating: data['rating'],
+                            totalTrade: data['totalTrade'],
+                            timeRemaining: data['timeRemaining'],
+                          ),
                         );
                       },
                     ),

@@ -16,20 +16,28 @@ final homeItemsProvider = StreamProvider.autoDispose.family<List<Map<String, dyn
   // Assuming strict ending times for now as requested:
   query = query.gt('end_time', DateTime.now().toIso8601String());
 
-  // Apply filters
+  // Common filter for all views: Item must be active
+  query = query.eq('status', 'active');
+
+  // Apply specific filters
   switch (filter) {
     case 'Ending':
       return query
-          .not('end_time', 'is', null) // Redundant but safe
+          .not('end_time', 'is', null) // Ensure has duration
+          .gt('end_time', DateTime.now().toUtc().toIso8601String()) // Ensure not ended (Compare in UTC)
           .order('end_time', ascending: true)
           .asStream();
 
     case 'Hot':
-      return query.order('price', ascending: false).asStream();
+      return query
+          .order('price', ascending: false)
+          .asStream();
 
     case 'New':
     case 'All':
     default:
-      return query.order('created_at', ascending: false).asStream();
+      return query
+          .order('created_at', ascending: false)
+          .asStream();
   }
 });

@@ -7,11 +7,10 @@ import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/domain/user_profile.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
-import 'package:baylora_prjct/feature/profile/screens/my_bids_screen.dart';
 import 'package:baylora_prjct/feature/profile/screens/my_listings_screen.dart';
 import 'package:baylora_prjct/feature/profile/widgets/bid_card.dart';
 import 'package:baylora_prjct/feature/profile/widgets/edit_profile_dialog.dart';
-import 'package:baylora_prjct/feature/profile/widgets/listing_card.dart';
+import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart';
 import 'package:baylora_prjct/feature/profile/widgets/profile_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -121,59 +120,115 @@ class _ListingsSection extends ConsumerWidget {
 
     return listingsAsync.when(
       data: (listings) {
-        final showSeeAll = listings.length > 3;
-        final displayList = showSeeAll ? listings.take(3).toList() : listings;
+        if (listings.isEmpty) return const Text(ProfileStrings.noListings);
+
+        final previewList = listings.take(4).toList();
 
         return Column(
           children: [
-            SectionHeader(
-              title: ProfileStrings.listingsTitle,
-              subTitle: ProfileStrings.listingsSubtitle,
-              showSeeAll: showSeeAll,
-              onSeeAll: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MyListingsScreen()),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: previewList.length,
+              separatorBuilder: (context, index) => AppValues.gapM,
+              itemBuilder: (context, index) {
+                final item = previewList[index];
+                final images = item['images'] as List?;
+                final tags = item['tags'] != null ? List<String>.from(item['tags']) : <String>[];
+                
+                // 1. Posted Date Parsing
+                DateTime postedDate = DateTime.now();
+                if (item['created_at'] != null) {
+                  try {
+                    postedDate = DateTime.parse(item['created_at']);
+                  } catch (_) {}
+                }
+
+                // 2. Price Parsing
+                double? price;
+                if (item['price'] != null) {
+                  final parsedPrice = double.tryParse(item['price'].toString());
+                  if (parsedPrice != null && parsedPrice > 0) {
+                    price = parsedPrice;
+                  }
+                }
+
+                // 3. Status Logic
+                String displayStatus = 'Active';
+                final dbStatus = item['status']?.toString().toLowerCase();
+
+                DateTime? endTime;
+                if (item['end_time'] != null) {
+                   try {
+                     endTime = DateTime.parse(item['end_time']);
+                   } catch (_) {}
+                }
+
+                if (dbStatus == 'sold') {
+                  displayStatus = 'Sold';
+                } else if (dbStatus == 'accepted') {
+                  displayStatus = 'Accepted';
+                } else {
+                  if (endTime != null && DateTime.now().isAfter(endTime)) {
+                    displayStatus = 'Ended';
+                  }
+                }
+
+                return ManagementListingCard(
+                  title: item['title'] ?? 'Untitled',
+                  imageUrl: (images != null && images.isNotEmpty) ? images[0] : '',
+                  status: displayStatus,
+                  offerCount: item['offer_count'] ?? 0,
+                  postedDate: postedDate,
+                  price: price,
+                  lookingFor: tags,
+                  isAuction: false,
+                  currentHighestBid: null,
+                  soldToItem: null,
+                  endTime: endTime,
                 );
               },
             ),
-            AppValues.gapM,
-            if (displayList.isEmpty)
-              const Text(ProfileStrings.noListings)
-            else
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: displayList.length,
-                separatorBuilder: (context, index) => AppValues.gapM,
-                itemBuilder: (context, index) {
-                  final item = displayList[index];
-                  final images = item['images'] as List?;
-                  final tags = item['tags'] != null ? List<String>.from(item['tags']) : <String>[];
-                  
-                  // Logic to determine display status
-                  String displayStatus = item['status'] ?? 'Active';
-                  if (item['end_time'] != null) {
-                    try {
-                      final endTime = DateTime.parse(item['end_time']);
-                      if (DateTime.now().isAfter(endTime)) {
-                        displayStatus = 'Ended';
-                      }
-                    } catch (_) {}
-                  }
-
-                  return ListingCard(
-                    title: item['title'] ?? 'Untitled',
-                    price: item['price']?.toString(),
-                    subtitle: item['swap_preference'],
-                    tags: tags,
-                    offers: "${item['offer_count'] ?? 0} Offers",
-                    postedTime: ProfileStrings.recently,
-                    status: displayStatus,
-                    imageUrl: (images != null && images.isNotEmpty) ? images[0] : null,
+            
+            // "See All" Logic: Only show if there are MORE items than we are previewing (4)
+            if (listings.length > 4) ...[
+              AppValues.gapM,
+              InkWell(
+                onTap: () {
+                   Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MyListingsScreen()),
                   );
                 },
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "See all",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textGrey,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: AppColors.textGrey,
+                      ),
+                    ],
+                  ),
+                ),
               ),
+            ],
           ],
         );
       },

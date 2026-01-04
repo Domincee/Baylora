@@ -20,4 +20,21 @@ class ProfileStrings {
   // Status
   static const String endsSoon = "Ends soon";
   static const String recently = "Recently";
+  
+  // Card Text
+  static const String startingBid = "Starting Bid";
+  static const String buyPrice = "Buy Price";
+  static const String lookingFor = "Looking for";
+  static const String others = "others";
+  static const String noBidsYet = "No Bids yet";
+  static const String noOffersYet = "No Offers yet";
+  static const String offers = "Offers";
+  static const String posted = "Posted";
+  static const String currentHighest = "Current Highest";
+  static const String add = "Add";
+  
+  // Action Buttons
+  static const String dealChat = "Deal Chat";
+  static const String leaveReview = "Leave Review";
+  static const String manageItem = "Manage Item";
 }

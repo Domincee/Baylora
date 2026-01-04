@@ -3,7 +3,7 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
-import 'package:baylora_prjct/feature/profile/widgets/listing_card.dart';
+import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,6 +40,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
           // Filter Logic
           final filteredList = listings.where((item) {
             final endTimeStr = item['end_time'] as String?;
+            final dbStatus = item['status']?.toString().toLowerCase();
             bool isExpired = false;
             
             if (endTimeStr != null) {
@@ -50,9 +51,11 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
             }
 
             if (_selectedFilter == 'Active') {
-              return !isExpired;
+              if (dbStatus == 'sold' || dbStatus == 'ended') return false;
+              if (isExpired && dbStatus != 'accepted') return false;
+              return true;
             } else if (_selectedFilter == 'Ended') {
-              return isExpired;
+              return isExpired || dbStatus == 'ended' || dbStatus == 'sold';
             }
             return true; // 'All'
           }).toList();
@@ -119,28 +122,56 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                               ? List<String>.from(item['tags'])
                               : <String>[];
 
-                          // Logic to determine display status
-                          String displayStatus = item['status'] ?? 'Active';
-                          if (item['end_time'] != null) {
+                          // 1. Posted Date Parsing
+                          DateTime postedDate = DateTime.now();
+                          if (item['created_at'] != null) {
                             try {
-                              final endTime = DateTime.parse(item['end_time']);
-                              if (DateTime.now().isAfter(endTime)) {
-                                displayStatus = 'Ended';
-                              }
+                              postedDate = DateTime.parse(item['created_at']);
                             } catch (_) {}
                           }
 
-                          return ListingCard(
+                          // 2. Price Parsing
+                          double? price;
+                          if (item['price'] != null) {
+                            final parsedPrice = double.tryParse(item['price'].toString());
+                            if (parsedPrice != null && parsedPrice > 0) {
+                              price = parsedPrice;
+                            }
+                          }
+
+                          // 3. Status Logic
+                          String displayStatus = 'Active';
+                          final dbStatus = item['status']?.toString().toLowerCase();
+                          
+                          DateTime? endTime;
+
+                          if (dbStatus == 'sold') {
+                            displayStatus = 'Sold';
+                          } else if (dbStatus == 'accepted') {
+                            displayStatus = 'Accepted';
+                          } else {
+                            if (item['end_time'] != null) {
+                              try {
+                                endTime = DateTime.parse(item['end_time']);
+                                if (DateTime.now().isAfter(endTime)) {
+                                  displayStatus = 'Ended';
+                                }
+                              } catch (_) {}
+                            }
+                          }
+
+                          return ManagementListingCard(
                             title: item['title'] ?? 'Untitled',
-                            price: item['price']?.toString(),
-                            subtitle: item['swap_preference'],
-                            tags: tags,
-                            offers: "${item['offer_count'] ?? 0} Offers",
-                            postedTime: ProfileStrings.recently,
+                            imageUrl: (images != null && images.isNotEmpty) ? images[0] : '',
                             status: displayStatus,
-                            imageUrl: (images != null && images.isNotEmpty)
-                                ? images[0]
-                                : null,
+                            offerCount: item['offer_count'] ?? 0,
+                            postedDate: postedDate,
+                            price: price,
+                            lookingFor: tags,
+                            isAuction: false, // Explicitly set to false as requested
+                            currentHighestBid: null, 
+                            soldToItem: null,
+                            endTime: endTime, // Added this to pass the endTime to the widget
                           );
                         },
                       ),

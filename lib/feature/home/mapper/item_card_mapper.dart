@@ -12,6 +12,12 @@ class ItemCardMapper {
     final firstImage = (images != null && images.isNotEmpty)
         ? images.first
         : 'https://via.placeholder.com/300';
+    
+    // Parse End Time
+    DateTime? endTime;
+    if (item['end_time'] != null) {
+      endTime = DateTime.tryParse(item['end_time']);
+    }
 
     return {
       'title': item['title'] ?? 'No Title',
@@ -26,7 +32,10 @@ class ItemCardMapper {
       'sellerImage': profile['avatar_url'] ?? 'https://i.pravatar.cc/150',
       'rating': (profile['rating'] ?? 0.0).toString(),
       'totalTrade': (profile['total_trades'] ?? 0).toString(),
-      'endTime': item['end_time'],
+      // Use Shared Logic
+      'timeRemaining': endTime != null 
+          ? (DateTime.now().isAfter(endTime) ? "Ended" : DateUtil.getRemainingTime(endTime, short: false)) 
+          : null,
     };
   }
 }

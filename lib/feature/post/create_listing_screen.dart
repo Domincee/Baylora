@@ -238,9 +238,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       // --- DATA SANITIZATION END ---
 
       // Calculate End Time
-      final durationHours = int.tryParse(_durationController.text) ?? 24;
-      final endTime = DateTime.now().add(Duration(hours: durationHours));
-
+      String? finalEndTime;
+      if (_isDurationEnabled) {
+        final durationHours = int.tryParse(_durationController.text) ?? 24;
+        final endTime = DateTime.now().add(Duration(hours: durationHours));
+        finalEndTime = endTime.toIso8601String();
+      } else {
+        finalEndTime = null;
+      }
 
       final response = await Supabase.instance.client.from('items').insert({
         'owner_id': user.id,
@@ -252,7 +257,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'images': imageUrls, 
         'condition': conditionStr,
         'category': _selectedCategory,
-        'end_time': endTime.toIso8601String(),
+        'end_time': finalEndTime,
         'status': 'active', 
       }).select().single();
 

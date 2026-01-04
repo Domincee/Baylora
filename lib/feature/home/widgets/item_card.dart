@@ -23,8 +23,7 @@ class ItemCard extends StatelessWidget {
   final String title;
   final String description;
   final String imagePath;
-  // New field for end time
-  final String? endTime;
+  final String? timeRemaining; // Added field
 
   const ItemCard({
     super.key,
@@ -41,7 +40,7 @@ class ItemCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.imagePath,
-    this.endTime,
+    this.timeRemaining, // Initialize
   });
 
   Widget _buildDurationBadge(BuildContext context, String? endTimeStr) {
@@ -174,9 +173,9 @@ class ItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title Row with Duration Badge
+                // Updated Title Row
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Text(
@@ -188,8 +187,24 @@ class ItemCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    _buildDurationBadge(context, endTime),
+                    if (timeRemaining != null) ...[
+                      AppValues.gapHXXS,
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.errorColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.errorColor.withOpacity(0.5)),
+                        ),
+                        child: Text(
+                          timeRemaining!,
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: AppColors.errorColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
                 AppValues.gapXXS,
