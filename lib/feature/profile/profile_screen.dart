@@ -58,6 +58,7 @@ class ProfileScreen extends ConsumerWidget {
                 username: profile.username.isNotEmpty ? profile.username : ProfileStrings.defaultUsername,
                 bio: profile.bio ?? ProfileStrings.noBio,
                 rating: profile.rating,
+                isVerified: profile.isVerified, // FIXED: Pass isVerified to header
                 onEdit: () => _showEditProfileDialog(context, ref, profile),
               ),
               AppValues.gapL,

@@ -5,9 +5,10 @@ final homeItemsProvider = StreamProvider.autoDispose.family<List<Map<String, dyn
   final supabase = Supabase.instance.client;
 
   // Start the query
+  // FIX: Added 'is_verified' to the selected profile columns
   var query = supabase
       .from('items')
-      .select('*, profiles:owner_id(username, avatar_url, rating, total_trades)');
+      .select('*, profiles:owner_id(username, avatar_url, rating, total_trades, is_verified)');
 
   // Common filter for all views: Item must be active
   query = query.eq('status', 'active');

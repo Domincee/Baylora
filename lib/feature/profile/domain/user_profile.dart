@@ -5,6 +5,7 @@ class UserProfile {
   final String? avatarUrl;
   final String? bio;
   final double rating;
+  final bool isVerified; // Added field
 
   UserProfile({
     required this.id,
@@ -13,6 +14,7 @@ class UserProfile {
     this.avatarUrl,
     this.bio,
     this.rating = 0.0,
+    this.isVerified = false, // Default to false
   });
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
@@ -27,6 +29,7 @@ class UserProfile {
       avatarUrl: map['avatar_url'],
       bio: map['bio'],
       rating: (map['rating'] ?? 0.0).toDouble(),
+      isVerified: map['is_verified'] ?? false, // Map from DB
     );
   }
 }

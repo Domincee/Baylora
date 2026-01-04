@@ -50,9 +50,11 @@ class ItemDetailsBottomBar extends StatelessWidget {
           child: ElevatedButton(
             onPressed: isOwner ? null : onPlaceBid,
             style: ElevatedButton.styleFrom(
+              // FIX: Use royalBlue (or deepBlue) for primary action. 
+              // 'primaryColor' was mapped to White (0xFFFFFFFF) in AppColors, causing invisible button.
               backgroundColor: isOwner 
                   ? AppColors.greyDisabled 
-                  : (isTrade ? AppColors.tradeIconColor : AppColors.primaryColor),
+                  : (isTrade ? AppColors.tradeIconColor : AppColors.royalBlue),
               disabledBackgroundColor: AppColors.greyDisabled,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppValues.radiusCircular),
@@ -71,12 +73,17 @@ class ItemDetailsBottomBar extends StatelessWidget {
                     AppValues.gapS,
                   ],
                 ],
-                Text(
-                  buttonText,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  child: Text(
+                    buttonText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      height: 1.2, // Fix for text being slightly cutoff at the bottom
+                    ),
                   ),
                 ),
               ],
