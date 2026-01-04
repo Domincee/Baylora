@@ -33,13 +33,21 @@ class BidCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: 80,
+              height: 80,
               color: AppColors.greyLight,
-              borderRadius: BorderRadius.circular(12),
-              image: imageUrl != null ? DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.cover) : null,
+              child: imageUrl != null && imageUrl!.isNotEmpty
+                  ? Image.network(
+                      imageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(child: Icon(Icons.image_not_supported, color: AppColors.grey400));
+                      },
+                    )
+                  : const Center(child: Icon(Icons.image_not_supported, color: AppColors.grey400)),
             ),
           ),
           AppValues.gapHS,

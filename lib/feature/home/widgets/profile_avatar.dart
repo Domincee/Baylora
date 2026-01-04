@@ -1,9 +1,10 @@
+import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ProfileAvatar extends StatelessWidget {
   final String imageUrl;
-  final double size; 
+  final double size;
 
   const ProfileAvatar({
     super.key,
@@ -13,43 +14,21 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Default Avatar Widget
-    final Widget defaultAvatarWidget = SizedBox(
-      width: size,
-      height: size,
-      child: const Icon(Icons.person, color: AppColors.royalBlue),
-    );
-
-    // If empty, show default immediately
-    if (imageUrl.isEmpty || !imageUrl.startsWith('http')) {
-      return _buildCircle(defaultAvatarWidget);
+    // 1. Determine Image Source
+    // If empty or doesn't start with http, treat as invalid/local placeholder needed
+    final bool isNetwork = imageUrl.isNotEmpty && imageUrl.startsWith('http');
+    
+    // 2. Resolve the final image provider
+    final ImageProvider imageProvider;
+    if (isNetwork) {
+      imageProvider = NetworkImage(imageUrl);
+    } else {
+      // If imageUrl is empty, use default. Otherwise, assume it's a local asset path (rare but possible)
+      // or just fallback to default.
+      final assetPath = imageUrl.isNotEmpty ? imageUrl : Images.defaultAvatar;
+      imageProvider = AssetImage(assetPath);
     }
 
-    // Try to load Network Image
-    return _buildCircle(
-      Image.network(
-        imageUrl,
-        width: size,
-        height: size,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return defaultAvatarWidget;
-        },
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Container(
-            width: size,
-            height: size,
-            color: AppColors.greyLight,
-            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-          );
-        },
-      ),
-    );
-  }
-
-
-  Widget _buildCircle(Widget child) {
     return Container(
       width: size,
       height: size,
@@ -60,7 +39,33 @@ class ProfileAvatar extends StatelessWidget {
         border: Border.all(color: AppColors.royalBlue, width: 2.0),
       ),
       child: ClipOval(
-        child: child,
+        child: Image(
+          image: imageProvider,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          // Loading Builder only works for NetworkImage usually, but Image widget supports it
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              width: size,
+              height: size,
+              color: AppColors.greyLight,
+              child: const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2)),
+            );
+          },
+          // Error Builder
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback to default asset if network fails
+            return Image.asset(
+              Images.defaultAvatar,
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+            );
+          },
+        ),
       ),
     );
   }

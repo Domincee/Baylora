@@ -29,7 +29,8 @@ class ItemCardMapper {
       'postedTime': DateUtil.getTimeAgo(item['created_at']),
       'isVerified': item['is_verified'] ?? false,
       'sellerName': profile['username'] ?? 'Unknown',
-      'sellerImage': profile['avatar_url'] ?? 'https://i.pravatar.cc/150',
+      // FIX: Changed from pravatar.cc to empty string so ProfileAvatar uses default logic
+      'sellerImage': profile['avatar_url'] ?? '',
       'rating': (profile['rating'] ?? 0.0).toString(),
       'totalTrade': (profile['total_trades'] ?? 0).toString(),
       // Use Shared Logic
