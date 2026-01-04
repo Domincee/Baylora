@@ -147,6 +147,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           child: ItemDetailsBottomBar(
             isOwner: isOwner,
             isTrade: type == 'trade',
+            isMix: type == 'mix',
             onPlaceBid: () {
               // TODO: Implement Place Bid logic
             },

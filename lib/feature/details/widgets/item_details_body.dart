@@ -41,6 +41,7 @@ class ItemDetailsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTrade = type == 'trade';
+    final isMix = type == 'mix';
 
     return Positioned.fill(
       bottom: 80, // Leave space for the bottom action bar
@@ -95,7 +96,66 @@ class ItemDetailsBody extends StatelessWidget {
                   AppValues.gapL,
 
                   // E. Price Section OR Swap Preference
-                  if (isTrade) ...[
+                  if (isMix) ...[
+                    // 1. Price Row (Split Layout)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ItemDetailsStrings.price,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: AppColors.textGrey,
+                                  ),
+                            ),
+                            AppValues.gapXXS,
+                            Text(
+                              "${ItemDetailsStrings.currencySymbol} ${item['price']?.toString() ?? '0'}",
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: AppColors.highLightTextColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        // Only show Highest Bid if > 0
+                        if (offers.isNotEmpty && (offers.first['amount'] ?? 0) > 0)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                ItemDetailsStrings.currentHighestBid,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      color: AppColors.textGrey,
+                                    ),
+                              ),
+                              AppValues.gapXXS,
+                              Text(
+                                "${ItemDetailsStrings.currencySymbol} ${offers.first['amount']}",
+                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                      color: AppColors.highLightTextColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                    AppValues.gapL,
+                    
+                    // 2. Trade Section
+                    Text(
+                      "Seller is looking for:",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: AppColors.textGrey,
+                          ),
+                    ),
+                    AppValues.gapS,
+                    SwapItemsWrap(swapItemString: item['swap_preference']),
+                    
+                  ] else if (isTrade) ...[
                     Text(
                       "Seller is looking for:",
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -105,6 +165,7 @@ class ItemDetailsBody extends StatelessWidget {
                     AppValues.gapS,
                     SwapItemsWrap(swapItemString: item['swap_preference']),
                   ] else ...[
+                    // Cash Only Layout
                     Text(
                       offers.isNotEmpty ? ItemDetailsStrings.currentHighestBid : ItemDetailsStrings.price,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -127,7 +188,7 @@ class ItemDetailsBody extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        isTrade ? "Current Offers" : ItemDetailsStrings.currentBids,
+                        (isTrade || isMix) ? "Current Offers" : ItemDetailsStrings.currentBids,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -141,7 +202,9 @@ class ItemDetailsBody extends StatelessWidget {
                     ],
                   ),
                   AppValues.gapM,
-                  BidList(offers: offers, isTrade: isTrade),
+                  
+                  // Handle Empty State specifically for Mix/Trade if needed, or rely on BidList's empty state
+                  BidList(offers: offers, isTrade: isTrade, isMix: isMix),
 
                   // Extra padding at bottom for scrolling past the floating button
                   const SizedBox(height: 40),

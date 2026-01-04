@@ -6,20 +6,29 @@ import 'package:flutter/material.dart';
 class ItemDetailsBottomBar extends StatelessWidget {
   final bool isOwner;
   final bool isTrade;
+  final bool isMix;
   final VoidCallback onPlaceBid;
 
   const ItemDetailsBottomBar({
     super.key,
     required this.isOwner,
     this.isTrade = false,
+    this.isMix = false,
     required this.onPlaceBid,
   });
 
   @override
   Widget build(BuildContext context) {
-    final buttonText = isOwner 
-        ? ItemDetailsStrings.yourItem 
-        : (isTrade ? "Offer a Trade" : ItemDetailsStrings.placeBid);
+    String buttonText;
+    if (isOwner) {
+      buttonText = ItemDetailsStrings.yourItem;
+    } else if (isMix) {
+      buttonText = "Make an Offer";
+    } else if (isTrade) {
+      buttonText = "Offer a Trade";
+    } else {
+      buttonText = ItemDetailsStrings.placeBid;
+    }
 
     return Container(
       padding: EdgeInsets.all(AppValues.spacingM),
@@ -41,7 +50,9 @@ class ItemDetailsBottomBar extends StatelessWidget {
           child: ElevatedButton(
             onPressed: isOwner ? null : onPlaceBid,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isOwner ? AppColors.greyDisabled : (isTrade ? AppColors.tradeIconColor : AppColors.primaryColor),
+              backgroundColor: isOwner 
+                  ? AppColors.greyDisabled 
+                  : (isTrade ? AppColors.tradeIconColor : AppColors.primaryColor),
               disabledBackgroundColor: AppColors.greyDisabled,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppValues.radiusCircular),
@@ -51,9 +62,14 @@ class ItemDetailsBottomBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (isTrade && !isOwner) ...[
-                  const Icon(Icons.swap_horiz, color: Colors.white),
-                  AppValues.gapS,
+                if (!isOwner) ...[
+                  if (isMix) ...[
+                    const Icon(Icons.handshake_outlined, color: Colors.white),
+                    AppValues.gapS,
+                  ] else if (isTrade) ...[
+                    const Icon(Icons.swap_horiz, color: Colors.white),
+                    AppValues.gapS,
+                  ],
                 ],
                 Text(
                   buttonText,

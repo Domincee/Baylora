@@ -8,11 +8,13 @@ import 'package:baylora_prjct/feature/shared/widgets/secret_offer_badge.dart';
 class BidList extends StatelessWidget {
   final List<dynamic> offers;
   final bool isTrade;
+  final bool isMix;
 
   const BidList({
     super.key,
     required this.offers,
     this.isTrade = false,
+    this.isMix = false,
   });
 
   @override
@@ -26,9 +28,10 @@ class BidList extends StatelessWidget {
               Icon(Icons.local_offer_outlined, size: 40, color: AppColors.grey300),
               AppValues.gapXS,
               Text(
-                "No bids yet. Be the first!",
+                "No offers yet. Be the first!",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textGrey,
+                      fontStyle: FontStyle.italic,
                     ),
               ),
             ],
@@ -45,8 +48,12 @@ class BidList extends StatelessWidget {
       itemBuilder: (context, index) {
         final offer = offers[index];
         final bidder = offer['profiles'] ?? {};
-        final amount = offer['amount'] ?? 0;
+        final amount = (offer['amount'] ?? 0) as num;
         final timeAgo = DateUtil.getTimeAgo(offer['created_at']);
+        final swapItemText = offer['swap_item_text'];
+        
+        final hasCash = amount > 0;
+        final hasTrade = swapItemText != null && swapItemText.toString().isNotEmpty;
 
         return Row(
           children: [
@@ -72,15 +79,44 @@ class BidList extends StatelessWidget {
                 ],
               ),
             ),
-            if (isTrade)
-              const SecretOfferBadge()
-            else
+            
+            // Mix/Hybrid Logic
+            if (isMix) ...[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (hasCash)
+                    Text(
+                      "₱ ${amount.toString()}",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  
+                  if (hasCash && hasTrade)
+                    Text(
+                      " + ",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textGrey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    
+                  if (hasTrade)
+                    const SecretOfferBadge(),
+                ],
+              ),
+            ] else if (isTrade) ...[
+              const SecretOfferBadge(),
+            ] else ...[
+              // Cash Only
               Text(
-                "₱ $amount",
+                "₱ ${amount.toString()}",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
+            ],
           ],
         );
       },
