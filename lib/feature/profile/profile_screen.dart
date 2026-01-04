@@ -58,21 +58,11 @@ class ProfileScreen extends ConsumerWidget {
               ),
               AppValues.gapL,
 
-              const SectionHeader(
-                title: ProfileStrings.listingsTitle,
-                subTitle: ProfileStrings.listingsSubtitle,
-              ),
-              AppValues.gapM,
-              const _ListingsList(),
+              const _ListingsSection(),
 
               AppValues.gapL,
 
-              const SectionHeader(
-                title: ProfileStrings.bidsTitle,
-                subTitle: ProfileStrings.bidsSubtitle,
-              ),
-              AppValues.gapM,
-              const _BidsList(),
+              const _BidsSection(),
 
               AppValues.gapL,
 
@@ -121,8 +111,8 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _ListingsList extends ConsumerWidget {
-  const _ListingsList();
+class _ListingsSection extends ConsumerWidget {
+  const _ListingsSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -242,14 +232,21 @@ class _ListingsList extends ConsumerWidget {
           ],
         );
       },
-      loading: () => const LinearProgressIndicator(),
+      loading: () => const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(title: ProfileStrings.listingsTitle, subTitle: ProfileStrings.listingsSubtitle),
+          AppValues.gapM,
+          LinearProgressIndicator(),
+        ],
+      ),
       error: (err, stack) => Text("${AppStrings.error}: $err"),
     );
   }
 }
 
-class _BidsList extends ConsumerWidget {
-  const _BidsList();
+class _BidsSection extends ConsumerWidget {
+  const _BidsSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -257,37 +254,62 @@ class _BidsList extends ConsumerWidget {
 
     return bidsAsync.when(
       data: (bids) {
-        if (bids.isEmpty) return const Text(ProfileStrings.noBids);
+        final showSeeAll = bids.length > 3;
+        final displayList = showSeeAll ? bids.take(3).toList() : bids;
 
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: bids.length,
-          separatorBuilder: (context, index) => AppValues.gapM,
-          itemBuilder: (context, index) {
-            final bid = bids[index];
+        return Column(
+          children: [
+            SectionHeader(
+              title: ProfileStrings.bidsTitle,
+              subTitle: ProfileStrings.bidsSubtitle,
+              showSeeAll: showSeeAll,
+              onSeeAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MyBidsScreen()),
+                );
+              },
+            ),
+            AppValues.gapM,
+            if (displayList.isEmpty)
+              const Text(ProfileStrings.noBids)
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: displayList.length,
+                separatorBuilder: (context, index) => AppValues.gapM,
+                itemBuilder: (context, index) {
+                  final bid = displayList[index];
+                  final item = bid['items'] as Map<String, dynamic>?;
 
-            // ✅ FIX: Safe casting for nested 'items' object
-            final item = bid['items'] as Map<String, dynamic>?;
+                  if (item == null) return const SizedBox.shrink();
 
-            if (item == null) return const SizedBox.shrink();
+                  final images = item['images'] as List?;
+                  String myOfferText = bid['cash_offer'] != null ? "P${bid['cash_offer']}" : (bid['swap_item_text'] ?? "Unknown Offer");
 
-            final images = item['images'] as List?;
-            String myOfferText = bid['cash_offer'] != null ? "P${bid['cash_offer']}" : (bid['swap_item_text'] ?? "Unknown Offer");
-
-            return BidCard(
-              title: item['title'] ?? 'Unknown Item',
-              myOffer: myOfferText,
-              timer: ProfileStrings.endsSoon,
-              postedTime: ProfileStrings.recently,
-              status: item['status'] ?? 'Active',
-              extraStatus: bid['status'],
-              imageUrl: (images != null && images.isNotEmpty) ? images[0] : null,
-            );
-          },
+                  return BidCard(
+                    title: item['title'] ?? 'Unknown Item',
+                    myOffer: myOfferText,
+                    timer: ProfileStrings.endsSoon,
+                    postedTime: ProfileStrings.recently,
+                    status: item['status'] ?? 'Active',
+                    extraStatus: bid['status'],
+                    imageUrl: (images != null && images.isNotEmpty) ? images[0] : null,
+                  );
+                },
+              ),
+          ],
         );
       },
-      loading: () => const LinearProgressIndicator(),
+      loading: () => const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+           SectionHeader(title: ProfileStrings.bidsTitle, subTitle: ProfileStrings.bidsSubtitle),
+           AppValues.gapM,
+           LinearProgressIndicator(),
+        ],
+      ),
       error: (err, stack) => Text("${AppStrings.error}: $err"),
     );
   }

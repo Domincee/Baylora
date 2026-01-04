@@ -43,6 +43,61 @@ class ItemCard extends StatelessWidget {
     this.timeRemaining, // Initialize
   });
 
+  Widget _buildDurationBadge(BuildContext context, String? endTimeStr) {
+    if (endTimeStr == null) return const SizedBox.shrink();
+
+    try {
+      final end = DateTime.parse(endTimeStr);
+      final now = DateTime.now();
+      final difference = end.difference(now);
+
+      if (difference.isNegative) {
+        return const SizedBox.shrink(); // Or show "Expired" if needed
+      }
+
+      final isUrgent = difference.inHours < 24;
+      String text;
+      Color color;
+
+      if (isUrgent) {
+        final hours = difference.inHours;
+        final mins = difference.inMinutes % 60;
+        if (hours > 0) {
+          text = "Ends in ${hours} hr";
+        } else {
+           text = "Ends in ${mins}m";
+        }
+        color = AppColors.errorColor;
+      } else {
+        final days = difference.inDays;
+        text = "Ends in $days days";
+        color = AppColors.textGrey;
+      }
+
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.access_time,
+            size: 14,
+            color: color,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 10, 
+            ),
+          ),
+        ],
+      );
+    } catch (e) {
+      return const SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

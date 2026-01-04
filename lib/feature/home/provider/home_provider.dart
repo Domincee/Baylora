@@ -8,6 +8,13 @@ final homeItemsProvider = StreamProvider.autoDispose.family<List<Map<String, dyn
   var query = supabase
       .from('items')
       .select('*, profiles:owner_id(username, avatar_url, rating, total_trades)');
+      
+  // Global filter: Hide items that have ended
+  // We check that end_time is GREATER than now.
+  // Note: If an item has NULL end_time (e.g., indefinite listing), this logic might hide it depending on DB schema.
+  // If you want to keep indefinite items, use: .or('end_time.gt.${DateTime.now().toIso8601String()},end_time.is.null')
+  // Assuming strict ending times for now as requested:
+  query = query.gt('end_time', DateTime.now().toIso8601String());
 
   // Common filter for all views: Item must be active
   query = query.eq('status', 'active');
