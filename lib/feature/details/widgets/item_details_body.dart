@@ -5,6 +5,7 @@ import 'package:baylora_prjct/feature/details/widgets/bid_list.dart';
 import 'package:baylora_prjct/feature/details/widgets/image_carousel_header.dart';
 import 'package:baylora_prjct/feature/details/widgets/seller_info_row.dart';
 import 'package:baylora_prjct/feature/details/widgets/tags_row.dart';
+import 'package:baylora_prjct/feature/shared/widgets/swap_items_wrap.dart';
 import 'package:flutter/material.dart';
 
 class ItemDetailsBody extends StatelessWidget {
@@ -39,6 +40,8 @@ class ItemDetailsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTrade = type == 'trade';
+
     return Positioned.fill(
       bottom: 80, // Leave space for the bottom action bar
       child: SingleChildScrollView(
@@ -91,21 +94,32 @@ class ItemDetailsBody extends StatelessWidget {
                   ),
                   AppValues.gapL,
 
-                  // E. Price Section
-                  Text(
-                    offers.isNotEmpty ? ItemDetailsStrings.currentHighestBid : ItemDetailsStrings.price,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.textGrey,
-                        ),
-                  ),
-                  AppValues.gapXXS,
-                  Text(
-                    "${ItemDetailsStrings.currencySymbol} ${displayPrice.toString()}",
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppColors.highLightTextColor, // Blue
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
+                  // E. Price Section OR Swap Preference
+                  if (isTrade) ...[
+                    Text(
+                      "Seller is looking for:",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: AppColors.textGrey,
+                          ),
+                    ),
+                    AppValues.gapS,
+                    SwapItemsWrap(swapItemString: item['swap_preference']),
+                  ] else ...[
+                    Text(
+                      offers.isNotEmpty ? ItemDetailsStrings.currentHighestBid : ItemDetailsStrings.price,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: AppColors.textGrey,
+                          ),
+                    ),
+                    AppValues.gapXXS,
+                    Text(
+                      "${ItemDetailsStrings.currencySymbol} ${displayPrice.toString()}",
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            color: AppColors.highLightTextColor, // Blue
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
                   AppValues.gapL,
 
                   // F. Bid History
@@ -113,7 +127,7 @@ class ItemDetailsBody extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        ItemDetailsStrings.currentBids,
+                        isTrade ? "Current Offers" : ItemDetailsStrings.currentBids,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -127,7 +141,7 @@ class ItemDetailsBody extends StatelessWidget {
                     ],
                   ),
                   AppValues.gapM,
-                  BidList(offers: offers),
+                  BidList(offers: offers, isTrade: isTrade),
 
                   // Extra padding at bottom for scrolling past the floating button
                   const SizedBox(height: 40),

@@ -140,7 +140,12 @@ class _ListingsSection extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final item = previewList[index];
                 final images = item['images'] as List?;
-                final tags = item['tags'] != null ? List<String>.from(item['tags']) : <String>[];
+                
+                // Handle swap_preference instead of tags
+                final swapPref = item['swap_preference'];
+                final List<String> lookingFor = (swapPref != null && swapPref.toString().isNotEmpty)
+                    ? swapPref.toString().split(',').map((e) => e.trim()).toList()
+                    : [];
                 
                 // 1. Posted Date Parsing
                 DateTime postedDate = DateTime.now();
@@ -187,7 +192,7 @@ class _ListingsSection extends ConsumerWidget {
                   offerCount: item['offer_count'] ?? 0,
                   postedDate: postedDate,
                   price: price,
-                  lookingFor: tags,
+                  lookingFor: lookingFor,
                   isAuction: false,
                   currentHighestBid: null,
                   soldToItem: null,

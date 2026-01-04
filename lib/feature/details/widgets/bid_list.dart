@@ -3,11 +3,17 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
+import 'package:baylora_prjct/feature/shared/widgets/secret_offer_badge.dart';
 
 class BidList extends StatelessWidget {
   final List<dynamic> offers;
+  final bool isTrade;
 
-  const BidList({super.key, required this.offers});
+  const BidList({
+    super.key,
+    required this.offers,
+    this.isTrade = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +72,15 @@ class BidList extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              "₱ $amount",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
+            if (isTrade)
+              const SecretOfferBadge()
+            else
+              Text(
+                "₱ $amount",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
           ],
         );
       },
