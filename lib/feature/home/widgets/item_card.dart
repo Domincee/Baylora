@@ -23,6 +23,7 @@ class ItemCard extends StatelessWidget {
   final String title;
   final String description;
   final String imagePath;
+  final String? timeRemaining; // Added field
 
   const ItemCard({
     super.key,
@@ -39,6 +40,7 @@ class ItemCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.imagePath,
+    this.timeRemaining, // Initialize
   });
 
   @override
@@ -116,13 +118,39 @@ class ItemCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                // Updated Title Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (timeRemaining != null) ...[
+                      AppValues.gapHXXS,
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.errorColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.errorColor.withOpacity(0.5)),
+                        ),
+                        child: Text(
+                          timeRemaining!,
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: AppColors.errorColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 AppValues.gapXXS,
                 Text(

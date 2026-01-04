@@ -1,6 +1,7 @@
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
 import 'package:baylora_prjct/feature/profile/constant/app_listing_colors.dart';
+import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:flutter/material.dart';
 
 class ManagementListingCard extends StatelessWidget {
@@ -14,6 +15,7 @@ class ManagementListingCard extends StatelessWidget {
   final String? currentHighestBid;
   final String? soldToItem;
   final bool isAuction;
+  final DateTime? endTime; // Added for duration calculation
 
   const ManagementListingCard({
     super.key,
@@ -27,12 +29,13 @@ class ManagementListingCard extends StatelessWidget {
     this.currentHighestBid,
     this.soldToItem,
     this.isAuction = false,
+    this.endTime,
   });
 
   Color _getStatusBgColor() {
     switch (status) {
       case 'Accepted':
-        return AppListingColors.statusAccepted;
+        return AppListingColors.statusAccepted; // Cyan/Light Blue
       case 'Ended':
         return AppListingColors.statusEnded;
       case 'Sold':
@@ -56,9 +59,9 @@ class ManagementListingCard extends StatelessWidget {
   }
 
   String _getActionButtonLabel() {
-    if (status == 'Accepted') return "Deal Chat";
-    if (status == 'Sold') return "Leave Review";
-    return "Manage Item";
+    if (status == 'Accepted') return ProfileStrings.dealChat;
+    if (status == 'Sold') return ProfileStrings.leaveReview;
+    return ProfileStrings.manageItem;
   }
 
   Color _getActionButtonBgColor() {
@@ -78,6 +81,9 @@ class ManagementListingCard extends StatelessWidget {
     // Calculate time ago using DateUtil
     final timeAgo = DateUtil.getTimeAgo(postedDate.toIso8601String());
     final hasNoOffers = offerCount == 0;
+    
+    // Use Shared Logic for Time Remaining
+    final timeRemaining = DateUtil.getRemainingTime(endTime, short: true);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -134,7 +140,7 @@ class ManagementListingCard extends StatelessWidget {
                 // Type Indicator (Cash/Auction or Trade)
                 if (price != null) ...[
                   Text(
-                    isAuction ? "Starting Bid" : "Buy Price",
+                    isAuction ? ProfileStrings.startingBid : ProfileStrings.buyPrice,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.subTextColor,
                         ),
@@ -148,7 +154,7 @@ class ManagementListingCard extends StatelessWidget {
                   ),
                 ] else if (lookingFor != null && lookingFor!.isNotEmpty) ...[
                   Text(
-                    "Looking for",
+                    ProfileStrings.lookingFor,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.subTextColor,
                         ),
@@ -166,7 +172,7 @@ class ManagementListingCard extends StatelessWidget {
                         ),
                         child: Text(
                           lookingFor!.length > 1
-                              ? "${lookingFor!.first} & ${lookingFor!.length - 1} others"
+                              ? "${lookingFor!.first} & ${lookingFor!.length - 1} ${ProfileStrings.others}"
                               : lookingFor!.first,
                           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                 color: AppListingColors.tagText,
@@ -185,7 +191,7 @@ class ManagementListingCard extends StatelessWidget {
                 // Stats Row
                 if (hasNoOffers)
                   Text(
-                    isAuction ? "No Bids yet" : "No Offers yet",
+                    isAuction ? ProfileStrings.noBidsYet : ProfileStrings.noOffersYet,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.subTextColor,
                           fontSize: 12,
@@ -193,14 +199,14 @@ class ManagementListingCard extends StatelessWidget {
                   )
                 else
                   Text(
-                    "$offerCount Offers",
+                    "$offerCount ${ProfileStrings.offers}",
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.subTextColor,
                           fontSize: 12,
                         ),
                   ),
                 Text(
-                  "Posted $timeAgo",
+                  "${ProfileStrings.posted} $timeAgo",
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.subTextColor,
                         fontSize: 12,
@@ -215,27 +221,51 @@ class ManagementListingCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Status Badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _getStatusBgColor(),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  status,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: _getStatusTextColor(),
-                        fontWeight: FontWeight.w600,
+              // Status Badge Row with Duration
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (timeRemaining != null && status == 'Active') ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.errorColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.errorColor.withOpacity(0.5)),
                       ),
-                ),
+                      child: Text(
+                        timeRemaining,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.errorColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _getStatusBgColor(),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      status,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            color: _getStatusTextColor(),
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8),
 
               // Extra Info for Accepted/Sold
               if (status == 'Accepted' && currentHighestBid != null) ...[
                 Text(
-                  "Current Highest",
+                  ProfileStrings.currentHighest,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.subTextColor,
                     fontSize: 10,
@@ -251,7 +281,7 @@ class ManagementListingCard extends StatelessWidget {
                 const SizedBox(height: 8),
               ] else if (status == 'Sold' && soldToItem != null) ...[
                 Text(
-                  "Add",
+                  ProfileStrings.add,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.subTextColor,
                     fontSize: 10,

@@ -27,4 +27,31 @@ class DateUtil {
     
     return 'Just now';
   }
+
+  static String? getRemainingTime(DateTime? endTime, {bool short = false}) {
+    if (endTime == null) return null;
+    
+    final now = DateTime.now();
+    if (now.isAfter(endTime)) return null; // Or "Ended" if you prefer
+
+    final difference = endTime.difference(now);
+    
+    if (short) {
+      if (difference.inDays > 0) {
+        return "${difference.inDays}d left";
+      } else if (difference.inHours > 0) {
+        return "${difference.inHours}h left";
+      } else {
+        return "${difference.inMinutes}m left";
+      }
+    } else {
+      if (difference.inDays > 0) {
+        return "${difference.inDays}d ${difference.inHours % 24}h left";
+      } else if (difference.inHours > 0) {
+        return "${difference.inHours}h ${difference.inMinutes % 60}m left";
+      } else {
+        return "${difference.inMinutes}m left";
+      }
+    }
+  }
 }

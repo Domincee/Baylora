@@ -9,21 +9,28 @@ final homeItemsProvider = StreamProvider.autoDispose.family<List<Map<String, dyn
       .from('items')
       .select('*, profiles:owner_id(username, avatar_url, rating, total_trades)');
 
-  // Apply filters
+  // Common filter for all views: Item must be active
+  query = query.eq('status', 'active');
+
+  // Apply specific filters
   switch (filter) {
     case 'Ending':
       return query
-          .not('end_time', 'is', null)
-          .gt('end_time', DateTime.now().toIso8601String())
+          .not('end_time', 'is', null) // Ensure has duration
+          .gt('end_time', DateTime.now().toUtc().toIso8601String()) // Ensure not ended (Compare in UTC)
           .order('end_time', ascending: true)
           .asStream();
 
     case 'Hot':
-      return query.order('price', ascending: false).asStream();
+      return query
+          .order('price', ascending: false)
+          .asStream();
 
     case 'New':
     case 'All':
     default:
-      return query.order('created_at', ascending: false).asStream();
+      return query
+          .order('created_at', ascending: false)
+          .asStream();
   }
 });

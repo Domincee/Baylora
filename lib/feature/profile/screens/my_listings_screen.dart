@@ -142,6 +142,8 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                           // 3. Status Logic
                           String displayStatus = 'Active';
                           final dbStatus = item['status']?.toString().toLowerCase();
+                          
+                          DateTime? endTime;
 
                           if (dbStatus == 'sold') {
                             displayStatus = 'Sold';
@@ -150,7 +152,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                           } else {
                             if (item['end_time'] != null) {
                               try {
-                                final endTime = DateTime.parse(item['end_time']);
+                                endTime = DateTime.parse(item['end_time']);
                                 if (DateTime.now().isAfter(endTime)) {
                                   displayStatus = 'Ended';
                                 }
@@ -169,6 +171,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                             isAuction: false, // Explicitly set to false as requested
                             currentHighestBid: null, 
                             soldToItem: null,
+                            endTime: endTime, // Added this to pass the endTime to the widget
                           );
                         },
                       ),
