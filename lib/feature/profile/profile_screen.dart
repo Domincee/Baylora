@@ -7,6 +7,7 @@ import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/domain/user_profile.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
+import 'package:baylora_prjct/feature/profile/screens/my_bids_screen.dart';
 import 'package:baylora_prjct/feature/profile/screens/my_listings_screen.dart';
 import 'package:baylora_prjct/feature/profile/widgets/bid_card.dart';
 import 'package:baylora_prjct/feature/profile/widgets/edit_profile_dialog.dart';
@@ -266,7 +267,7 @@ class _BidsSection extends ConsumerWidget {
               onSeeAll: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const MyBidsScreen()),
+                  MaterialPageRoute(builder: (context) => const  MyBidsScreen()),
                 );
               },
             ),
