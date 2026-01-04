@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/item_details_screen.dart';
@@ -104,15 +104,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final data = ItemCardMapper.map(item);
 
                         return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ItemDetailsScreen(
-                                  itemId: item['id'].toString(),
+                          onTap: () async {
+                            EasyLoading.show(maskType: EasyLoadingMaskType.black);
+                            // Brief delay to ensure smooth transition transition/feedback
+                            await Future.delayed(const Duration(milliseconds: 300));
+                            EasyLoading.dismiss();
+                            
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ItemDetailsScreen(
+                                    itemId: item['id'].toString(),
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           },
                           child: ItemCard(
                             title: data['title'],
