@@ -5,7 +5,6 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/text/section_header.dart';
-import 'package:baylora_prjct/core/widgets/tiles/app_list_tile.dart';
 import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/domain/user_profile.dart';
@@ -16,6 +15,7 @@ import 'package:baylora_prjct/feature/profile/widgets/bid_card.dart';
 import 'package:baylora_prjct/feature/profile/widgets/edit_profile_dialog.dart';
 import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart';
 import 'package:baylora_prjct/feature/profile/widgets/profile_header.dart';
+import 'package:baylora_prjct/feature/profile/widgets/settings_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -60,7 +60,7 @@ class ProfileScreen extends ConsumerWidget {
                 username: profile.username.isNotEmpty ? profile.username : ProfileStrings.defaultUsername,
                 bio: profile.bio ?? ProfileStrings.noBio,
                 rating: profile.rating,
-                isVerified: profile.isVerified, // FIXED: Pass isVerified to header
+                isVerified: profile.isVerified,
                 onEdit: () => _showEditProfileDialog(context, ref, profile),
               ),
               AppValues.gapL,
@@ -75,36 +75,61 @@ class ProfileScreen extends ConsumerWidget {
 
               AppValues.gapL,
 
+              // --- Settings Header (Outside) ---
               Text(
                 AppStrings.settings,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              AppValues.gapXXS,
               Text(
                 ProfileStrings.settingsSubtitle,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.subTextColor,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textGrey,
                 ),
               ),
               AppValues.gapM,
+
+              // --- Grouped Card Container ---
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.lavenderBlue,
-                  borderRadius: AppValues.borderRadiusM,
+                  color: Colors.white,
+                  borderRadius: AppValues.borderRadiusCircular, // Using circular/pill radius per spec, or adjust to borderRadiusL
+                  border: Border.all(color: Colors.grey.shade200),
                 ),
+                // Ensure internal padding so text doesn't hit borders if needed,
+                // but ListTiles usually handle their own padding. 
+                // We'll clip behavior to ensure ripples stay inside rounded corners.
+                clipBehavior: Clip.antiAlias, 
                 child: Column(
                   children: [
-                    AppListTile(
+                    // Item 1: Edit Profile
+                    SettingsTile(
                       title: AppStrings.editProfile,
                       subtitle: ProfileStrings.editProfileSubtitle,
                       onTap: () => _showEditProfileDialog(context, ref, profile),
                     ),
                     const Divider(height: 1, indent: 16, endIndent: 16),
-                    const AppListTile(title: AppStrings.notifications, subtitle: ProfileStrings.notificationSubtitle),
+                    
+                    // Item 2: Notification
+                    const SettingsTile(
+                      title: AppStrings.notifications,
+                      subtitle: ProfileStrings.notificationSubtitle,
+                    ),
                     const Divider(height: 1, indent: 16, endIndent: 16),
-                    const AppListTile(
+                    
+                    // Item 3: Privacy & Terms
+                    const SettingsTile(
+                      title: "Privacy & Terms",
+                      subtitle: "View how we handle your data.",
+                    ),
+                    const Divider(height: 1, indent: 16, endIndent: 16),
+
+                    // Item 4: Log out
+                    const SettingsTile(
                       title: AppStrings.logout,
                       hideSubtitle: true,
-                      titleColor: AppColors.errorColor,
                     ),
                   ],
                 ),

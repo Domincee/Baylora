@@ -7,7 +7,13 @@ class SettingsTile extends StatelessWidget {
   final bool hideSubtitle;
   final VoidCallback? onTap;
 
-  const SettingsTile({super.key, required this.title, this.subtitle, this.hideSubtitle = false, this.onTap});
+  const SettingsTile({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.hideSubtitle = false,
+    this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,20 +33,22 @@ class SettingsTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  if (!hideSubtitle && subtitle != null)
-                    Text(
+                  if (!hideSubtitle && subtitle != null) ...[
+                     const SizedBox(height: 4), // Added small gap
+                     Text(
                       subtitle!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textGrey,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w400, // Reduced weight slightly for better hierarchy
                       ),
                     ),
+                  ],
                 ],
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
-              size: 14,
+              size: 16, // Updated size to 16
               color: AppColors.textGrey,
             ),
           ],
