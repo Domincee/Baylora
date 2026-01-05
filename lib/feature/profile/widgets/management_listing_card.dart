@@ -199,27 +199,35 @@ class ManagementListingCard extends StatelessWidget {
     Color bgColor = AppColors.tealLight.withOpacity(0.5);
     Color textColor = AppColors.tealText;
 
-    if (status.toLowerCase() == 'sold') {
+    final s = status.toLowerCase();
+
+    if (s == 'sold') {
       text = 'Sold';
       bgColor = AppColors.statusSoldBg;
       textColor = AppColors.statusSoldText;
-    } else if (status.toLowerCase() == 'accepted') {
+    } else if (s == 'accepted') {
       text = 'Accepted';
       bgColor = AppColors.statusAcceptedBg;
       textColor = Colors.white;
-    } else if (status.toLowerCase() == 'ended' || status.toLowerCase() == 'expired') {
-      text = 'Expired'; // Changed from 'Ended' to 'Expired'
-      bgColor = const Color(0xFFFFEBEE);
-      textColor = AppColors.errorColor;
     } else {
-       // Check if expired based on endTime if status is still active
-       if (endTime != null && DateTime.now().isAfter(endTime!)) {
-         text = 'Expired'; // Changed from 'Ended' to 'Expired'
-         bgColor = const Color(0xFFFFEBEE);
-         textColor = AppColors.errorColor;
-       } else {
-         text = 'Active';
-       }
+      final now = DateTime.now();
+
+      if (endTime != null && endTime!.isBefore(now)) {
+        // Case: Expired
+        text = 'Expired';
+        bgColor = AppColors.grey200;
+        textColor = AppColors.textDarkGrey;
+      } else if (endTime != null && endTime!.isAfter(now)) {
+        // Case: Time-Sensitive
+        text = 'Ends in ${_formatDuration(endTime!.difference(now))}';
+        bgColor = const Color(0xFFFFEBEE);
+        textColor = AppColors.errorColor;
+      } else {
+        // Case: Active (Default)
+        text = 'Active';
+        bgColor = AppColors.tealLight.withOpacity(0.5);
+        textColor = AppColors.tealText;
+      }
     }
 
     return Container(
@@ -283,5 +291,15 @@ class ManagementListingCard extends StatelessWidget {
     if (difference.inDays == 0) return 'today';
     if (difference.inDays == 1) return '1 day ago';
     return '${difference.inDays} days ago';
+  }
+
+  String _formatDuration(Duration duration) {
+    if (duration.inDays > 0) {
+      return '${duration.inDays}d';
+    } else if (duration.inHours > 0) {
+      return '${duration.inHours}h';
+    } else {
+      return '${duration.inMinutes}m';
+    }
   }
 }

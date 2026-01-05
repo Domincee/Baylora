@@ -24,9 +24,10 @@ class ProfileService {
   Stream<List<Map<String, dynamic>>> get myListingsStream {
     return _supabase
         .from('items')
-        .stream(primaryKey: ['id'])
+        .select()
         .eq('owner_id', userId)
-        .order('created_at', ascending: false);
+        .order('created_at', ascending: false)
+        .asStream();
   }
 
   Stream<List<Map<String, dynamic>>> get myBidsStream {
