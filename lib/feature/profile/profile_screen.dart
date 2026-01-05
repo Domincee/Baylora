@@ -62,6 +62,7 @@ class ProfileScreen extends ConsumerWidget {
                 username: profile.username.isNotEmpty ? profile.username : ProfileStrings.defaultUsername,
                 bio: profile.bio ?? ProfileStrings.noBio,
                 rating: profile.rating,
+                totalTrades: profile.totalTrades.toString(),
                 isVerified: profile.isVerified,
                 onEdit: () => _showEditProfileDialog(context, ref, profile),
               ),

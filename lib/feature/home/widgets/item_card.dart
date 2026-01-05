@@ -2,8 +2,8 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/uni_image.dart';
 import 'package:baylora_prjct/feature/home/widgets/build_price.dart';
-import 'package:baylora_prjct/feature/home/widgets/build_rating.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
+import 'package:baylora_prjct/feature/shared/widgets/user_rating_pill.dart'; // Import Shared Widget
 import 'package:baylora_prjct/feature/shared/widgets/username_with_badge.dart'; // Import Shared Widget
 import 'package:flutter/material.dart';
 
@@ -96,7 +96,7 @@ class ItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                BuildRating(rating: rating, totalTrade: totalTrade, context: context),
+                UserRatingPill(rating: rating, totalTrades: totalTrade),
               ],
             ),
           ),

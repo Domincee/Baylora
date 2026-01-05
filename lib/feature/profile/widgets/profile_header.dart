@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
+import 'package:baylora_prjct/feature/shared/widgets/user_rating_pill.dart';
 import 'package:baylora_prjct/feature/shared/widgets/username_with_badge.dart'; // Import Shared Widget
 
 class ProfileHeader extends StatelessWidget {
@@ -10,7 +11,8 @@ class ProfileHeader extends StatelessWidget {
   final String username;
   final String bio;
   final double rating;
-  final bool isVerified; // Added field
+  final String totalTrades; // Added
+  final bool isVerified;
   final VoidCallback onEdit;
 
   const ProfileHeader({
@@ -20,7 +22,8 @@ class ProfileHeader extends StatelessWidget {
     required this.username,
     required this.bio,
     required this.rating,
-    this.isVerified = false, // Default false
+    this.totalTrades = "0", // Default
+    this.isVerified = false,
     required this.onEdit,
   });
 
@@ -73,11 +76,10 @@ class ProfileHeader extends StatelessWidget {
                   ),
                 ),
                 AppValues.gapXXS,
-                Row(children: List.generate(5, (index) => Icon(
-                  Icons.star, 
-                  color: index < rating ? Colors.amber : Colors.grey[300], 
-                  size: 16
-                ))),
+                UserRatingPill(
+                  rating: rating.toString(),
+                  totalTrades: totalTrades,
+                ),
               ],
             ),
           )

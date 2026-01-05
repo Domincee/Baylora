@@ -92,6 +92,12 @@ class AppColors {
   /// Grey for disabled states
   static const Color greyDisabled = Color(0xFFBDBDBD);
 
+  /// Gradient Grey Start (for Rating Pill)
+  static const Color gradientGreyStart = Color(0xFFD7D7D7);
+
+  /// Gradient Grey End (for Rating Pill)
+  static const Color gradientGreyEnd = Color(0xFFD0C9C9);
+
   // ============================================
   // SEMANTIC COLORS
   // ============================================

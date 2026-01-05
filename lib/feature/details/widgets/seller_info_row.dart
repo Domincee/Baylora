@@ -3,6 +3,7 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
+import 'package:baylora_prjct/feature/shared/widgets/user_rating_pill.dart';
 import 'package:baylora_prjct/feature/shared/widgets/username_with_badge.dart'; // Import Shared Widget
 
 class SellerInfoRow extends StatelessWidget {
@@ -53,50 +54,10 @@ class SellerInfoRow extends StatelessWidget {
         ),
         
         // Rating Pill - Only show if rating > 0 or trades > 0
-        if (hasRating || hasTrades)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.greyLight,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                if (hasRating) ...[
-                  const Icon(Icons.star_rounded, color: AppColors.starColor, size: 18),
-                  const SizedBox(width: 4),
-                  Text(
-                    "$rating",
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textDarkGrey,
-                        ),
-                  ),
-                ],
-                
-                if (hasRating && hasTrades)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(
-                      "·",
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textDarkGrey,
-                          ),
-                    ),
-                  ),
-
-                if (hasTrades)
-                  Text(
-                    "$trades trades",
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textDarkGrey,
-                        ),
-                  ),
-              ],
-            ),
-          ),
+        UserRatingPill(
+          rating: rating.toString(),
+          totalTrades: trades.toString(),
+        ),
       ],
     );
   }
