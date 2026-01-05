@@ -97,8 +97,8 @@ class _AppTextInputState extends State<AppTextInput> {
               borderRadius: AppValues.borderRadiusM,
               borderSide: const BorderSide(color: AppColors.errorColor, width: 2),
             ),
-            // Hide the default error text visually but keep validation logic
-            errorStyle: const TextStyle(height: 0, fontSize: 0),
+            // Show the error text properly
+            // errorStyle: const TextStyle(height: 0, fontSize: 0), // REMOVED THIS LINE
             suffixIcon: _buildSuffixIcon(),
           ),
         ),

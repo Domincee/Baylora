@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:baylora_prjct/core/assets/images.dart';
@@ -57,24 +60,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _form.confirmPassCtrl.text.trim().isEmpty;
 
     if (hasEmptyFields) {
-      _form.validate();
+      _form.validate(); // To show inline errors
       AppFeedback.error(context, AuthStrings.fillAllFieldsError);
       return;
     }
 
-    // 2. Check for password mismatch
+    // 2. Validate format (email regex, password length, etc.)
+    if (!_form.validate()) {
+      // If validation fails but fields are NOT empty, it means format is wrong.
+      // We rely on inline errors, but user requested consistent Snackbar behavior.
+      // We'll show a generic "check input" message if it's not an empty field error.
+      AppFeedback.error(context, "Please check your input");
+      return; 
+    }
+
+    // 3. Check for password mismatch (Validator handles this inline, but double check)
     if (_form.passCtrl.text != _form.confirmPassCtrl.text) {
-      _form.validate();
       AppFeedback.error(context, AuthStrings.passwordMismatchError);
       return;
     }
 
-    // 3. Final validation check (email format etc.)
-    if (!_form.validate()) {
-      return; 
-    }
-
-    // 4. Check Terms & Agreement (Only if all fields valid)
+    // 4. Check Terms & Agreement
     if (!_agreeToTerms) {
       setState(() => _showTermsError = true);
       AppFeedback.error(context, AuthStrings.acceptTermsRequired);
@@ -108,9 +114,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
         routeType: RouteType.fade,
       );
     } on AuthException catch (e) {
-      if (mounted) AppFeedback.error(context, e.message);
-    } catch (_) {
-      if (mounted) AppFeedback.error(context, AuthStrings.unexpectedError);
+      if (mounted) {
+        // Handle explicit SocketException (offline/network errors)
+        final isNetworkError = e.message.contains('SocketException') ||
+            e.message.contains('Network is unreachable') ||
+            e.message.contains('Connection refused');
+        
+        if (isNetworkError) {
+           AppFeedback.error(context, AppStrings.noInternetConnection);
+        } else {
+           AppFeedback.error(context, e.message);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final isNetworkError = e is SocketException ||
+            (e.toString().contains('SocketException')) ||
+            (e.toString().contains('Network is unreachable')) ||
+            (e.toString().contains('Connection refused'));
+
+        final String message = isNetworkError
+            ? AppStrings.noInternetConnection
+            : AuthStrings.unexpectedError;
+
+        AppFeedback.error(context, message);
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

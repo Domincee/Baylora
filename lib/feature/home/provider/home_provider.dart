@@ -5,12 +5,11 @@ final homeItemsProvider = StreamProvider.autoDispose.family<List<Map<String, dyn
   final supabase = Supabase.instance.client;
 
   // Start the query
-  // FIX: Added 'is_verified' to the selected profile columns
   var query = supabase
       .from('items')
       .select('*, profiles:owner_id(username, avatar_url, rating, total_trades, is_verified)');
 
-  // Common filter for all views: Item must be active
+
   query = query.eq('status', 'active');
 
   // Apply specific filters
@@ -18,7 +17,7 @@ final homeItemsProvider = StreamProvider.autoDispose.family<List<Map<String, dyn
     case 'Ending':
       return query
           .not('end_time', 'is', null) // Ensure has duration
-          .gt('end_time', DateTime.now().toUtc().toIso8601String()) // Ensure not ended (Compare in UTC)
+          .gt('end_time', DateTime.now().toUtc().toIso8601String())
           .order('end_time', ascending: true)
           .asStream();
 

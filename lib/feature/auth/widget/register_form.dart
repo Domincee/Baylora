@@ -40,19 +40,19 @@ class RegisterForm extends StatelessWidget {
             label: AuthStrings.usernameLabel,
             icon: Icons.person,
             controller: form.userNameCtrl,
-            validator: AppValidators.lettersOnly,
+            validator: AppValidators.validateUsername,
           ),
           AppTextInput(
             label: AuthStrings.firstNameLabel,
             icon: Icons.person,
             controller: form.firstNameCtrl,
-            validator: AppValidators.lettersOnly,
+            validator: AppValidators.validateName,
           ),
           AppTextInput(
             label: AuthStrings.lastNameLabel,
             icon: Icons.person,
             controller: form.lastNameCtrl,
-            validator: AppValidators.lettersOnly,
+            validator: AppValidators.validateName,
           ),
           AppTextInput(
             label: AuthStrings.emailLabel,

@@ -1,43 +1,57 @@
+import 'package:baylora_prjct/feature/auth/constant/auth_strings.dart';
+
 class AppValidators {
   static String? required(String? val) =>
-      val == null || val.isEmpty ? "Required" : null;
+      val == null || val.trim().isEmpty ? AuthStrings.requiredField : null;
 
   static String? lettersOnly(String? val) {
-    if (val == null || val.isEmpty) return "Required";
-    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(val)) return "Letters only";
+    if (val == null || val.trim().isEmpty) return AuthStrings.requiredField;
+    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(val)) return AuthStrings.lettersOnly;
     return null;
   }
 
   static String? email(String? val) {
-    if (val == null || val.isEmpty) return "Required";
-    if (!val.contains('@') || !val.contains('.')) return "Invalid Email";
+    if (val == null || val.trim().isEmpty) return AuthStrings.requiredField;
+    // Simple email regex for format validation
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(val)) {
+      return AuthStrings.invalidEmailFormat;
+    }
     return null;
   }
 
-  static String? validateEmail(String? val) => email(val);
+  // Alias removed to avoid duplication
+  // static String? validateEmail(String? val) => email(val);
 
-  static String? password(String? val) =>
-      val != null && val.length < 6 ? "Min 6 chars" : null;
+  static String? password(String? val) {
+    if (val == null || val.trim().isEmpty) return AuthStrings.requiredField;
+    if (val.length < 6) return AuthStrings.passwordMinLength;
+    return null;
+  }
 
-  static String? validatePassword(String? val) => password(val);
+  // Alias removed to avoid duplication
+  // static String? validatePassword(String? val) => password(val);
 
   static String? validateUsername(String? val) {
-    if (val == null || val.isEmpty) return "Required";
+    if (val == null || val.trim().isEmpty) return AuthStrings.requiredField;
     if (val.length < 3) return "Min 3 chars";
-    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(val)) {
-      return "Letters, numbers, underscore only";
+    // Modified to allow only letters (a-z, A-Z)
+    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(val)) {
+      return AuthStrings.lettersOnly;
     }
     return null;
   }
 
   static String? validateName(String? val, {String fieldName = "Name"}) {
-    if (val == null || val.isEmpty) return "Required";
-    if (!RegExp(r'^[a-zA-Z]+$').hasMatch(val)) {
+    if (val == null || val.trim().isEmpty) return AuthStrings.requiredField;
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(val)) {
       return "$fieldName should contain letters only";
     }
     return null;
   }
 
-  static String? confirmPassword(String? val, String password) =>
-      val != password ? "Mismatch" : null;
+  static String? confirmPassword(String? val, String password) {
+    if (val == null || val.trim().isEmpty) return AuthStrings.requiredField;
+    if (val != password) return AuthStrings.passwordMismatchError;
+    return null;
+  }
 }

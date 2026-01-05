@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
@@ -183,7 +185,36 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text("${AppStrings.error}: $err")),
+        error: (err, stack) {
+          final isNetworkError = err is SocketException ||
+            (err.toString().contains('SocketException')) ||
+            (err.toString().contains('Network is unreachable')) ||
+            (err.toString().contains('Connection refused'));
+
+          final String message = isNetworkError
+            ? AppStrings.noInternetConnection
+            : "${AppStrings.error}: $err";
+
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isNetworkError ? Icons.wifi_off : Icons.error_outline,
+                  color: AppColors.errorColor,
+                  size: 48,
+                ),
+                AppValues.gapM,
+                Text(message, textAlign: TextAlign.center),
+                AppValues.gapM,
+                ElevatedButton(
+                  onPressed: () => ref.refresh(myListingsProvider),
+                  child: const Text(AppStrings.retry),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

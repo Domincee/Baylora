@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
@@ -25,8 +28,20 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   Future<void> _handleLogin() async {
+    // 1. Validate Form
     if (!_form.validate()) {
-      AppFeedback.error(context, AuthStrings.fillAllFieldsError);
+      // Check if fields are actually empty to give correct feedback
+      final bool isEmpty = _form.emailCtrl.text.trim().isEmpty || 
+                           _form.passCtrl.text.trim().isEmpty;
+      
+      if (isEmpty) {
+        AppFeedback.error(context, AuthStrings.fillAllFieldsError);
+      } else {
+        // If not empty but invalid (e.g. wrong email format), show generic error
+        // or rely on the inline errors from AppValidators.
+        // The user specifically asked to avoid "Please fill empty field" if it's just invalid format.
+         AppFeedback.error(context, "Please check your input");
+      }
       return;
     }
 
@@ -60,9 +75,33 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } on AuthException catch (e) {
-      if (mounted) AppFeedback.error(context, e.message);
-    } catch (_) {
-      if (mounted) AppFeedback.error(context, AuthStrings.unexpectedError);
+      if (mounted) {
+        final isNetworkError = e.message.contains('SocketException') ||
+            e.message.contains('Network is unreachable') ||
+            e.message.contains('Connection refused');
+
+        if (isNetworkError) {
+          AppFeedback.error(context, AppStrings.noInternetConnection);
+        } else {
+          AppFeedback.error(context, e.message);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final isNetworkError = e is SocketException ||
+            (e.toString().contains('SocketException')) ||
+            (e.toString().contains('Network is unreachable')) ||
+            (e.toString().contains('Connection refused'));
+
+        final String message;
+        if (isNetworkError) {
+          message = AppStrings.noInternetConnection;
+        } else {
+          message = AuthStrings.unexpectedError;
+        }
+            
+        AppFeedback.error(context, message);
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
       unawaited(AppFeedback.hideLoading());

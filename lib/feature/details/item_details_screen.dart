@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
@@ -66,16 +69,29 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   }
 
   Widget _buildErrorState(Object? error) {
+    final bool isNetworkError = error is SocketException ||
+        (error.toString().contains('SocketException')) ||
+        (error.toString().contains('Network is unreachable')) ||
+        (error.toString().contains('Connection refused'));
+
+    final String message = isNetworkError
+        ? AppStrings.noInternetConnection
+        : '${ItemDetailsStrings.failedToLoad} ${error.toString()}';
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, color: AppColors.errorColor, size: 48),
+            Icon(
+              isNetworkError ? Icons.wifi_off : Icons.error_outline,
+              color: AppColors.errorColor,
+              size: 48,
+            ),
             AppValues.gapM,
             Text(
-              '${ItemDetailsStrings.failedToLoad}$error',
+              message,
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textGrey),
             ),
@@ -86,7 +102,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                   _itemFuture = _fetchItemDetails();
                 });
               },
-              child: const Text(ItemDetailsStrings.retry),
+              child: const Text(AppStrings.retry),
             )
           ],
         ),
@@ -106,7 +122,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     // 2. Parsed Fields
     final images = (item['images'] as List<dynamic>?) ?? [];
     final title = item['title'] ?? ItemDetailsStrings.noTitle;
-    final description = item['description'] ?? '';
+    final description = item['description'] ?? ''; 
     final type = item['type'] ?? 'sale'; 
     final category = item['category'] ?? 'General';
     final condition = item['condition'] ?? 'Used';

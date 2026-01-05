@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
@@ -116,8 +118,25 @@ class PrimaryAppBar extends ConsumerWidget {
                             // 1. Show Loading first
                             await EasyLoading.show(status: 'Signing out...');
                             
-                            // 2. Clear Supabase Session
-                            await Supabase.instance.client.auth.signOut();
+                            try {
+                              // 2. Clear Supabase Session
+                              await Supabase.instance.client.auth.signOut();
+                            } catch (e) {
+                              if (context.mounted) {
+                                final isNetworkError = e is SocketException ||
+                                  (e.toString().contains('SocketException')) ||
+                                  (e.toString().contains('Network is unreachable')) ||
+                                  (e.toString().contains('Connection refused'));
+
+                                if (isNetworkError) {
+                                   await EasyLoading.dismiss();
+                                   ScaffoldMessenger.of(context).showSnackBar(
+                                     const SnackBar(content: Text(AppStrings.noInternetConnection)),
+                                   );
+                                   return;
+                                }
+                              }
+                            }
                             
                             // 3. Clear Local State (Riverpod)
                             // Note: Since we added .autoDispose to the providers, 

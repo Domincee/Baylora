@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/core/util/app_validators.dart';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 
@@ -38,22 +39,23 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   }
 
   Future<void> _handleSave() async {
-    // 1. Validate Username locally
+    // 1. Validate Username locally using shared validator
     final username = _usernameController.text.trim();
-    if (username.length < 3) {
-      setState(() => _usernameError = "must be at least 3 characters");
+    
+    // Check using shared validator logic
+    final validationError = AppValidators.validateUsername(username);
+    
+    if (validationError != null) {
+      setState(() => _usernameError = validationError);
       return;
     }
-    // VALIDATION: Max length check
+
+    // Additional length check if needed (though AppValidators covers min len)
     if (username.length > 15) {
       setState(() => _usernameError = "Username cannot exceed 15 characters");
       return;
     }
-    // VALIDATION: Only letters (a-z, A-Z) and underscores allowed. No numbers.
-    if (RegExp(r'[^a-zA-Z_]').hasMatch(username)) {
-      setState(() => _usernameError = "Invalid username format (@,#,.)");
-      return;
-    }
+
     // Reset error
     setState(() {
       _usernameError = null;

@@ -40,6 +40,13 @@ class AuthStrings {
   static const String registrationFailed = "Registration failed";
   static const String unexpectedError = "Unexpected error occurred";
 
+  // Validation messages
+  static const String requiredField = "Please fill empty field";
+  static const String invalidEmailFormat = "Incorrect email format";
+  static const String passwordMinLength = "Password must be at least 6 characters";
+  static const String invalidUsername = "Letters, numbers, underscore only";
+  static const String lettersOnly = "Letters only";
+
   // Login specific messages
   static const String loginSuccess = "Login Successful!";
   static const String redirectMess = "Redirecting...";

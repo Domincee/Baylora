@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
@@ -145,8 +146,17 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       } catch (e) {
         debugPrint("Error uploading image: $e");
         if (mounted) {
+           final isNetworkError = e is SocketException ||
+            (e.toString().contains('SocketException')) ||
+            (e.toString().contains('Network is unreachable')) ||
+            (e.toString().contains('Connection refused'));
+
+           final String message = isNetworkError
+            ? AppStrings.noInternetConnection
+            : 'Failed to upload an image: $e';
+
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Failed to upload an image: $e")),
+            SnackBar(content: Text(message)),
           );
         }
       }
@@ -273,8 +283,17 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final isNetworkError = e is SocketException ||
+            (e.toString().contains('SocketException')) ||
+            (e.toString().contains('Network is unreachable')) ||
+            (e.toString().contains('Connection refused'));
+
+        final String message = isNetworkError
+            ? AppStrings.noInternetConnection
+            : 'Error publishing listing: $e';
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error publishing listing: $e")),
+          SnackBar(content: Text(message)),
         );
       }
     } finally {

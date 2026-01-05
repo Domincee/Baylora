@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
@@ -112,7 +114,36 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text("${AppStrings.error}: $err")),
+        error: (err, stack) {
+          final isNetworkError = err is SocketException ||
+            (err.toString().contains('SocketException')) ||
+            (err.toString().contains('Network is unreachable')) ||
+            (err.toString().contains('Connection refused'));
+
+          final String message = isNetworkError
+            ? AppStrings.noInternetConnection
+            : "${AppStrings.error}: $err";
+          
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isNetworkError ? Icons.wifi_off : Icons.error_outline,
+                  color: AppColors.errorColor,
+                  size: 48,
+                ),
+                AppValues.gapM,
+                Text(message, textAlign: TextAlign.center),
+                AppValues.gapM,
+                ElevatedButton(
+                  onPressed: () => ref.refresh(userProfileProvider),
+                  child: const Text(AppStrings.retry),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

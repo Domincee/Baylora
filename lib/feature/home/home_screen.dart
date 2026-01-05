@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
@@ -64,7 +67,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) {
                   debugPrint('Error loading items: $err');
-                  return const Center(child: Text('Something went wrong.'));
+                  
+                  final isNetworkError = err is SocketException ||
+                      (err.toString().contains('SocketException')) ||
+                      (err.toString().contains('Network is unreachable')) ||
+                      (err.toString().contains('Connection refused'));
+
+                  final String message = isNetworkError
+                      ? AppStrings.noInternetConnection
+                      : AppStrings.somethingWentWrong;
+
+                  final IconData icon = isNetworkError ? Icons.wifi_off : Icons.error_outline;
+
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(icon, color: AppColors.textGrey, size: 48),
+                        AppValues.gapS,
+                        Text(message, textAlign: TextAlign.center),
+                        AppValues.gapM,
+                        ElevatedButton(
+                          onPressed: _refreshItems,
+                          child: const Text(AppStrings.retry),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 data: (items) {
                   if (items.isEmpty) {

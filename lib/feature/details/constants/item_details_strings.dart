@@ -1,6 +1,5 @@
 class ItemDetailsStrings {
   static const String failedToLoad = 'Failed to load item.\n';
-  static const String retry = 'Retry';
   static const String itemNotFound = 'Item not found';
   static const String noTitle = 'No Title';
   static const String description = 'Description';
