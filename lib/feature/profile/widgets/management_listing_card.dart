@@ -129,8 +129,7 @@ class ManagementListingCard extends StatelessWidget {
                 // Title
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -147,7 +146,7 @@ class ManagementListingCard extends StatelessWidget {
                   ),
                   Text(
                     "P${price!.toStringAsFixed(0)}", 
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.blueText, // Should verify this is right blue
                           fontWeight: FontWeight.w600,
                         ),
@@ -155,7 +154,7 @@ class ManagementListingCard extends StatelessWidget {
                 ] else if (lookingFor != null && lookingFor!.isNotEmpty) ...[
                   Text(
                     ProfileStrings.lookingFor,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: AppColors.subTextColor,
                         ),
                   ),
@@ -192,24 +191,21 @@ class ManagementListingCard extends StatelessWidget {
                 if (hasNoOffers)
                   Text(
                     isAuction ? ProfileStrings.noBidsYet : ProfileStrings.noOffersYet,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: AppColors.subTextColor,
-                          fontSize: 12,
                         ),
                   )
                 else
                   Text(
                     "$offerCount ${ProfileStrings.offers}",
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: AppColors.subTextColor,
-                          fontSize: 12,
                         ),
                   ),
                 Text(
                   "${ProfileStrings.posted} $timeAgo",
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: AppColors.subTextColor,
-                        fontSize: 12,
                       ),
                 ),
               ],
@@ -238,7 +234,6 @@ class ManagementListingCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: AppColors.errorColor,
                           fontWeight: FontWeight.w600,
-                          fontSize: 10,
                         ),
                       ),
                     ),

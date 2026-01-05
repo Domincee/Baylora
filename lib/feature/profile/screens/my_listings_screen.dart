@@ -17,8 +17,9 @@ class MyListingsScreen extends ConsumerStatefulWidget {
 }
 
 class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
-  String _selectedFilter = 'All'; // 'All', 'Active', 'Ended'
-  final List<String> _filters = ['All', 'Active', 'Ended'];
+  // Updated filter options to match requirements
+  String _selectedFilter = 'All'; 
+  final List<String> _filters = ['All', 'For Sale', 'For Trade', 'Ended'];
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
         backgroundColor: AppColors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.black),
-        titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+        titleTextStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
               color: AppColors.black,
               fontWeight: FontWeight.w600,
             ),
@@ -43,6 +44,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
           final filteredList = listings.where((item) {
             final endTimeStr = item['end_time'] as String?;
             final dbStatus = item['status']?.toString().toLowerCase();
+            final type = item['type']?.toString().toLowerCase();
             bool isExpired = false;
             
             if (endTimeStr != null) {
@@ -52,14 +54,31 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
               } catch (_) {}
             }
 
-            if (_selectedFilter == 'Active') {
-              if (dbStatus == 'sold' || dbStatus == 'ended') return false;
-              if (isExpired && dbStatus != 'accepted') return false;
-              return true;
-            } else if (_selectedFilter == 'Ended') {
-              return isExpired || dbStatus == 'ended' || dbStatus == 'sold';
+            switch (_selectedFilter) {
+              case 'Ended':
+                // Logic: Show items that have ended (expired or explicit status)
+                // This covers items that ran out of time or were marked sold/ended/accepted
+                if (dbStatus == 'ended' || dbStatus == 'sold' || dbStatus == 'accepted') return true;
+                if (isExpired) return true;
+                return false;
+
+              case 'For Sale':
+                // Active Cash listings
+                if (dbStatus != 'active') return false;
+                if (isExpired) return false;
+                return type == 'cash';
+
+              case 'For Trade':
+                // Active Trade listings
+                if (dbStatus != 'active') return false;
+                if (isExpired) return false;
+                return type == 'trade';
+
+              case 'All':
+              default:
+                // Show everything (Active history)
+                return true; 
             }
-            return true; // 'All'
           }).toList();
 
           return Column(
@@ -93,7 +112,8 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                           selectedColor: AppColors.blueLight,
                           labelStyle: TextStyle(
                             color: isSelected ? AppColors.blueText : AppColors.textGrey,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                            fontSize: Theme.of(context).textTheme.bodySmall?.fontSize,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
