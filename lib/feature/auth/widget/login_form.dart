@@ -52,7 +52,7 @@ class _LoginFormState extends State<LoginForm> {
             icon: Icons.email,
             controller: widget.form.emailCtrl,
             keyboardType: TextInputType.emailAddress,
-            validator: AppValidators.validateEmail,
+            validator: AppValidators.email,
           ),
 
           // Password input
@@ -61,7 +61,7 @@ class _LoginFormState extends State<LoginForm> {
             icon: Icons.lock,
             controller: widget.form.passCtrl,
             isPassword: true,
-            validator: AppValidators.validatePassword,
+            validator: AppValidators.password,
           ),
 
           // Remember Me Checkbox (Using Reusable AuthCheckbox)
