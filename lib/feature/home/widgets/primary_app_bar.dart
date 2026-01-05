@@ -138,11 +138,6 @@ class PrimaryAppBar extends ConsumerWidget {
                               }
                             }
                             
-                            // 3. Clear Local State (Riverpod)
-                            // Note: Since we added .autoDispose to the providers, 
-                            // they will reset automatically when the widget tree is disposed.
-                            // But strictly invalidating them here ensures they are cleared immediately.
-                            // ref.invalidate(userProfileProvider); // Optional but safe
 
                             if (context.mounted) {
                               await EasyLoading.dismiss();
@@ -160,7 +155,7 @@ class PrimaryAppBar extends ConsumerWidget {
                           return [
                             const PopupMenuItem(
                               value: 'my_items',
-                              child: Text('My Items'),
+                              child: Text(AppStrings.myItems),
                             ),
                             const PopupMenuItem(
                               value: 'settings',

@@ -9,9 +9,9 @@ class AppStrings {
 
  // --- New Generic Additions ---
  static const String settings = "Settings";
+ static const String myItems = "My Items";
  static const String logout = "Log out";
- static const String notifications = "Notification";
- static const String editProfile = "Edit Profile";
+
  static const String save = "Save";
  static const String cancel = "Cancel";
  static const String error = "Error";

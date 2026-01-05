@@ -9,13 +9,11 @@ import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/domain/user_profile.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
-import 'package:baylora_prjct/feature/profile/screens/my_bids_screen.dart';
-import 'package:baylora_prjct/feature/profile/screens/my_listings_screen.dart';
-import 'package:baylora_prjct/feature/profile/widgets/bid_card.dart';
 import 'package:baylora_prjct/feature/profile/widgets/edit_profile_dialog.dart';
-import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart';
 import 'package:baylora_prjct/feature/profile/widgets/profile_header.dart';
-import 'package:baylora_prjct/feature/profile/widgets/settings_tile.dart';
+import 'package:baylora_prjct/feature/profile/widgets/sections/profile_bids_section.dart';
+import 'package:baylora_prjct/feature/profile/widgets/sections/profile_listings_section.dart';
+import 'package:baylora_prjct/feature/profile/widgets/sections/profile_settings_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -38,6 +36,10 @@ class ProfileScreen extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  void _handleLogout(BuildContext context, WidgetRef ref) {
+    // Implement logout logic here
   }
 
   @override
@@ -67,73 +69,19 @@ class ProfileScreen extends ConsumerWidget {
               SectionHeader(title: ProfileStrings.listingsTitle, subTitle: ProfileStrings.listingsSubtitle),
               AppValues.gapL,
 
-              const _ListingsSection(),
+              const ProfileListingsSection(),
 
               AppValues.gapL,
 
-              const _BidsSection(),
+              const ProfileBidsSection(),
 
               AppValues.gapL,
 
-              // --- Settings Header (Outside) ---
-              Text(
-                AppStrings.settings,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              ProfileSettingsSection(
+                onEditProfile: () => _showEditProfileDialog(context, ref, profile),
+                onLogout: () => _handleLogout(context, ref),
               ),
-              AppValues.gapXXS,
-              Text(
-                ProfileStrings.settingsSubtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textGrey,
-                ),
-              ),
-              AppValues.gapM,
-
-              // --- Grouped Card Container ---
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: AppValues.borderRadiusCircular, // Using circular/pill radius per spec, or adjust to borderRadiusL
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                // Ensure internal padding so text doesn't hit borders if needed,
-                // but ListTiles usually handle their own padding. 
-                // We'll clip behavior to ensure ripples stay inside rounded corners.
-                clipBehavior: Clip.antiAlias, 
-                child: Column(
-                  children: [
-                    // Item 1: Edit Profile
-                    SettingsTile(
-                      title: AppStrings.editProfile,
-                      subtitle: ProfileStrings.editProfileSubtitle,
-                      onTap: () => _showEditProfileDialog(context, ref, profile),
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    
-                    // Item 2: Notification
-                    const SettingsTile(
-                      title: AppStrings.notifications,
-                      subtitle: ProfileStrings.notificationSubtitle,
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-                    
-                    // Item 3: Privacy & Terms
-                    const SettingsTile(
-                      title: "Privacy & Terms",
-                      subtitle: "View how we handle your data.",
-                    ),
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-
-                    // Item 4: Log out
-                    const SettingsTile(
-                      title: AppStrings.logout,
-                      hideSubtitle: true,
-                    ),
-                  ],
-                ),
-              ),
+              
               AppValues.gapXXL,
             ],
           ),
@@ -170,215 +118,6 @@ class ProfileScreen extends ConsumerWidget {
           );
         },
       ),
-    );
-  }
-}
-
-class _ListingsSection extends ConsumerWidget {
-  const _ListingsSection();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final listingsAsync = ref.watch(myListingsProvider);
-
-    return listingsAsync.when(
-      data: (listings) {
-        if (listings.isEmpty) return const Text(ProfileStrings.noListings);
-
-        final previewList = listings.take(4).toList();
-
-        return Column(
-          children: [
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: previewList.length,
-              separatorBuilder: (context, index) => AppValues.gapM,
-              itemBuilder: (context, index) {
-                final item = previewList[index];
-                final images = item['images'] as List?;
-                
-                // Handle swap_preference instead of tags
-                final swapPref = item['swap_preference'];
-                final List<String> lookingFor = (swapPref != null && swapPref.toString().isNotEmpty)
-                    ? swapPref.toString().split(',').map((e) => e.trim()).toList()
-                    : [];
-                
-                // 1. Posted Date Parsing
-                DateTime postedDate = DateTime.now();
-                if (item['created_at'] != null) {
-                  try {
-                    postedDate = DateTime.parse(item['created_at']);
-                  } catch (_) {}
-                }
-
-                // 2. Price Parsing
-                double? price;
-                if (item['price'] != null) {
-                  final parsedPrice = double.tryParse(item['price'].toString());
-                  if (parsedPrice != null && parsedPrice > 0) {
-                    price = parsedPrice;
-                  }
-                }
-
-                // 3. Status Logic
-                String displayStatus = 'Active';
-                final dbStatus = item['status']?.toString().toLowerCase();
-
-                DateTime? endTime;
-                if (item['end_time'] != null) {
-                   try {
-                     endTime = DateTime.parse(item['end_time']);
-                   } catch (_) {}
-                }
-
-                if (dbStatus == 'sold') {
-                  displayStatus = 'Sold';
-                } else if (dbStatus == 'accepted') {
-                  displayStatus = 'Accepted';
-                } else {
-                  if (endTime != null && DateTime.now().isAfter(endTime)) {
-                    displayStatus = 'Ended';
-                  }
-                }
-
-                return ManagementListingCard(
-                  title: item['title'] ?? 'Untitled',
-                  imageUrl: (images != null && images.isNotEmpty) ? images[0] : '',
-                  status: displayStatus,
-                  offerCount: item['offer_count'] ?? 0,
-                  postedDate: postedDate,
-                  price: price,
-                  lookingFor: lookingFor,
-                  isAuction: false,
-                  currentHighestBid: null,
-                  soldToItem: null,
-                  endTime: endTime,
-                );
-              },
-            ),
-            
-            // "See All" Logic: Only show if there are MORE items than we are previewing (4)
-            if (listings.length > 4) ...[
-              AppValues.gapM,
-              InkWell(
-                onTap: () {
-                   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyListingsScreen()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "See all",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textGrey,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 14,
-                        color: AppColors.textGrey,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ],
-        );
-      },
-      loading: () => const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(title: ProfileStrings.listingsTitle, subTitle: ProfileStrings.listingsSubtitle),
-          AppValues.gapM,
-          LinearProgressIndicator(),
-        ],
-      ),
-      error: (err, stack) => Text("${AppStrings.error}: $err"),
-    );
-  }
-}
-
-class _BidsSection extends ConsumerWidget {
-  const _BidsSection();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bidsAsync = ref.watch(myBidsProvider);
-
-    return bidsAsync.when(
-      data: (bids) {
-        final showSeeAll = bids.length > 3;
-        final displayList = showSeeAll ? bids.take(3).toList() : bids;
-
-        return Column(
-          children: [
-            SectionHeader(
-              title: ProfileStrings.bidsTitle,
-              subTitle: ProfileStrings.bidsSubtitle,
-              showSeeAll: showSeeAll,
-              onSeeAll: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const  MyBidsScreen()),
-                );
-              },
-            ),
-            AppValues.gapM,
-            if (displayList.isEmpty)
-              const Text(ProfileStrings.noBids)
-            else
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: displayList.length,
-                separatorBuilder: (context, index) => AppValues.gapM,
-                itemBuilder: (context, index) {
-                  final bid = displayList[index];
-                  final item = bid['items'] as Map<String, dynamic>?;
-
-                  if (item == null) return const SizedBox.shrink();
-
-                  final images = item['images'] as List?;
-                  String myOfferText = bid['cash_offer'] != null ? "P${bid['cash_offer']}" : (bid['swap_item_text'] ?? "Unknown Offer");
-
-                  return BidCard(
-                    title: item['title'] ?? 'Unknown Item',
-                    myOffer: myOfferText,
-                    timer: ProfileStrings.endsSoon,
-                    postedTime: ProfileStrings.recently,
-                    status: item['status'] ?? 'Active',
-                    extraStatus: bid['status'],
-                    imageUrl: (images != null && images.isNotEmpty) ? images[0] : null,
-                  );
-                },
-              ),
-          ],
-        );
-      },
-      loading: () => const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-           SectionHeader(title: ProfileStrings.bidsTitle, subTitle: ProfileStrings.bidsSubtitle),
-           AppValues.gapM,
-           LinearProgressIndicator(),
-        ],
-      ),
-      error: (err, stack) => Text("${AppStrings.error}: $err"),
     );
   }
 }

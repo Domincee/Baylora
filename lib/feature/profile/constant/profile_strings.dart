@@ -37,4 +37,24 @@ class ProfileStrings {
   static const String dealChat = "Deal Chat";
   static const String leaveReview = "Leave Review";
   static const String manageItem = "Manage Item";
+
+
+  //Setting Text
+
+  static const String settingHeader = "Settings";
+  static const String settingSubtitle = "Control your Profile and Alerts.";
+
+
+  static const String editProfileSet = "Edit Profile";
+  static const String editProfileSetSub = "Update your name, bio and photo.";
+
+  static const String notificationsSet = "Notifications";
+  static const String notificationsSetSub = "Choose what you want to be notified about.";
+
+
+  static const String privacyTermsSet = "Privacy & Terms";
+  static const String privacyTermsSetSub = "View how we handle your data.";
+
+  static const String logoutSet = "Log Out";
+
 }
