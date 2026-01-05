@@ -6,6 +6,7 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
+import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -122,27 +123,24 @@ class PrimaryAppBar extends ConsumerWidget {
                               // 2. Clear Supabase Session
                               await Supabase.instance.client.auth.signOut();
                             } catch (e) {
-                              if (context.mounted) {
-                                final isNetworkError = e is SocketException ||
-                                  (e.toString().contains('SocketException')) ||
-                                  (e.toString().contains('Network is unreachable')) ||
-                                  (e.toString().contains('Connection refused'));
+                              if (!context.mounted) return;
+                              
+                              final isNetworkError = e is SocketException ||
+                                (e.toString().contains('SocketException')) ||
+                                (e.toString().contains('Network is unreachable')) ||
+                                (e.toString().contains('Connection refused'));
 
-                                if (isNetworkError) {
-                                   await EasyLoading.dismiss();
+                              if (isNetworkError) {
+                                 await EasyLoading.dismiss();
+                                 if (context.mounted) {
                                    ScaffoldMessenger.of(context).showSnackBar(
                                      const SnackBar(content: Text(AppStrings.noInternetConnection)),
                                    );
-                                   return;
-                                }
+                                 }
+                                 return;
                               }
                             }
                             
-                            // 3. Clear Local State (Riverpod)
-                            // Note: Since we added .autoDispose to the providers, 
-                            // they will reset automatically when the widget tree is disposed.
-                            // But strictly invalidating them here ensures they are cleared immediately.
-                            // ref.invalidate(userProfileProvider); // Optional but safe
 
                             if (context.mounted) {
                               await EasyLoading.dismiss();
@@ -160,11 +158,11 @@ class PrimaryAppBar extends ConsumerWidget {
                           return [
                             const PopupMenuItem(
                               value: 'my_items',
-                              child: Text('My Items'),
+                              child: Text(ProfileStrings.myItems),
                             ),
                             const PopupMenuItem(
                               value: 'settings',
-                              child: Text(AppStrings.settings),
+                              child: Text(ProfileStrings.settings),
                             ),
                             PopupMenuItem(
                               value: 'logout',
