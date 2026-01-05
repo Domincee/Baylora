@@ -1,225 +1,287 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:flutter/material.dart';
 
 class ManagementListingCard extends StatelessWidget {
   final String title;
-  final String imageUrl;
-  final String status;
-  final int offerCount;
-  final DateTime postedDate;
+  final String imageUrl; // Pass the FIRST image from the list here. If empty, pass ''.
+  final String status; // 'active', 'sold', 'accepted', 'expired'
   final double? price;
   final List<String> lookingFor;
-  final bool isAuction;
-  final double? currentHighestBid;
-  final Map<String, dynamic>? soldToItem;
+  final int offerCount;
+  final DateTime postedDate;
   final DateTime? endTime;
+  final VoidCallback? onAction;
 
   const ManagementListingCard({
     super.key,
     required this.title,
     required this.imageUrl,
     required this.status,
-    required this.offerCount,
-    required this.postedDate,
     this.price,
     this.lookingFor = const [],
-    required this.isAuction,
-    this.currentHighestBid,
-    this.soldToItem,
+    required this.offerCount,
+    required this.postedDate,
     this.endTime,
+    this.onAction,
   });
 
-  Color _getStatusColor() {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return AppColors.successColor;
-      case 'sold':
-        return AppColors.grey600;
-      case 'accepted':
-        return AppColors.blueText;
-      case 'ended':
-        return AppColors.errorColor;
-      default:
-        return AppColors.textGrey;
-    }
-  }
+  bool get isCash => price != null && lookingFor.isEmpty;
+  bool get isTrade => price == null && lookingFor.isNotEmpty;
+  bool get isMix => price != null && lookingFor.isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
-    // Check if item has ended (only for active items)
-    bool isEnded = false;
-    if (endTime != null && status.toLowerCase() == 'active') {
-       isEnded = DateTime.now().isAfter(endTime!);
-    }
-    
-    // If ended and not sold/accepted, we can visually treat it as ended
-    final effectiveStatus = (isEnded && status.toLowerCase() == 'active') ? 'Ended' : status;
-    final isItemEnded = effectiveStatus == 'Ended';
-
-
     return Container(
+      padding: AppValues.paddingSmall,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppValues.borderRadiusM,
-        border: isItemEnded ? Border.all(color: AppColors.errorColor.withValues(alpha: 0.5)) : null,
-        boxShadow: [
+        color: AppColors.white,
+        borderRadius: AppValues.borderRadiusL,
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppColors.shadowColor,
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
         ],
       ),
-      padding: AppValues.paddingS,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image
           ClipRRect(
-            borderRadius: AppValues.borderRadiusS,
-            child: Stack(
-              children: [
-                 Image.network(
-                  imageUrl,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    width: 80,
-                    height: 80,
-                    color: AppColors.grey200,
-                    child: const Icon(Icons.image_not_supported, color: AppColors.textGrey),
-                  ),
-                ),
-                if(isItemEnded)
-                  Container(
-                    width: 80,
-                    height: 80,
-                    color: AppColors.overlay,
-                    alignment: Alignment.center,
-                    child: Text(
-                      "ENDED",
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold
+            borderRadius: AppValues.borderRadiusM,
+            child: Container(
+              width: 80,
+              height: 80,
+              color: AppColors.greyLight,
+              child: imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                        child: Icon(Icons.image_not_supported,
+                            color: AppColors.grey400),
                       ),
+                    )
+                  : const Center(
+                      child: Icon(Icons.image_not_supported,
+                          color: AppColors.grey400),
                     ),
-                  )
-              ],
             ),
           ),
-          AppValues.gapM,
-
+          AppValues.gapHS,
           // Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    if (isItemEnded)
-                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.errorColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          "Ended",
-                           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: AppColors.errorColor,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                       )
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor().withValues(alpha: 0.1),
-                          borderRadius: AppValues.borderRadiusS,
-                        ),
-                        child: Text(
-                          status,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: _getStatusColor(),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                  ],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
-                
-                // Price or Trade
-                if (price != null)
-                  Text(
-                    "P${price!.toStringAsFixed(2)}",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                
-                if (lookingFor.isNotEmpty)
-                   Text(
-                    "${ProfileStrings.lookingFor}: ${lookingFor.take(2).join(', ')}",
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.textGrey,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                const SizedBox(height: 8),
-
-                // Offers / Bids info
-                Row(
-                  children: [
-                    Icon(Icons.local_offer_outlined, size: 14, color: AppColors.textGrey),
-                    const SizedBox(width: 4),
-                    Text(
-                      "$offerCount ${ProfileStrings.offers}",
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textGrey,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      _formatDate(postedDate),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.textGrey,
-                      ),
-                    ),
-                  ],
-                ),
+                AppValues.gapXXS,
+                _buildVariantContent(context),
+                AppValues.gapXS,
+                _buildFooter(context),
               ],
             ),
+          ),
+          AppValues.gapHS,
+          // Status & Action
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildStatusBadge(context),
+              AppValues.gapL,
+              if (onAction != null || status != 'expired')
+                _buildActionButton(context),
+            ],
           ),
         ],
       ),
     );
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
+  Widget _buildVariantContent(BuildContext context) {
+    if (isCash) {
+      return Text(
+        "₱${price!.toStringAsFixed(0)}",
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.highLightTextColor,
+              fontWeight: FontWeight.bold,
+            ),
+      );
+    } else if (isTrade) {
+      return _buildLookingFor(context);
+    } else if (isMix) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "₱${price!.toStringAsFixed(0)}",
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.highLightTextColor,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            "or trade for:",
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.subTextColor,
+                  fontSize: 10,
+                ),
+          ),
+          const SizedBox(height: 2),
+          _buildLookingFor(context),
+        ],
+      );
+    }
+    return const SizedBox.shrink();
+  }
 
-    if (diff.inDays == 0) return "Today";
-    if (diff.inDays == 1) return "Yesterday";
-    return "${date.day}/${date.month}/${date.year}";
+  Widget _buildLookingFor(BuildContext context) {
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: lookingFor.take(2).map((item) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: AppColors.lavenderBlue,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            item,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.tealText,
+                  fontSize: 10,
+                ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          offerCount == 0 ? "No offers yet" : "$offerCount Offers",
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: AppColors.textDarkGrey,
+                fontWeight: FontWeight.w600,
+                fontSize: 11,
+              ),
+        ),
+        Text(
+          "Posted ${_getRelativeTime(postedDate)}",
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: AppColors.subTextColor,
+                fontSize: 10,
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusBadge(BuildContext context) {
+    String text = status;
+    Color bgColor = AppColors.tealLight.withOpacity(0.5);
+    Color textColor = AppColors.tealText;
+
+    if (status.toLowerCase() == 'sold') {
+      text = 'Sold';
+      bgColor = AppColors.statusSoldBg;
+      textColor = AppColors.statusSoldText;
+    } else if (status.toLowerCase() == 'accepted') {
+      text = 'Accepted';
+      bgColor = AppColors.statusAcceptedBg;
+      textColor = Colors.white;
+    } else if (status.toLowerCase() == 'ended' || status.toLowerCase() == 'expired') {
+      text = 'Expired'; // Changed from 'Ended' to 'Expired'
+      bgColor = const Color(0xFFFFEBEE);
+      textColor = AppColors.errorColor;
+    } else {
+       // Check if expired based on endTime if status is still active
+       if (endTime != null && DateTime.now().isAfter(endTime!)) {
+         text = 'Expired'; // Changed from 'Ended' to 'Expired'
+         bgColor = const Color(0xFFFFEBEE);
+         textColor = AppColors.errorColor;
+       } else {
+         text = 'Active';
+       }
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: AppValues.borderRadiusCircular,
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+            ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context) {
+    String label = 'Manage';
+    Color bgColor = AppColors.grey200;
+    Color textColor = AppColors.textDarkGrey;
+    
+    final s = status.toLowerCase();
+
+    if (s == 'accepted') {
+      label = 'Deal Chat';
+      bgColor = AppColors.selectedColor;
+      textColor = AppColors.white;
+    } else if (s == 'sold') {
+      label = 'Review';
+      bgColor = const Color(0xFFFFEBEE);
+      textColor = AppColors.successColor;
+    }
+
+    return InkWell(
+      onTap: onAction,
+      borderRadius: AppValues.borderRadiusM,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: AppValues.borderRadiusM,
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: textColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+        ),
+      ),
+    );
+  }
+
+  String _getRelativeTime(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    if (difference.inDays == 0) return 'today';
+    if (difference.inDays == 1) return '1 day ago';
+    return '${difference.inDays} days ago';
   }
 }

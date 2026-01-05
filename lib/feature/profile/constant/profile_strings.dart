@@ -1,7 +1,7 @@
 class ProfileStrings {
   // Headers
   static const String listingsTitle = "Listings";
-  static const String listingsSubtitle = "Items you are selling";
+  static const String listingsSubtitle = "Items you posted";
   static const String bidsTitle = "Bids";
   static const String bidsSubtitle = "Items you are Bidding on";
 
@@ -44,4 +44,5 @@ class ProfileStrings {
   static const String dealChat = "Deal Chat";
   static const String leaveReview = "Leave Review";
   static const String manageItem = "Manage Item";
+  static const String viewItem = "View Item";
 }

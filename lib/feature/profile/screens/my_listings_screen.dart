@@ -19,7 +19,7 @@ class MyListingsScreen extends ConsumerStatefulWidget {
 class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
   // Updated filter options to match requirements
   String _selectedFilter = 'All'; 
-  final List<String> _filters = ['All', 'For Sale', 'For Trade', 'Ended'];
+  final List<String> _filters = ['All', 'For Sale', 'For Trade', 'Expired']; // Changed 'Ended' to 'Expired'
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
             }
 
             switch (_selectedFilter) {
-              case 'Ended':
+              case 'Expired': // Changed from 'Ended' to 'Expired'
                 // Logic: Show items that have ended (expired or explicit status)
                 // This covers items that ran out of time or were marked sold/ended/accepted
                 if (dbStatus == 'ended' || dbStatus == 'sold' || dbStatus == 'accepted') return true;
@@ -179,7 +179,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                               try {
                                 endTime = DateTime.parse(item['end_time']);
                                 if (DateTime.now().isAfter(endTime)) {
-                                  displayStatus = 'Ended';
+                                  displayStatus = 'Expired'; // Changed from 'Ended' to 'Expired'
                                 }
                               } catch (_) {}
                             }
@@ -193,10 +193,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
                             postedDate: postedDate,
                             price: price,
                             lookingFor: lookingFor,
-                            isAuction: false, // Explicitly set to false as requested
-                            currentHighestBid: null, 
-                            soldToItem: null,
-                            endTime: endTime, // Added this to pass the endTime to the widget
+                            endTime: endTime,
                           );
                         },
                       ),

@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
@@ -139,7 +140,7 @@ class BidCard extends StatelessWidget {
                    borderRadius: AppValues.borderRadiusM,
                  ),
                  child: Text(
-                   "View Item",
+                   ProfileStrings.viewItem,
                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                      fontSize: 10,
                      fontWeight: FontWeight.bold,

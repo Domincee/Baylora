@@ -73,7 +73,7 @@ class ProfileListingsSection extends ConsumerWidget {
                   displayStatus = 'Accepted';
                 } else {
                   if (endTime != null && DateTime.now().isAfter(endTime)) {
-                    displayStatus = 'Ended';
+                    displayStatus = 'Expired'; // Changed from 'Ended' to 'Expired'
                   }
                 }
 
@@ -85,9 +85,6 @@ class ProfileListingsSection extends ConsumerWidget {
                   postedDate: postedDate,
                   price: price,
                   lookingFor: lookingFor,
-                  isAuction: false,
-                  currentHighestBid: null,
-                  soldToItem: null,
                   endTime: endTime,
                 );
               },
