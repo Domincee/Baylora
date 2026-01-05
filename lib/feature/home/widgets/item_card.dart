@@ -126,9 +126,9 @@ class ItemCard extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.errorColor.withOpacity(0.1),
+                          color: AppColors.errorColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.errorColor.withOpacity(0.5)),
+                          border: Border.all(color: AppColors.errorColor.withValues(alpha: 0.5)),
                         ),
                         child: Text(
                           timeRemaining!,

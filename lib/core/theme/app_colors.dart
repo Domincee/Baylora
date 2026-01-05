@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centralized color palette for the entire application.
-/// All colors should be referenced from here to maintain consistency.
+
 class AppColors {
   // ============================================
   // PRIMARY COLORS

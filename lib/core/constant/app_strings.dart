@@ -7,11 +7,8 @@ class AppStrings {
  static const String home = "Home";
  static const String profile = "Profile";
 
- // --- New Generic Additions ---
- static const String settings = "Settings";
- static const String myItems = "My Items";
+ // --- Generic Strings ---
  static const String logout = "Log out";
-
  static const String save = "Save";
  static const String cancel = "Cancel";
  static const String error = "Error";

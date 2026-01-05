@@ -6,9 +6,15 @@ class ProfileStrings {
   static const String bidsSubtitle = "Items you are Bidding on";
 
   // Settings Section
+  static const String settings = "Settings";
   static const String settingsSubtitle = "Control your Profile and Alerts.";
+  static const String editProfile = "Edit Profile";
   static const String editProfileSubtitle = "Update your name, bio and photo.";
+  static const String notifications = "Notifications";
   static const String notificationSubtitle = "Choose what you want to be notified about.";
+  static const String privacyTerms = "Privacy & Terms";
+  static const String privacyTermsSubtitle = "View how we handle your data.";
+  static const String logout = "Log out"; // Restored specific string for Profile Feature
 
   // Empty States & Defaults
   static const String noBio = "No bio yet.";
@@ -32,29 +38,10 @@ class ProfileStrings {
   static const String posted = "Posted";
   static const String currentHighest = "Current Highest";
   static const String add = "Add";
+  static const String myItems = "My Items";
   
   // Action Buttons
   static const String dealChat = "Deal Chat";
   static const String leaveReview = "Leave Review";
   static const String manageItem = "Manage Item";
-
-
-  //Setting Text
-
-  static const String settingHeader = "Settings";
-  static const String settingSubtitle = "Control your Profile and Alerts.";
-
-
-  static const String editProfileSet = "Edit Profile";
-  static const String editProfileSetSub = "Update your name, bio and photo.";
-
-  static const String notificationsSet = "Notifications";
-  static const String notificationsSetSub = "Choose what you want to be notified about.";
-
-
-  static const String privacyTermsSet = "Privacy & Terms";
-  static const String privacyTermsSetSub = "View how we handle your data.";
-
-  static const String logoutSet = "Log Out";
-
 }
