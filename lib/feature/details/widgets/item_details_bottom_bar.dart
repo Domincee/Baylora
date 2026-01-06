@@ -19,70 +19,34 @@ class ItemDetailsBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String buttonText;
-    if (isOwner) {
-      buttonText = ItemDetailsStrings.yourItem;
-    } else if (isMix) {
-      buttonText = "Make an Offer";
-    } else if (isTrade) {
-      buttonText = "Offer a Trade";
-    } else {
-      buttonText = ItemDetailsStrings.placeBid;
-    }
-
     return Container(
-      padding: EdgeInsets.all(AppValues.spacingM),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowColor.withValues(alpha: 0.5),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(AppValues.spacingM),
+      decoration: _buildContainerDecoration(),
       child: SafeArea(
         top: false,
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: AppValues.buttonHeight,
           child: ElevatedButton(
             onPressed: isOwner ? null : onPlaceBid,
-            style: ElevatedButton.styleFrom(
-              // FIX: Use royalBlue (or deepBlue) for primary action. 
-              // 'primaryColor' was mapped to White (0xFFFFFFFF) in AppColors, causing invisible button.
-              backgroundColor: isOwner 
-                  ? AppColors.greyDisabled 
-                  : (isTrade ? AppColors.tradeIconColor : AppColors.royalBlue),
-              disabledBackgroundColor: AppColors.greyDisabled,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppValues.radiusCircular),
-              ),
-              elevation: 0,
-            ),
+            style: _buildButtonStyle(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (!isOwner) ...[
-                  if (isMix) ...[
-                    const Icon(Icons.handshake_outlined, color: Colors.white),
-                    AppValues.gapS,
-                  ] else if (isTrade) ...[
-                    const Icon(Icons.swap_horiz, color: Colors.white),
-                    AppValues.gapS,
-                  ],
-                ],
+                if (!isOwner) _buildButtonIcon(),
                 Flexible(
                   child: Text(
-                    buttonText,
+                    _getButtonText(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(
+                      color: AppColors.white,
                       fontWeight: FontWeight.bold,
-                      height: 1.2, // Fix for text being slightly cutoff at the bottom
+                      height: 1.2,
                     ),
                   ),
                 ),
@@ -92,5 +56,74 @@ class ItemDetailsBottomBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getButtonText() {
+    if (isOwner) {
+      return ItemDetailsStrings.yourItem;
+    } else if (isMix) {
+      return ItemDetailsStrings.makeAnOffer;
+    } else if (isTrade) {
+      return ItemDetailsStrings.offerATrade;
+    } else {
+      return ItemDetailsStrings.placeBid;
+    }
+  }
+
+  BoxDecoration _buildContainerDecoration() {
+    return BoxDecoration(
+      color: AppColors.white,
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.shadowColor.withValues(alpha: 0.5),
+          blurRadius: 10,
+          offset: const Offset(0, -4),
+        ),
+      ],
+    );
+  }
+
+  ButtonStyle _buildButtonStyle() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: isOwner
+          ? AppColors.greyDisabled
+          : (isTrade ? AppColors.tradeIconColor : AppColors.royalBlue),
+      disabledBackgroundColor: AppColors.greyDisabled,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppValues.radiusCircular),
+      ),
+      elevation: 0,
+    );
+  }
+
+  Widget _buildButtonIcon() {
+    if (isMix) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.handshake_outlined, color: AppColors.white),
+          AppValues.gapHS,
+        ],
+      );
+    } else if (isTrade) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.swap_horiz, color: AppColors.white),
+          AppValues.gapHS,
+        ],
+      );
+    } else if (!isOwner) {
+      // Bid case
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.gavel_outlined, color: AppColors.white), // bid icon
+          AppValues.gapHS,
+        ],
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 }

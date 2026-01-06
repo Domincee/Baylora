@@ -1,20 +1,20 @@
-import 'dart:io';
-
-import 'package:baylora_prjct/core/constant/app_strings.dart';
-import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
+
 import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/root/main_wrapper.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/app_feedback.dart';
 import 'package:baylora_prjct/core/util/app_navigation.dart';
+import 'package:baylora_prjct/core/util/network_utils.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/constant/auth_strings.dart';
 import 'package:baylora_prjct/feature/auth/controllers/auth_form_controller.dart';
 import 'package:baylora_prjct/feature/auth/pages/register.dart';
 import 'package:baylora_prjct/feature/auth/widget/login_form.dart';
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,17 +30,14 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     // 1. Validate Form
     if (!_form.validate()) {
-      // Check if fields are actually empty to give correct feedback
-      final bool isEmpty = _form.emailCtrl.text.trim().isEmpty || 
-                           _form.passCtrl.text.trim().isEmpty;
-      
+      final bool isEmpty = _form.emailCtrl.text.trim().isEmpty ||
+          _form.passCtrl.text.trim().isEmpty;
+
       if (isEmpty) {
         AppFeedback.error(context, AuthStrings.fillAllFieldsError);
       } else {
-        // If not empty but invalid (e.g. wrong email format), show generic error
-        // or rely on the inline errors from AppValidators.
-        // The user specifically asked to avoid "Please fill empty field" if it's just invalid format.
-         AppFeedback.error(context, "Please check your input");
+
+        AppFeedback.error(context, "Please check your input");
       }
       return;
     }
@@ -50,9 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final AuthResponse res = await Supabase.instance.client.auth
           .signInWithPassword(
-            email: _form.emailCtrl.text.trim(),
-            password: _form.passCtrl.text.trim(),
-          );
+        email: _form.emailCtrl.text.trim(),
+        password: _form.passCtrl.text.trim(),
+      );
 
       if (!mounted) return;
 
@@ -76,11 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on AuthException catch (e) {
       if (mounted) {
-        final isNetworkError = e.message.contains('SocketException') ||
-            e.message.contains('Network is unreachable') ||
-            e.message.contains('Connection refused');
-
-        if (isNetworkError) {
+        if (NetworkUtils.isNetworkError(e)) {
           AppFeedback.error(context, AppStrings.noInternetConnection);
         } else {
           AppFeedback.error(context, e.message);
@@ -88,19 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final isNetworkError = e is SocketException ||
-            (e.toString().contains('SocketException')) ||
-            (e.toString().contains('Network is unreachable')) ||
-            (e.toString().contains('Connection refused'));
-
-        final String message;
-        if (isNetworkError) {
-          message = AppStrings.noInternetConnection;
+        if (NetworkUtils.isNetworkError(e)) {
+          AppFeedback.error(context, AppStrings.noInternetConnection);
         } else {
-          message = AuthStrings.unexpectedError;
+          AppFeedback.error(context, AuthStrings.unexpectedError);
         }
-            
-        AppFeedback.error(context, message);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

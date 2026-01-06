@@ -19,7 +19,7 @@ class _ImageCarouselHeaderState extends State<ImageCarouselHeader> {
   Widget build(BuildContext context) {
     if (widget.images.isEmpty) {
       return Container(
-        height: 300,
+        height: AppValues.size300.height,
         width: double.infinity,
         color: AppColors.greyLight,
         child: const Center(
@@ -31,7 +31,7 @@ class _ImageCarouselHeaderState extends State<ImageCarouselHeader> {
     return Column(
       children: [
         SizedBox(
-          height: 300,
+          height: AppValues.size300.height,
           width: double.infinity,
           child: PageView.builder(
             itemCount: widget.images.length,

@@ -26,6 +26,9 @@ class ItemDetailsStrings {
   static const String submitFinalOffer = 'Submit Final Offer';
   static const String sellerLookingFor = 'Seller is looking for:';
   static const String currentOffers = 'Current Offers';
+  static const String makeAnOffer = 'Make an Offer';
+  static const String offerATrade = 'Offer a Trade';
+  static const String noOffers = "No offers yet. Be the first!";
   
   // Defaults
   static const String defaultCategory = 'General';

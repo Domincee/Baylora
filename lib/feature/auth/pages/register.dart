@@ -1,13 +1,10 @@
-import 'dart:io';
-
-import 'package:baylora_prjct/core/constant/app_strings.dart';
-import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:baylora_prjct/core/assets/images.dart';
+import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/app_feedback.dart';
 import 'package:baylora_prjct/core/util/app_navigation.dart';
+import 'package:baylora_prjct/core/util/network_utils.dart';
 import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/constant/auth_strings.dart';
 import 'package:baylora_prjct/feature/auth/controllers/auth_form_controller.dart';
@@ -15,6 +12,8 @@ import 'package:baylora_prjct/feature/auth/pages/login.dart';
 import 'package:baylora_prjct/feature/auth/services/auth_service.dart';
 import 'package:baylora_prjct/feature/auth/widget/register_form.dart';
 import 'package:baylora_prjct/main.dart';
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -67,14 +66,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     // 2. Validate format (email regex, password length, etc.)
     if (!_form.validate()) {
-      // If validation fails but fields are NOT empty, it means format is wrong.
-      // We rely on inline errors, but user requested consistent Snackbar behavior.
-      // We'll show a generic "check input" message if it's not an empty field error.
-      AppFeedback.error(context, "Please check your input");
+
+      AppFeedback.error(context, AuthStrings.invalidInput);
       return; 
     }
 
-    // 3. Check for password mismatch (Validator handles this inline, but double check)
     if (_form.passCtrl.text != _form.confirmPassCtrl.text) {
       AppFeedback.error(context, AuthStrings.passwordMismatchError);
       return;
@@ -115,12 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } on AuthException catch (e) {
       if (mounted) {
-        // Handle explicit SocketException (offline/network errors)
-        final isNetworkError = e.message.contains('SocketException') ||
-            e.message.contains('Network is unreachable') ||
-            e.message.contains('Connection refused');
-        
-        if (isNetworkError) {
+        if (NetworkUtils.isNetworkError(e)) {
            AppFeedback.error(context, AppStrings.noInternetConnection);
         } else {
            AppFeedback.error(context, e.message);
@@ -128,16 +119,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final isNetworkError = e is SocketException ||
-            (e.toString().contains('SocketException')) ||
-            (e.toString().contains('Network is unreachable')) ||
-            (e.toString().contains('Connection refused'));
-
-        final String message = isNetworkError
-            ? AppStrings.noInternetConnection
-            : AuthStrings.unexpectedError;
-
-        AppFeedback.error(context, message);
+        if (NetworkUtils.isNetworkError(e)) {
+           AppFeedback.error(context, AppStrings.noInternetConnection);
+        } else {
+           AppFeedback.error(context, AuthStrings.unexpectedError);
+        }
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

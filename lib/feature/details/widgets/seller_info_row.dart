@@ -34,7 +34,6 @@ class SellerInfoRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // REPLACED: Custom Row -> Shared UsernameWithBadge
               UsernameWithBadge(
                 username: username,
                 isVerified: isVerified,
@@ -52,7 +51,6 @@ class SellerInfoRow extends StatelessWidget {
           ),
         ),
         
-        // Rating Pill - Only show if rating > 0 or trades > 0
         UserRatingPill(
           rating: rating.toString(),
           totalTrades: trades.toString(),

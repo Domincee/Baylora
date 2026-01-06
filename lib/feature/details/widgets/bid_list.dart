@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
@@ -22,13 +23,13 @@ class BidList extends StatelessWidget {
     if (offers.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.symmetric(vertical: AppValues.spacing20),
           child: Column(
             children: [
-              Icon(Icons.local_offer_outlined, size: 40, color: AppColors.grey300),
+              Icon(Icons.local_offer_outlined, size: AppValues.spacingXXL, color: AppColors.grey300),
               AppValues.gapXS,
               Text(
-                "No offers yet. Be the first!",
+                ItemDetailsStrings.noOffers,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textGrey,
                       fontStyle: FontStyle.italic,
@@ -44,7 +45,7 @@ class BidList extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: offers.length > 5 ? 5 : offers.length, // Show max 5 recent bids
-      separatorBuilder: (context, index) => const Divider(height: 16),
+      separatorBuilder: (context, index) => const Divider(height: AppValues.spacingM),
       itemBuilder: (context, index) {
         final offer = offers[index];
         final bidder = offer['profiles'] ?? {};
@@ -57,7 +58,7 @@ class BidList extends StatelessWidget {
 
         return Row(
           children: [
-            ProfileAvatar(imageUrl: bidder['avatar_url'] ?? '', size: 36),
+            ProfileAvatar(imageUrl: bidder['avatar_url'] ?? '', size: AppValues.spacing36),
             AppValues.gapHS,
             Expanded(
               child: Column(

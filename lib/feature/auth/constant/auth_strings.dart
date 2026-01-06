@@ -39,7 +39,7 @@ class AuthStrings {
   static const String registrationSuccess = "Registration successful!";
   static const String registrationFailed = "Registration failed";
   static const String unexpectedError = "Unexpected error occurred";
-
+  static const String invalidInput = "Please check your input";
   // Validation messages
   static const String requiredField = "Please fill empty field";
   static const String invalidEmailFormat = "Incorrect email format";

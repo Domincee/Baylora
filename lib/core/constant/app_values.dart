@@ -240,6 +240,7 @@ class AppValues {
  ///image container
   static const Size imageContainer = Size(150, 150) ;
   static const Size container25 = Size(25, 25) ;
+  static const Size size300 = Size(300, 300) ;
 
 
   //constraint
