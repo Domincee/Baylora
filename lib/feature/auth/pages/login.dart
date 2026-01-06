@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
         AppFeedback.error(context, AuthStrings.fillAllFieldsError);
       } else {
 
-        AppFeedback.error(context, "Please check your input");
+        AppFeedback.error(context,AuthStrings.invalidInput);
       }
       return;
     }

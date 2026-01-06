@@ -81,12 +81,12 @@ class RegisterForm extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: AuthCheckbox(
-              label: "I agree to ",
+              label: AuthStrings.iAgreeTo,
               value: agreeToTerms,
               onChanged: (v) => onAgreeChanged(v ?? false),
               showError: showTermsError,
               onLabelTap: onTermsTap,
-              linkText: "Terms & Agreements",
+              linkText: AuthStrings.openTermsDialogText,
             ),
           ),
 

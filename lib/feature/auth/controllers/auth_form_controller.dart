@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 /// Base controller for authentication forms (login, register).
-/// Manages form state, controllers, and validation logic.
 class AuthFormController {
   // Email field
   final emailCtrl = TextEditingController();
@@ -13,9 +12,7 @@ class AuthFormController {
   final formKey = GlobalKey<FormState>();
 
   /// Validates the form using the form key
-  bool validate() {
-    return formKey.currentState?.validate() ?? false;
-  }
+  bool validate() => formKey.currentState?.validate() ?? false;
 
   /// Clears all form fields
   void clearForm() {
@@ -28,6 +25,14 @@ class AuthFormController {
     formKey.currentState?.reset();
   }
 
+  /// Returns a map of field values for convenience
+  Map<String, String> getValues() {
+    return {
+      'email': emailCtrl.text.trim(),
+      'password': passCtrl.text.trim(),
+    };
+  }
+
   /// Disposes all resources
   void dispose() {
     emailCtrl.dispose();
@@ -37,19 +42,11 @@ class AuthFormController {
 
 /// Extended controller for registration forms with additional fields
 class RegisterFormController extends AuthFormController {
-  // Username field
   final userNameCtrl = TextEditingController();
-
-  // First name field
   final firstNameCtrl = TextEditingController();
-
-  // Last name field
   final lastNameCtrl = TextEditingController();
-
-  // Confirm password field
   final confirmPassCtrl = TextEditingController();
 
-  /// Clears all form fields including register-specific ones
   @override
   void clearForm() {
     super.clearForm();
@@ -59,7 +56,6 @@ class RegisterFormController extends AuthFormController {
     confirmPassCtrl.clear();
   }
 
-  /// Disposes all resources including register-specific ones
   @override
   void dispose() {
     super.dispose();
@@ -68,10 +64,25 @@ class RegisterFormController extends AuthFormController {
     lastNameCtrl.dispose();
     confirmPassCtrl.dispose();
   }
+
+  /// Returns a map of all registration field values
+  Map<String, String> getValues() {
+    final base = super.getValues();
+    base.addAll({
+      'username': userNameCtrl.text.trim(),
+      'firstName': firstNameCtrl.text.trim(),
+      'lastName': lastNameCtrl.text.trim(),
+      'confirmPassword': confirmPassCtrl.text.trim(),
+    });
+    return base;
+  }
+
+  /// Optional: helper to check if passwords match
+  bool passwordsMatch() => passCtrl.text.trim() == confirmPassCtrl.text.trim();
 }
 
-/// Extended controller for login forms (can be extended with remember-me, etc.)
+/// Extended controller for login forms (can add more login-specific fields)
 class LoginFormController extends AuthFormController {
-  // Add login-specific fields here in the future
-  // e.g., bool rememberMe = false;
+  // Placeholder for future login-specific fields, e.g., rememberMe
+  // bool rememberMe = false;
 }

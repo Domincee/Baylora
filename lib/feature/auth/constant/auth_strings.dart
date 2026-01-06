@@ -19,12 +19,13 @@ class AuthStrings {
   static const String haveAccountText = "Already have an account?";
   static const String agreeTermsText = "I agree to Terms & Agreements";
   static const String acceptTermsRequired = "Accept terms & agreements";
-
+  static const String openTermsDialogText = "Terms & Agreements";
   // Form field labels
   static const String usernameLabel = "Username";
   static const String firstNameLabel = "First Name";
   static const String lastNameLabel = "Last Name";
   static const String confirmPasswordLabel = "Re-enter password";
+  static const String iAgreeTo ="I agree to ";
 
   // Terms Dialog
   static const String termsTitle = "Terms & Agreements";
