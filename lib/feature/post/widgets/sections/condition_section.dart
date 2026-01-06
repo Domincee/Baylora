@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/post/widgets/shared/condition_chip.dart';
-import 'package:baylora_prjct/feature/post/widgets/shared/section_header.dart';
 
 class ConditionSection extends StatelessWidget {
   final int selectedCondition;
@@ -18,35 +18,54 @@ class ConditionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: "Condition"),
+         Text(
+          "Condition",
+             style: Theme.of(context).textTheme.bodyLarge,
+        ),
         AppValues.gapS,
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        Row(
           children: [
-            ConditionChip(
-              label: "New",
-              isSelected: selectedCondition == 0,
-              onTap: () => onConditionChanged(0),
+            Expanded(
+              child: _buildChip(context, "New", 0),
             ),
-            ConditionChip(
-              label: "Used",
-              isSelected: selectedCondition == 1,
-              onTap: () => onConditionChanged(1),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _buildChip(context, "Used", 1),
             ),
-            ConditionChip(
-              label: "Fair",
-              isSelected: selectedCondition == 3,
-              onTap: () => onConditionChanged(3),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _buildChip(context, "Fair", 3),
             ),
-            ConditionChip(
-              label: "Broken",
-              isSelected: selectedCondition == 2,
-              onTap: () => onConditionChanged(2),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _buildChip(context, "Broken", 2),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildChip(BuildContext context, String label, int index) {
+    final bool isSelected = selectedCondition == index;
+    return GestureDetector(
+      onTap: () => onConditionChanged(index),
+      child: Container(
+        height: 36,
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.selectedColor : AppColors.greyLight,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: isSelected ? AppColors.white : AppColors.textGrey,
+          ),
+        ),
+      ),
     );
   }
 }

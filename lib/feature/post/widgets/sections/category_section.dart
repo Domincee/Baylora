@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/feature/post/widgets/shared/section_header.dart';
 
 class CategorySection extends StatelessWidget {
   final String? selectedCategory;
@@ -20,48 +19,65 @@ class CategorySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: "Category"),
-        AppValues.gapS,
+        // Match the height of the DurationSection header (which has a Switch)
+        // Switch is usually around 40px, so we wrap Text in a Container with height 40
         Container(
-          padding: AppValues.paddingCard,
+          height: 40,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "Category",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: 40, // Match duration section height
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             color: AppColors.greyLight,
-            borderRadius: AppValues.borderRadiusM,
+            borderRadius: BorderRadius.circular(30),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: selectedCategory,
-                  isExpanded: true,
-                  hint: Text("Choose...", style: Theme.of(context).textTheme.bodyMedium,),
-                  items: [
-                    "Electronics",
-                    "Clothing",
-                    "Books",
-                    "Furniture",
-                    "Appliances",
-                    "Other"
-                  ]
-                      .map((e) => DropdownMenuItem(value: e,
-                      child: Text(e,
-                      style: Theme.of(context).textTheme.bodyMedium
-                  )))
-                      .toList(),
-                  onChanged: onChanged,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedCategory,
+              isExpanded: true,
+              icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.grey600),
+              hint: Text(
+                "Select Category",
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textGrey,
                 ),
               ),
-            ],
+              items: [
+                "Electronics",
+                "Clothing",
+                "Books",
+                "Furniture",
+                "Appliances",
+                "Other"
+              ]
+                  .map((e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(
+                          e,
+                          style:  Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ))
+                  .toList(),
+              onChanged: onChanged,
+            ),
           ),
         ),
         if (showError) ...[
           const SizedBox(height: 4),
-          const Text(
-            "Choose a category",
-            style: TextStyle(
-              color: AppColors.errorColor,
-              fontSize: 12,
+          const Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: Text(
+              "Choose a category",
+              style: TextStyle(
+                color: AppColors.errorColor,
+                fontSize: 12,
+              ),
             ),
           ),
         ],

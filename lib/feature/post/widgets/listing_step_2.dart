@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/basic_info_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/category_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/condition_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/description_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/duration_section.dart';
-import 'package:baylora_prjct/feature/post/widgets/sections/exchange_preference_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/photos_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/pricing_section.dart';
 import 'dart:io';
@@ -29,6 +29,8 @@ class ListingStep2 extends StatelessWidget {
   final ValueChanged<String> onTagRemoved;
   final List<File> images;
   final VoidCallback onAddPhoto;
+  final ValueChanged<File> onRemovePhoto;
+  final VoidCallback onNext;
 
   // Validation Flags
   final bool showImageError;
@@ -63,6 +65,8 @@ class ListingStep2 extends StatelessWidget {
     required this.onTagRemoved,
     required this.images,
     required this.onAddPhoto,
+    required this.onRemovePhoto,
+    required this.onNext,
     this.showImageError = false,
     this.showTitleError = false,
     this.showCategoryError = false,
@@ -76,235 +80,140 @@ class ListingStep2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    switch (selectedType) {
-      case 0:
-        return _buildSellItemForm();
-      case 1:
-        return _buildTradeItemForm();
-      case 2:
-        return _buildSellOrTradeItemForm();
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildSellItemForm() {
-    return SingleChildScrollView(
-      padding: AppValues.paddingH.copyWith(bottom: AppValues.spacingXXL),
+    return Container(
+      color: AppColors.white,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PhotosSection(
-            images: images,
-            onAddPhoto: onAddPhoto,
-            showError: showImageError,
-          ),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: BasicInfoSection(
-                  titleController: titleController,
-                  showError: showTitleError,
-                  onChanged: onTitleChanged,
-                ),
+          // Custom Header
+          Container(
+            padding: const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
+            color: AppColors.white,
+            child: SafeArea(
+              bottom: false,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                    onPressed: () => Navigator.maybePop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Sell Item",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "2/3",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.textGrey,
+                            ),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: onNext,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.royalBlue,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        "Next",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              AppValues.gapHM,
-              SizedBox(
-                width: 150,
-                child: DurationSection(
-                  isDurationEnabled: isDurationEnabled,
-                  durationController: durationController,
-                  onToggleDuration: onToggleDuration,
-                  onIncrement: onIncrementDuration,
-                  onDecrement: onDecrementDuration,
-                ),
-              ),
-            ],
+            ),
           ),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: CategorySection(
-                  selectedCategory: selectedCategory,
-                  onChanged: onCategoryChanged,
-                  showError: showCategoryError,
-                ),
-              ),
-              AppValues.gapHM,
-              Expanded(
-                child: ConditionSection(
-                  selectedCondition: selectedCondition,
-                  onConditionChanged: onConditionChanged,
-                ),
-              ),
-            ],
-          ),
-          AppValues.gapL,
-          PricingSection(
-            priceController: priceController,
-            showError: showPriceError,
-            onChanged: onPriceChanged,
-          ),
-          AppValues.gapL,
-          DescriptionSection(
-            descriptionController: descriptionController,
-            showError: showDescriptionError,
-            onChanged: onDescriptionChanged,
-          ),
-        ],
-      ),
-    );
-  }
+          
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Photos Section
+                  PhotosSection(
+                    images: images,
+                    onAddPhoto: onAddPhoto,
+                    onRemovePhoto: onRemovePhoto,
+                    showError: showImageError,
+                  ),
+                  AppValues.gapL,
 
-  Widget _buildTradeItemForm() {
-    return SingleChildScrollView(
-      padding: AppValues.paddingH.copyWith(bottom: AppValues.spacingXXL),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          PhotosSection(
-            images: images,
-            onAddPhoto: onAddPhoto,
-            showError: showImageError,
-          ),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: BasicInfoSection(
-                  titleController: titleController,
-                  showError: showTitleError,
-                  onChanged: onTitleChanged,
-                ),
-              ),
-              AppValues.gapHM,
-              SizedBox(
-                width: 150,
-                child: DurationSection(
-                  isDurationEnabled: isDurationEnabled,
-                  durationController: durationController,
-                  onToggleDuration: onToggleDuration,
-                  onIncrement: onIncrementDuration,
-                  onDecrement: onDecrementDuration,
-                ),
-              ),
-            ],
-          ),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: CategorySection(
-                  selectedCategory: selectedCategory,
-                  onChanged: onCategoryChanged,
-                  showError: showCategoryError,
-                ),
-              ),
-              AppValues.gapHM,
-              Expanded(
-                child: ConditionSection(
-                  selectedCondition: selectedCondition,
-                  onConditionChanged: onConditionChanged,
-                ),
-              ),
-            ],
-          ),
-          AppValues.gapL,
-          ExchangePreferenceSection(
-            cashController: priceController,
-            wishlistTags: wishlistTags,
-            onTagAdded: onTagAdded,
-            onTagRemoved: onTagRemoved,
-            showPriceInput: false,
-            showWishlistError: showWishlistError,
-          ),
-          AppValues.gapL,
-          DescriptionSection(
-            descriptionController: descriptionController,
-            showError: showDescriptionError,
-            onChanged: onDescriptionChanged,
-          ),
-        ],
-      ),
-    );
-  }
+                  // 2. Basic Info Section
+                  BasicInfoSection(
+                    titleController: titleController,
+                    showError: showTitleError,
+                    onChanged: onTitleChanged,
+                  ),
+                  AppValues.gapL,
 
-  Widget _buildSellOrTradeItemForm() {
-    return SingleChildScrollView(
-      padding: AppValues.paddingH.copyWith(bottom: AppValues.spacingXXL),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          PhotosSection(
-            images: images,
-            onAddPhoto: onAddPhoto,
-            showError: showImageError,
-          ),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: BasicInfoSection(
-                  titleController: titleController,
-                  showError: showTitleError,
-                  onChanged: onTitleChanged,
-                ),
+                  // 3. Responsive Split Row (Duration & Category)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: DurationSection(
+                          isDurationEnabled: isDurationEnabled,
+                          durationController: durationController,
+                          onToggleDuration: onToggleDuration,
+                          onIncrement: onIncrementDuration,
+                          onDecrement: onDecrementDuration,
+                        ),
+                      ),
+                      AppValues.gapHM,
+                      Expanded(
+                        flex: 1,
+                        child: CategorySection(
+                          selectedCategory: selectedCategory,
+                          onChanged: onCategoryChanged,
+                          showError: showCategoryError,
+                        ),
+                      ),
+                    ],
+                  ),
+                  AppValues.gapL,
+
+                  // 4. Condition Section
+                  ConditionSection(
+                    selectedCondition: selectedCondition,
+                    onConditionChanged: onConditionChanged,
+                  ),
+                  AppValues.gapL,
+
+                  // 5. Pricing Section
+                  PricingSection(
+                    priceController: priceController,
+                    showError: showPriceError,
+                    onChanged: onPriceChanged,
+                  ),
+                  AppValues.gapL,
+
+                  // 6. Description Section
+                  DescriptionSection(
+                    descriptionController: descriptionController,
+                    showError: showDescriptionError,
+                    onChanged: onDescriptionChanged,
+                  ),
+                  AppValues.gapXXL, // Bottom padding
+                ],
               ),
-              AppValues.gapHM,
-              SizedBox(
-                width: 150,
-                child: DurationSection(
-                  isDurationEnabled: isDurationEnabled,
-                  durationController: durationController,
-                  onToggleDuration: onToggleDuration,
-                  onIncrement: onIncrementDuration,
-                  onDecrement: onDecrementDuration,
-                ),
-              ),
-            ],
-          ),
-          AppValues.gapL,
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: CategorySection(
-                  selectedCategory: selectedCategory,
-                  onChanged: onCategoryChanged,
-                  showError: showCategoryError,
-                ),
-              ),
-              AppValues.gapHM,
-              Expanded(
-                child: ConditionSection(
-                  selectedCondition: selectedCondition,
-                  onConditionChanged: onConditionChanged,
-                ),
-              ),
-            ],
-          ),
-          AppValues.gapL,
-          ExchangePreferenceSection(
-            cashController: priceController,
-            wishlistTags: wishlistTags,
-            onTagAdded: onTagAdded,
-            onTagRemoved: onTagRemoved,
-            showPriceError: showPriceError,
-            showWishlistError: showWishlistError,
-            onPriceChanged: onPriceChanged,
-          ),
-          AppValues.gapL,
-          DescriptionSection(
-            descriptionController: descriptionController,
-            showError: showDescriptionError,
-            onChanged: onDescriptionChanged,
+            ),
           ),
         ],
       ),

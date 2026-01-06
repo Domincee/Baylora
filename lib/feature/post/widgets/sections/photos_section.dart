@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/feature/post/widgets/shared/section_header.dart';
 import 'dart:io';
 
 class PhotosSection extends StatelessWidget {
   final List<File> images;
   final VoidCallback onAddPhoto;
+  final ValueChanged<File>? onRemovePhoto;
   final bool showError;
 
   const PhotosSection({
     super.key,
     required this.images,
     required this.onAddPhoto,
+    this.onRemovePhoto,
     this.showError = false,
   });
 
@@ -21,46 +22,99 @@ class PhotosSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: "Photos"),
+        Row(
+          children: [
+            Text(
+              "Photos",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              "${images.length}/3",
+              style: const TextStyle(
+                color: AppColors.textGrey,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
         AppValues.gapS,
-        SizedBox(
-          height: 100,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
             children: [
-              ...images.map(
-                (file) => Container(
-                  width: 100,
-                  margin: const EdgeInsets.only(right: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.greyLight,
-                    borderRadius: AppValues.borderRadiusM,
-                    image: DecorationImage(
-                      image: FileImage(file),
-                      fit: BoxFit.cover,
+              if (images.length < 3)
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: GestureDetector(
+                    onTap: onAddPhoto,
+                    child: Container(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        color: AppColors.greyLight,
+                        borderRadius: AppValues.borderRadiusM,
+                      ),
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.blueLight,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt, 
+                            color: AppColors.royalBlue, 
+                            size: 24
+                          ),
+                        ),
+                      ),
                     ),
+                  ),
+                ),
+              ...images.map(
+                (file) => Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        height: 150,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: AppColors.greyLight,
+                          borderRadius: AppValues.borderRadiusM,
+                          image: DecorationImage(
+                            image: FileImage(file),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: GestureDetector(
+                          onTap: () => onRemovePhoto?.call(file),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: AppColors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              size: 16,
+                              color: AppColors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              if (images.length < 3)
-                GestureDetector(
-                  onTap: onAddPhoto,
-                  child: Container(
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.greyLight,
-                      borderRadius: AppValues.borderRadiusM,
-                      border: Border.all(
-                        color: AppColors.greyMedium,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.add_a_photo,
-                      color: AppColors.textGrey,
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

@@ -123,7 +123,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     final images = (item['images'] as List<dynamic>?) ?? [];
     final title = item['title'] ?? ItemDetailsStrings.noTitle;
     final description = item['description'] ?? ''; 
-    final type = item['type'] ?? 'sale'; 
+    final type = item['type'] ?? 'cash'; 
     final category = item['category'] ?? 'General';
     final condition = item['condition'] ?? 'Used';
     final endTime = ItemDetailsController.parseEndTime(item['end_time']);
@@ -164,8 +164,151 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
             isOwner: isOwner,
             isTrade: type == 'trade',
             isMix: type == 'mix',
-            onPlaceBid: () {
-              // TODO: Implement Place Bid logic
+            onPlaceBid: () async {
+              // Step 1: Input Modal
+              final bool? shouldProceed = await showModalBottomSheet<bool>(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: AppColors.white,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (context) {
+                  return Container(
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Handle
+                        Center(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 12),
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                        // Title
+                        Text(
+                          (type == 'cash') ? "Place your Bid" : "Place your Offer",
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        AppValues.gapM,
+                        // Body Placeholder
+                        Expanded(child: Container()),
+                        // Button
+                        Padding(
+                          padding: const EdgeInsets.all(AppValues.spacingM),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.royalBlue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(AppValues.radiusCircular),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                              ),
+                              child: Text(
+                                (type == 'cash') ? "Confirm Bid" : "Submit Offer",
+                                style: const TextStyle(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+
+              // Step 2: Review Modal
+              if (shouldProceed == true && context.mounted) {
+                await showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: AppColors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  builder: (context) {
+                    return Container(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Handle
+                          Center(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 12),
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+                          // Title
+                          Text(
+                            "Review Offer",
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          AppValues.gapM,
+                          // Body Placeholder
+                          Expanded(child: Container()),
+                          // Button
+                          Padding(
+                            padding: const EdgeInsets.all(AppValues.spacingM),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // Submit Final Offer logic
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.royalBlue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(AppValues.radiusCircular),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                ),
+                                child: const Text(
+                                  "Submit Final Offer",
+                                  style: TextStyle(
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }
             },
           ),
         ),

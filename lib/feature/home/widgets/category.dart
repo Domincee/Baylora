@@ -30,8 +30,10 @@ class CategoryFilter extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.start,
           children: categories.map((category) {
             final isSelected = category == selectedCategory;
+
             return _CategoryChip(
               label: category,
+
               isSelected: isSelected,
               onTap: () => onSelect(category),
             );
@@ -68,7 +70,7 @@ class _CategoryChip extends StatelessWidget {
           borderRadius: AppValues.borderRadiusCircular,
           boxShadow: [
             if (!isSelected)
-              const BoxShadow(
+                const BoxShadow(
                 color: AppColors.shadowColor,
                 blurRadius: 4,
                 offset: Offset(0, 2),

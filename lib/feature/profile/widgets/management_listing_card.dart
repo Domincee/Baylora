@@ -196,7 +196,7 @@ class ManagementListingCard extends StatelessWidget {
 
   Widget _buildStatusBadge(BuildContext context) {
     String text = status;
-    Color bgColor = AppColors.tealLight.withOpacity(0.5);
+    Color bgColor = AppColors.tealLight.withValues(alpha: 0.5);
     Color textColor = AppColors.tealText;
 
     final s = status.toLowerCase();
@@ -225,7 +225,7 @@ class ManagementListingCard extends StatelessWidget {
       } else {
         // Case: Active (Default)
         text = 'Active';
-        bgColor = AppColors.tealLight.withOpacity(0.5);
+        bgColor = AppColors.tealLight.withValues(alpha:  0.5);
         textColor = AppColors.tealText;
       }
     }

@@ -94,6 +94,12 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
+  void _removePhoto(File file) {
+    setState(() {
+      _selectedImages.remove(file);
+    });
+  }
+
   String _getStep2Title() {
     switch (_selectedType) {
       case 0:
@@ -378,7 +384,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       children: [
         Scaffold(
           backgroundColor: AppColors.white,
-          appBar: ListingAppBar(
+          appBar: _currentStep == 1 
+              ? null // Step 2 handles its own header
+              : ListingAppBar(
             currentStep: _currentStep,
             step2Title: _getStep2Title(),
             isNextEnabled: _selectedType != -1,
@@ -432,6 +440,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                 onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
                 images: _selectedImages,
                 onAddPhoto: _pickImage,
+                onRemovePhoto: _removePhoto,
+                onNext: _validateStep2,
                 showImageError: _showImageError,
                 showTitleError: _showTitleError,
                 showCategoryError: _showCategoryError,

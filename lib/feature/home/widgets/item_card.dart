@@ -3,8 +3,8 @@ import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/uni_image.dart';
 import 'package:baylora_prjct/feature/home/widgets/build_price.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
-import 'package:baylora_prjct/feature/shared/widgets/user_rating_pill.dart'; // Import Shared Widget
-import 'package:baylora_prjct/feature/shared/widgets/username_with_badge.dart'; // Import Shared Widget
+import 'package:baylora_prjct/feature/shared/widgets/user_rating_pill.dart';
+import 'package:baylora_prjct/feature/shared/widgets/username_with_badge.dart';
 import 'package:flutter/material.dart';
 
 
@@ -24,7 +24,8 @@ class ItemCard extends StatelessWidget {
   final String title;
   final String description;
   final String imagePath;
-  final String? timeRemaining; 
+  final String? timeRemaining;
+  final VoidCallback? onTap;
 
   const ItemCard({
     super.key,
@@ -41,16 +42,15 @@ class ItemCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.imagePath,
-    this.timeRemaining, 
+    this.timeRemaining,
+    this.onTap,
   });
-
-  // ... (keeping _buildDurationBadge helper if needed, but omitted for brevity if not used here)
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        // Color moved to Material widget below
         borderRadius: AppValues.borderRadiusM,
         boxShadow: [
           BoxShadow(
@@ -60,155 +60,162 @@ class ItemCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // User Info Section
-          Padding(
-            padding: AppValues.paddingCard,
-            child: Row(
-              children: [
-                ProfileAvatar(
-                  imageUrl: sellerImage,
-                  size: 40,
-                ),
-                AppValues.gapHS,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // REPLACED: Custom Row -> Shared UsernameWithBadge
-                      UsernameWithBadge(
-                        username: sellerName,
-                        isVerified: isVerified,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.black,
-                        ),
-                      ),
-                      Text(
-                        postedTime,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppColors.textGrey,
-                          fontWeight: FontWeight.w600
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                UserRatingPill(rating: rating, totalTrades: totalTrade),
-              ],
-            ),
-          ),
-
-          // Item Details (unchanged)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppValues.spacingM),
+      child: ClipRRect(
+        borderRadius: AppValues.borderRadiusM,
+        child: Material(
+          color: AppColors.white,
+          child: InkWell(
+            onTap: onTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Updated Title Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                // User Info Section
+                Padding(
+                  padding: AppValues.paddingCard,
+                  child: Row(
+                    children: [
+                      ProfileAvatar(
+                        imageUrl: sellerImage,
+                        size: 40,
                       ),
-                    ),
-                    if (timeRemaining != null) ...[
-                      AppValues.gapHXXS,
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.errorColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.errorColor.withValues(alpha: 0.5)),
-                        ),
-                        child: Text(
-                          timeRemaining!,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: AppColors.errorColor,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      AppValues.gapHS,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            UsernameWithBadge(
+                              username: sellerName,
+                              isVerified: isVerified,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.black,
+                              ),
+                            ),
+                            Text(
+                              postedTime,
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: AppColors.textGrey,
+                                fontWeight: FontWeight.w600
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      UserRatingPill(rating: rating, totalTrades: totalTrade),
                     ],
-                  ],
-                ),
-                AppValues.gapXXS,
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.subTextColor,
-                    fontWeight: FontWeight.w600,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
-                AppValues.gapXS,
-                BuildPrice(
-                  type: type,
-                  price: price,
-                  swapItem: swapItem,
-                  context: context,
-                ),
-                type == 'mix' ? AppValues.gapXXS : SizedBox.shrink(),
-                type == 'mix'
-                    ? Row(
+
+                // Item Details
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppValues.spacingM),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Willing to swap for:",
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppColors.textGrey,
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          AppValues.gapHXXS,
-                          ...swapItem.split(',').take(2).map((item) => Container(
-                                margin: EdgeInsets.only(right: 4),
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: AppColors.blueLight,
-                                  borderRadius: AppValues.borderRadiusS,
+                          if (timeRemaining != null) ...[
+                            AppValues.gapHXXS,
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.errorColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.errorColor.withValues(alpha: 0.5)),
+                              ),
+                              child: Text(
+                                timeRemaining!,
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: AppColors.errorColor,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                child: Text(
-                                  item.trim(),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      AppValues.gapXXS,
+                      Text(
+                        description,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.subTextColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      AppValues.gapXS,
+                      BuildPrice(
+                        type: type,
+                        price: price,
+                        swapItem: swapItem,
+                        context: context,
+                      ),
+                      type == 'mix' ? AppValues.gapXXS : SizedBox.shrink(),
+                      type == 'mix'
+                          ? Row(
+                              children: [
+                                Text(
+                                  "Willing to swap for:",
                                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: AppColors.blueText,
-                                    fontSize: 10,
+                                    color: AppColors.textGrey,
                                   ),
                                 ),
-                              )),
-                        ],
-                      )
-                    : SizedBox.shrink(),
+                                AppValues.gapHXXS,
+                                ...swapItem.split(',').take(2).map((item) => Container(
+                                      margin: EdgeInsets.only(right: 4),
+                                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.blueLight,
+                                        borderRadius: AppValues.borderRadiusS,
+                                      ),
+                                      child: Text(
+                                        item.trim(),
+                                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                          color: AppColors.blueText,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    )),
+                              ],
+                            )
+                          : SizedBox.shrink(),
+                    ],
+                  ),
+                ),
+
+                AppValues.gapS,
+
+                // Item Image
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(AppValues.radiusM),
+                    bottomRight: Radius.circular(AppValues.radiusM),
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: UniversalImage(
+                      path: imagePath,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-
-          AppValues.gapS,
-
-          // Item Image
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(AppValues.radiusM),
-              bottomRight: Radius.circular(AppValues.radiusM),
-            ),
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: UniversalImage(
-                path: imagePath,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -24,8 +24,7 @@ class SellerInfoRow extends StatelessWidget {
     
     final num rating = seller['rating'] ?? 0;
     final num trades = seller['total_trades'] ?? 0;
-    final bool hasRating = rating > 0;
-    final bool hasTrades = trades > 0;
+
 
     return Row(
       children: [

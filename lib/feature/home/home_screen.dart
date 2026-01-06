@@ -131,7 +131,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final item = items[index];
                         final data = ItemCardMapper.map(item);
 
-                        return GestureDetector(
+                        return ItemCard(
+                          title: data['title'],
+                          description: data['description'],
+                          price: data['price'],
+                          type: data['type'],
+                          swapItem: data['swapItem'],
+                          imagePath: data['imagePath'],
+                          postedTime: data['postedTime'],
+                          isVerified: data['isVerified'],
+                          sellerName: data['sellerName'],
+                          sellerImage: data['sellerImage'],
+                          rating: data['rating'],
+                          totalTrade: data['totalTrade'],
+                          timeRemaining: data['timeRemaining'],
                           onTap: () {
                             Navigator.push(
                               context,
@@ -142,21 +155,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               ),
                             );
                           },
-                          child: ItemCard(
-                            title: data['title'],
-                            description: data['description'],
-                            price: data['price'],
-                            type: data['type'],
-                            swapItem: data['swapItem'],
-                            imagePath: data['imagePath'],
-                            postedTime: data['postedTime'],
-                            isVerified: data['isVerified'],
-                            sellerName: data['sellerName'],
-                            sellerImage: data['sellerImage'],
-                            rating: data['rating'],
-                            totalTrade: data['totalTrade'],
-                            timeRemaining: data['timeRemaining'],
-                          ),
                         );
                       },
                     ),

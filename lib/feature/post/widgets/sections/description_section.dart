@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/feature/post/widgets/shared/section_header.dart';
 
 class DescriptionSection extends StatelessWidget {
   final TextEditingController descriptionController;
@@ -20,37 +19,51 @@ class DescriptionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: "Description"),
+        const Text(
+          "Description & Details",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         AppValues.gapS,
         Container(
+          width: double.infinity,
           padding: AppValues.paddingCard,
           decoration: BoxDecoration(
             color: AppColors.greyLight,
-            borderRadius: AppValues.borderRadiusM,
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: descriptionController,
-                maxLines: 4,
-                maxLength: 120,
-                onChanged: onChanged,
-                decoration: const InputDecoration(
-                  hintText: "Enter description",
-                  border: InputBorder.none,
-                ),
-              ),
-            ],
+          child: TextField(
+            controller: descriptionController,
+            minLines: 6,
+            maxLines: null,
+            maxLength: 500,
+            onChanged: onChanged,
+            decoration: const InputDecoration(
+              hintText: "Describe the item, its condition and what buyers should know...",
+              hintStyle: TextStyle(color: AppColors.textGrey),
+              filled: true,
+              fillColor: Colors.transparent,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
           ),
         ),
         if (showError) ...[
           const SizedBox(height: 4),
-          const Text(
-            "Description can't be empty",
-            style: TextStyle(
-              color: AppColors.errorColor,
-              fontSize: 12,
+          const Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: Text(
+              "Description can't be empty",
+              style: TextStyle(
+                color: AppColors.errorColor,
+                fontSize: 12,
+              ),
             ),
           ),
         ],
