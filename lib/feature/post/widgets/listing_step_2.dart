@@ -217,8 +217,7 @@ class _ListingStep2State extends State<ListingStep2> {
                   ),
                   AppValues.gapL,
 
-                  // 5. Pricing Section
-                  // 5. Dynamic Section based on Type
+
 
                   // IF SELLING (Cash) -> Show Price
                   if (widget.selectedType == 0) ...[
@@ -239,12 +238,9 @@ class _ListingStep2State extends State<ListingStep2> {
                     ),
                   ],
 
-                  // IF BOTH (Mix) -> You likely want a special widget here later
-                  // For now, if you want to test, you could stack them or leave this empty
-                  // until we build the specific 'SellAndTradeSection'.
+
                   if (widget.selectedType == 2) ...[
-                    // Placeholder for the "Mix" section we discussed earlier
-                    // or you can stack both temporary:
+
                     PricingSection(
                       priceController: widget.priceController,
                       showError: widget.showPriceError,

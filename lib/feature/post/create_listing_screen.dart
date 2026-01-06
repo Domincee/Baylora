@@ -1,15 +1,20 @@
+import 'dart:io';
+
 import 'package:baylora_prjct/core/constant/app_strings.dart';
-import 'package:flutter/material.dart';
-import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/post/constants/post_db_values.dart';
+import 'package:baylora_prjct/feature/post/constants/post_storage.dart';
+import 'package:baylora_prjct/feature/post/constants/post_strings.dart';
+import 'package:baylora_prjct/feature/post/screens/post_success_screen.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_3.dart';
-import 'package:baylora_prjct/feature/post/screens/post_success_screen.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
@@ -19,6 +24,7 @@ class CreateListingScreen extends StatefulWidget {
 }
 
 class _CreateListingScreenState extends State<CreateListingScreen> {
+  // --- State Variables ---
   int _currentStep = 0;
   int _selectedType = -1;
   int _selectedCondition = 1; // 0: New, 1: Used, 2: Broken, 3: Fair
@@ -28,12 +34,12 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   bool _isLoading = false;
 
   final _titleController = TextEditingController();
-  final _durationController = TextEditingController(text: '1');
+  final _durationController = TextEditingController(text: PostDbValues.defaultDuration);
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   final List<String> _wishlistTags = [];
-  
+
   // Image selection
   final ImagePicker _picker = ImagePicker();
   final List<File> _selectedImages = [];
@@ -56,6 +62,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   }
 
   // ====== Logic Helpers ======
+
   void _incrementDuration() {
     int current = int.tryParse(_durationController.text) ?? 0;
     setState(() {
@@ -71,15 +78,16 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       });
     }
   }
-  
+
   Future<void> _pickImage() async {
     if (_selectedImages.length >= 3) return;
-    
+
     try {
-      debugPrint("Picking image...");
+      if (kDebugMode) debugPrint("Picking image...");
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
       if (image != null) {
-        debugPrint("Image picked: ${image.path}");
+        if (kDebugMode) debugPrint("Image picked: ${image.path}");
         setState(() {
           _selectedImages.add(File(image.path));
           if (_selectedImages.isNotEmpty && _showImageError) {
@@ -87,7 +95,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           }
         });
       } else {
-        debugPrint("Image picking canceled");
+        if (kDebugMode) debugPrint("Image picking canceled");
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
@@ -103,11 +111,11 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   String _getStep2Title() {
     switch (_selectedType) {
       case 0:
-        return "Sell Item";
+        return PostStrings.sellItem;
       case 1:
-        return "Trade Item";
+        return PostStrings.tradeItem;
       case 2:
-        return "Sell or Trade";
+        return PostStrings.sellTradeItem;
       default:
         return "";
     }
@@ -116,17 +124,34 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   String _getConditionLabel(int conditionIndex) {
     switch (conditionIndex) {
       case 0:
-        return "New";
+        return PostStrings.labelNew;
       case 1:
-        return "Used";
+        return PostStrings.labelUsed;
       case 2:
-        return "Broken";
+        return PostStrings.labelBroken;
       case 3:
-        return "Fair";
+        return PostStrings.labelFair;
       default:
-        return "Used";
+        return PostStrings.labelUsed;
     }
   }
+
+  bool _isNetworkError(Object e) {
+    final errorString = e.toString();
+    return e is SocketException ||
+        errorString.contains('SocketException') ||
+        errorString.contains('Network is unreachable') ||
+        errorString.contains('Connection refused');
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  // ====== Data Handling ======
 
   Future<List<String>> _uploadImages(List<File> images) async {
     final user = Supabase.instance.client.auth.currentUser;
@@ -141,141 +166,115 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         final path = '${user.id}/${timestamp}_$name';
 
         await Supabase.instance.client.storage
-            .from('item_images')
+            .from(PostStorage.bucketItemImages)
             .upload(path, image);
 
         final url = Supabase.instance.client.storage
-            .from('item_images')
+            .from(PostStorage.bucketItemImages)
             .getPublicUrl(path);
 
         uploadedUrls.add(url);
       } catch (e) {
         debugPrint("Error uploading image: $e");
         if (mounted) {
-           final isNetworkError = e is SocketException ||
-            (e.toString().contains('SocketException')) ||
-            (e.toString().contains('Network is unreachable')) ||
-            (e.toString().contains('Connection refused'));
-
-           final String message = isNetworkError
-            ? AppStrings.noInternetConnection
-            : 'Failed to upload an image: $e';
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
-          );
+          final message = _isNetworkError(e)
+              ? AppStrings.noInternetConnection
+              : '${PostStrings.msgImageUploadFailed}$e';
+          _showSnackBar(message);
         }
       }
     }
     return uploadedUrls;
   }
 
+  String _getTypeDbValue() {
+    switch (_selectedType) {
+      case 0:
+        return 'cash';
+      case 1:
+        return 'trade';
+      case 2:
+        return 'mix';
+      default:
+        return 'cash';
+    }
+  }
+
+  String _getConditionDbValue() {
+    switch (_selectedCondition) {
+      case 0:
+        return 'new';
+      case 1:
+        return 'used';
+      case 2:
+        return 'broken';
+      case 3:
+        return 'fair';
+      default:
+        return 'used';
+    }
+  }
+
+  double? _getSanitizedPrice() {
+    // If trade only, price is null
+    if (_selectedType == 1) return null;
+
+    if (_priceController.text.isNotEmpty) {
+      return double.tryParse(_priceController.text.replaceAll(',', ''));
+    }
+    return null;
+  }
+
+  String? _getSanitizedSwapPreference() {
+    // If cash only, swap preference is null
+    if (_selectedType == 0) return null;
+    return _wishlistTags.join(', ');
+  }
+
+  String? _getEndTime() {
+    if (!_isDurationEnabled) return null;
+
+    final durationHours = int.tryParse(_durationController.text) ?? 24;
+    final endTime = DateTime.now().add(Duration(hours: durationHours));
+    return endTime.toIso8601String();
+  }
+
   Future<void> _handlePublish() async {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("User not logged in")),
-      );
+      _showSnackBar(PostStrings.msgUserNotLoggedIn);
       return;
     }
 
     if (_titleController.text.trim().isEmpty) {
-       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Title is required")),
-      );
+      _showSnackBar(PostStrings.msgTitleRequired);
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
-      // 1. Upload Images
       final imageUrls = await _uploadImages(_selectedImages);
 
-      // Map Type
-      String typeStr;
-      switch (_selectedType) {
-        case 0:
-          typeStr = 'cash';
-          break;
-        case 1:
-          typeStr = 'trade';
-          break;
-        case 2:
-          typeStr = 'mix';
-          break;
-        default:
-          typeStr = 'cash';
-      }
-
-      // Map Condition (for DB - lowercase)
-      String conditionStr = 'used';
-      switch (_selectedCondition) {
-        case 0:
-          conditionStr = 'new';
-          break;
-        case 1:
-          conditionStr = 'used';
-          break;
-        case 2:
-          conditionStr = 'broken';
-          break;
-        case 3:
-          conditionStr = 'fair'; // Changed from 'good' to 'fair'
-          break;
-      }
-
-      // --- DATA SANITIZATION START ---
-
-      // Parse Price
-      double? priceVal;
-      // ONLY parse price if type is NOT Trade-only (so 0 or 2)
-      if (_selectedType != 1) { 
-        if (_priceController.text.isNotEmpty) {
-           priceVal = double.tryParse(_priceController.text.replaceAll(',', ''));
-        }
-      } else {
-        // Force null if it's Trade Only
-        priceVal = null;
-      }
-
-      // Swap Preference
-      String? swapPref;
-      // ONLY use swap tags if type is NOT Cash-only (so 1 or 2)
-      if (_selectedType != 0) {
-        swapPref = _wishlistTags.join(', ');
-      } else {
-        // Force null/empty if it's Cash Only
-        swapPref = null; 
-      }
-      
-      // --- DATA SANITIZATION END ---
-
-      // Calculate End Time
-      String? finalEndTime;
-      if (_isDurationEnabled) {
-        final durationHours = int.tryParse(_durationController.text) ?? 24;
-        final endTime = DateTime.now().add(Duration(hours: durationHours));
-        finalEndTime = endTime.toIso8601String();
-      } else {
-        finalEndTime = null;
-      }
-
-      final response = await Supabase.instance.client.from('items').insert({
+      final insertData = {
         'owner_id': user.id,
         'title': _titleController.text.trim(),
         'description': _descriptionController.text.trim(),
-        'type': typeStr,
-        'price': priceVal, // Uses sanitized value
-        'swap_preference': swapPref, // Uses sanitized value
-        'images': imageUrls, 
-        'condition': conditionStr,
+        'type': _getTypeDbValue(),
+        'price': _getSanitizedPrice(),
+        'swap_preference': _getSanitizedSwapPreference(),
+        'images': imageUrls,
+        'condition': _getConditionDbValue(),
         'category': _selectedCategory,
-        'end_time': finalEndTime,
-        'status': 'active', 
-      }).select().single();
+        'end_time': _getEndTime(),
+        'status': PostDbValues.statusActive,
+      };
+
+      final response = await Supabase.instance.client
+          .from(PostStorage.tableItems)
+          .insert(insertData)
+          .select()
+          .single();
 
       final newItemId = response['id'].toString();
 
@@ -289,24 +288,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final isNetworkError = e is SocketException ||
-            (e.toString().contains('SocketException')) ||
-            (e.toString().contains('Network is unreachable')) ||
-            (e.toString().contains('Connection refused'));
-
-        final String message = isNetworkError
+        final message = _isNetworkError(e)
             ? AppStrings.noInternetConnection
-            : 'Error publishing listing: $e';
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+            : '${PostStrings.msgPublishError}$e';
+        _showSnackBar(message);
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -314,37 +303,35 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   void _validateStep2() {
     bool hasError = false;
 
-    // Reset errors
-    setState(() {
-      _showImageError = false;
-      _showTitleError = false;
-      _showCategoryError = false;
-      _showDescriptionError = false;
-      _showPriceError = false;
-      _showWishlistError = false;
-    });
+    // Check local variables to avoid multiple setStates
+    bool imgErr = false;
+    bool titleErr = false;
+    bool catErr = false;
+    bool descErr = false;
+    bool priceErr = false;
+    bool wishErr = false;
 
     // Images
     if (_selectedImages.isEmpty) {
-      _showImageError = true;
+      imgErr = true;
       hasError = true;
     }
 
     // Title
     if (_titleController.text.trim().isEmpty) {
-      _showTitleError = true;
+      titleErr = true;
       hasError = true;
     }
 
     // Category
     if (_selectedCategory == null) {
-      _showCategoryError = true;
+      catErr = true;
       hasError = true;
     }
 
     // Description
     if (_descriptionController.text.trim().isEmpty) {
-      _showDescriptionError = true;
+      descErr = true;
       hasError = true;
     }
 
@@ -355,7 +342,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         priceVal = double.tryParse(_priceController.text.replaceAll(',', ''));
       }
       if (priceVal == null || priceVal == 0) {
-        _showPriceError = true;
+        priceErr = true;
         hasError = true;
       }
     }
@@ -363,18 +350,37 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     // Wishlist (Trade or Both)
     if (_selectedType == 1 || _selectedType == 2) {
       if (_wishlistTags.isEmpty) {
-        _showWishlistError = true;
+        wishErr = true;
         hasError = true;
       }
     }
 
-    if (hasError) {
-      setState(() {}); // Trigger rebuild to show errors
-      return;
-    }
+    // Update state once
+    setState(() {
+      _showImageError = imgErr;
+      _showTitleError = titleErr;
+      _showCategoryError = catErr;
+      _showDescriptionError = descErr;
+      _showPriceError = priceErr;
+      _showWishlistError = wishErr;
+    });
+
+    if (hasError) return;
 
     // Proceed to Step 3
     setState(() => _currentStep++);
+  }
+
+  void _nextStep() {
+    if (_currentStep == 1) {
+      _validateStep2();
+    } else {
+      setState(() => _currentStep++);
+    }
+  }
+
+  void _prevStep() {
+    setState(() => _currentStep--);
   }
 
   // ====== Main Build ======
@@ -384,22 +390,16 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       children: [
         Scaffold(
           backgroundColor: AppColors.white,
-          appBar: _currentStep == 1 
+          appBar: _currentStep == 1
               ? null // Step 2 handles its own header
               : ListingAppBar(
-            currentStep: _currentStep,
-            step2Title: _getStep2Title(),
-            isNextEnabled: _selectedType != -1,
-            onNext: () {
-              if (_currentStep == 1) {
-                _validateStep2();
-              } else {
-                setState(() => _currentStep++);
-              }
-            },
-            onBack: () => setState(() => _currentStep--),
-            onClose: () => Navigator.pop(context),
-          ),
+                  currentStep: _currentStep,
+                  step2Title: _getStep2Title(),
+                  isNextEnabled: _selectedType != -1,
+                  onNext: _nextStep,
+                  onBack: _prevStep,
+                  onClose: () => Navigator.pop(context),
+                ),
           body: IndexedStack(
             index: _currentStep,
             children: [
@@ -412,7 +412,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                 titleController: _titleController,
                 durationController: _durationController,
                 isDurationEnabled: _isDurationEnabled,
-                onToggleDuration: (val) => setState(() => _isDurationEnabled = val),
+                onToggleDuration: (val) =>
+                    setState(() => _isDurationEnabled = val),
                 onIncrementDuration: _incrementDuration,
                 onDecrementDuration: _decrementDuration,
                 selectedCategory: _selectedCategory,
@@ -425,7 +426,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   });
                 },
                 selectedCondition: _selectedCondition,
-                onConditionChanged: (val) => setState(() => _selectedCondition = val),
+                onConditionChanged: (val) =>
+                    setState(() => _selectedCondition = val),
                 priceController: _priceController,
                 descriptionController: _descriptionController,
                 wishlistTags: _wishlistTags,
@@ -437,7 +439,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                     }
                   });
                 },
-                onTagRemoved: (tag) => setState(() => _wishlistTags.remove(tag)),
+                onTagRemoved: (tag) =>
+                    setState(() => _wishlistTags.remove(tag)),
                 images: _selectedImages,
                 onAddPhoto: _pickImage,
                 onRemovePhoto: _removePhoto,
@@ -467,9 +470,11 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               ListingStep3(
                 images: _selectedImages,
                 title: _titleController.text,
-                category: _selectedCategory ?? "N/A",
+                category: _selectedCategory ?? PostStrings.labelNA,
                 condition: _getConditionLabel(_selectedCondition),
-                duration: _isDurationEnabled ? "${_durationController.text} hrs" : null,
+                duration: _isDurationEnabled
+                    ? "${_durationController.text} hrs"
+                    : null,
                 description: _descriptionController.text,
                 price: _priceController.text,
                 wishlistTags: _wishlistTags,
@@ -493,14 +498,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                       color: AppColors.royalBlue,
                     ),
                     AppValues.gapS,
-                    const Text(
-                      "Publishing your listing...",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
+                    Text(PostStrings.publishingYourListing,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: AppColors.white,
+                            )),
                   ],
                 ),
               ),

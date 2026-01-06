@@ -1,48 +1,59 @@
 class PostStrings {
-  //title
+  // --- Titles & Headers ---
   static const String photos = "Photos";
-
+  static const String title = "Title";
+  static const String noTitle = "No Title";
   static const String basicInfo = "Basic info";
-  static const String category =  "Category";
-  static const String condition =  "Condition";
-  static const String setDuration =   "Exchange Preference";
-  static const String lookingFor =   "Looking For";
-
+  static const String category = "Category";
+  static const String condition = "Condition";
+  static const String setDuration = "Set Duration";
+  static const String duration = "Duration";
+  static const String lookingFor = "Looking For";
   static const String minimumToBid = "Minimum to Bid";
-  static const String exchangePreference =   "Exchange Preference";
+  static const String exchangePreference = "Exchange Preference";
+  static const String descAndDetails = "Description and Details";
+  static const String iWantCashOr = "I want cash OR..";
 
-  static const String descAndDetails =  "I want cash OR..";
-
-  static const String iWantCashOr =  "I want cash OR..";
-
-  //hint text
-  static const String yourSelling =   "What are you selling?";
-  static const String hintDescription =  "Describe the item, its condition and what buyers should know...";
+  // --- Hint Texts ---
+  static const String yourSelling = "What are you selling?";
+  static const String hintDescription = "Describe the item, its condition and what buyers should know...";
   static const String selCategory = "Select Category";
   static const String noLimit = "no limit";
 
- ///=======================
-  //step 1 strings
+  // --- Step 1 Strings ---
   static const String whatTypeOfListing = "What type of listing is this?";
   static const String chooseOptionItem = "Choose the best option for your item.";
-  //title
   static const String sellItem = "Sell Item";
   static const String tradeItem = "Trade Item";
   static const String sellTradeItem = "Sell or Trade";
-  //subtitle
+
+  // --- Step 1 Subtitles ---
   static const String forTransaction = "For cash transactions only";
-  static const String forExchange =  "Open to both cash and trades (Recommended)";
-  static const String forBothItem =  "Open to both cash and trades (Recommended)";
+  static const String forExchange = "Open to both cash and trades (Recommended)";
+  static const String forBothItem = "Open to both cash and trades (Recommended)";
 
-  //error Message
-
+  // --- Error Messages ---
   static const String requiredErrMess = "This is required";
   static const String chooseCatErrMess = "Choose a category";
-  static const String descriptionErrMess =  "Description can't be empty";
-  static const String imageErrMess =   "You need to upload at least 1 image";
+  static const String descriptionErrMess = "Description can't be empty";
+  static const String imageErrMess = "You need to upload at least 1 image";
+  static const String msgUserNotLoggedIn = "User not logged in";
+  static const String msgTitleRequired = "Title is required";
+  static const String msgImageUploadFailed = "Failed to upload an image: ";
+  static const String msgPublishError = "Error publishing listing: ";
 
-  //helper text
+  // --- Helper & Instructional Text ---
   static const String tip = "Tip: ";
   static const String helperTextLookingFor = "Enter you are looking for. Leave empty to see all items.";
   static const String helperTextLookingFor2nd = "Being specific helps you find the right trade faster.";
+
+  // --- Overlay & Loading Messages ---
+  static const String publishingYourListing = "Publishing your listing...";
+
+  // --- Labels & Values ---
+  static const String labelNew = "New";
+  static const String labelUsed = "Used";
+  static const String labelBroken = "Broken";
+  static const String labelFair = "Fair";
+  static const String labelNA = "N/A";
 }

@@ -241,4 +241,8 @@ class AppValues {
   static const Size imageContainer = Size(150, 150) ;
   static const Size container25 = Size(25, 25) ;
 
+
+  //constraint
+  static const BoxConstraints boxMinConstraint100H = BoxConstraints(minHeight: 100) ;
+
 }

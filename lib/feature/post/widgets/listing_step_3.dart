@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
+import '../constants/post_strings.dart';
+
 class ListingStep3 extends StatelessWidget {
   final List<File> images;
   final String title;
@@ -37,286 +39,334 @@ class ListingStep3 extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-
           AppValues.gapL,
-
           // Photos Section
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Photos",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+               PostStrings.photos,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     ),
               ),
+              AppValues.gapHS,
               Text(
                 "${images.length}/3",
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textGrey,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w700,
                     ),
               ),
             ],
           ),
           AppValues.gapS,
-          if (images.isNotEmpty)
-            SizedBox(
-              height: 100,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: images.length,
-                separatorBuilder: (context, index) => AppValues.gapM,
-                itemBuilder: (context, index) {
-                  return Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.greyLight,
-                      borderRadius: AppValues.borderRadiusM,
-                      border: Border.all(color: AppColors.greyMedium),
-                      image: DecorationImage(
-                        image: FileImage(images[index]),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            )
-          else
-            Container(
-              height: 100,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.greyLight,
-                borderRadius: AppValues.borderRadiusM,
-              ),
-              child: const Center(child: Text("No images uploaded")),
-            ),
-
+            _imageBox(),
           AppValues.gapL,
-
           // Basic Info Header
           Text(
-            "Basic info",
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+            PostStrings.basicInfo,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 ),
           ),
           AppValues.gapM,
 
           // Title
-          _buildLabel("Title"),
-          _buildReadOnlyField(context, title.isNotEmpty ? title : "No Title"),
+          _buildLabel(context, PostStrings.title),//string
+          _buildReadOnlyField(context, title.isNotEmpty ? title : PostStrings.noTitle),//string
           AppValues.gapM,
-
           // Category
-          _buildLabel("Category"),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: _buildReadOnlyChip(context, category),
-          ),
-          AppValues.gapM,
-
-          // Condition
-          _buildLabel("Condition"),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.royalBlue,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                condition,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-          AppValues.gapM,
-
-          // Duration (Optional)
-          if (duration != null) ...[
-            _buildLabel("Duration"),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: _buildReadOnlyChip(context, duration!),
-            ),
-            AppValues.gapM,
-          ],
-
-          // Description
-          _buildLabel("Description & Details"),
-          Container(
-            width: double.infinity,
-            padding: AppValues.paddingAll,
-            decoration: BoxDecoration(
-              color: AppColors.greyLight,
-              borderRadius: AppValues.borderRadiusM,
-            ),
-            constraints: const BoxConstraints(minHeight: 100),
-            child: Text(
-              description.isNotEmpty
-                  ? description
-                  : "Description of the item....",
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textDarkGrey,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  _buildLabel(context, PostStrings.category),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: _buildReadOnlyChip(context, category),//string
                   ),
-            ),
+                ],
+              ),
+
+              AppValues.gapM,
+
+              // Condition
+              Column(
+                children: [
+                  _buildLabel(context,PostStrings.condition),//string
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: _buildReadOnlyChip(context, condition),
+
+                  ),
+                ],
+              ),
+
+              AppValues.gapM,
+              if (duration != null) ...[
+                Column(
+                  children: [
+                    _buildLabel(context, PostStrings.duration),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _buildReadOnlyChip(context, duration!),
+                    ),
+                  ],
+                ),
+              ],
+
+            ],
           ),
-          AppValues.gapL,
+          AppValues.gapM,
 
           // Price Section (Sell or Both)
           if (selectedType == 0 || selectedType == 2) ...[
-            _buildLabel("Price ₱ "),
-            Container(
-              width: double.infinity,
-              padding: AppValues.paddingAll,
-              decoration: BoxDecoration(
-                color: AppColors.greyLight,
-                borderRadius: AppValues.borderRadiusM,
-              ),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  price.isNotEmpty ? price: "₱ 0.00",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ),
-            ),
+            _buildLabel(context, PostStrings.minimumToBid),
+            _PriceBox(price: price),
             AppValues.gapM,
           ],
 
           // Wishlist Section (Trade or Both)
           if (selectedType == 1 || selectedType == 2) ...[
-            _buildLabel("Wishlist"),
-            Container(
-              width: double.infinity,
-              padding: AppValues.paddingAll,
-              decoration: BoxDecoration(
-                color: AppColors.greyLight,
-                borderRadius: AppValues.borderRadiusM,
-              ),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: wishlistTags.isNotEmpty
-                    ? Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: wishlistTags.map((tag) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.blueLight,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              tag,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.blueText,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                            ),
-                          );
-                        }).toList(),
-                      )
-                    : const Text("No wishlist items added"),
-              ),
-            ),
+            _buildLabel(context, PostStrings.lookingFor),
+            _ItemBox(wishlistTags: wishlistTags),
             AppValues.gapL,
           ],
 
+          // Description
+          _buildLabel(context, PostStrings.descAndDetails),
+          _DescriptionBox(description: description),
+          AppValues.gapL,
+
+
           // Post Button
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: onPost,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.royalBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 0,
-              ),
-              child: const Text(
-                "Post",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
+          _PostButton(onPost: onPost),
           AppValues.gapXL,
         ],
       ),
     );
   }
 
-  Widget _buildLabel(String text) {
+  //image box widget
+  SizedBox _imageBox() {
+    return SizedBox(
+            height: AppValues.imageContainer.height,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: images.length,
+              separatorBuilder: (context, index) => AppValues.gapM,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: AppValues.imageContainer.width,
+                  height: AppValues.imageContainer.height,
+                  decoration: BoxDecoration(
+                    color: AppColors.greyLight,
+                    borderRadius: AppValues.borderRadiusM,
+                    border: Border.all(color: AppColors.greyMedium),
+                    image: DecorationImage(
+                      image: FileImage(images[index]),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+  }
+
+  //Title widget with bottom padding
+  Widget _buildLabel(BuildContext context,String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding:  EdgeInsets.only(bottom: AppValues.spacingXS),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: AppColors.black87,
+        style:  Theme.of(context).textTheme.bodyLarge
+      ),
+    );
+  }
+
+  //gray box with text for title
+  Widget _buildReadOnlyField(BuildContext context, String text) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM, vertical: AppValues.spacingS),
+      decoration: BoxDecoration(
+        color: AppColors.greyLight,
+        borderRadius:AppValues.borderRadiusCircular,
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            fontWeight: FontWeight.w600,
+            color: AppColors.subTextColor
         ),
       ),
     );
   }
 
-  Widget _buildReadOnlyField(BuildContext context, String text) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.greyLight,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
-  }
-
+//gray pill with text for category,condition,duration
   Widget _buildReadOnlyChip(BuildContext context, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM, vertical: AppValues.spacingS),
       decoration: BoxDecoration(
         color: AppColors.greyLight,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius:AppValues.borderRadiusCircular,
       ),
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+               color: AppColors.subTextColor
             ),
+      ),
+    );
+  }
+}
+
+//post button at the bottom
+class _PostButton extends StatelessWidget {
+  const _PostButton({
+    required this.onPost,
+  });
+
+  final VoidCallback onPost;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onPost,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.royalBlue,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius:AppValues.borderRadiusCircular,
+          ),
+          elevation: 0,
+        ),
+        child: const Text(
+          "Post",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// item with light blue with text item name
+class _ItemBox extends StatelessWidget {
+  const _ItemBox({
+    required this.wishlistTags,
+  });
+
+  final List<String> wishlistTags;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: AppColors.greyLight,
+        borderRadius: AppValues.borderRadiusM,
+      ),
+      child: Container(
+        width: double.infinity,
+        padding: AppValues.paddingS,
+        decoration: BoxDecoration(
+          borderRadius: AppValues.borderRadiusM,
+        ),
+        child:
+             Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: wishlistTags.map((tag) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM, vertical: AppValues.spacingS),
+                    decoration: BoxDecoration(
+                      color: AppColors.lavenderBlue,
+                      borderRadius: AppValues.borderRadiusCircular,
+                    ),
+                    child: Text(
+                      tag,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(
+                            color: AppColors.highLightTextColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  );
+                }).toList(),
+              ),
+      ),
+    );
+  }
+}
+
+//container with gray color with value text of minimum price
+class _PriceBox extends StatelessWidget {
+  const _PriceBox({
+    required this.price,
+  });
+
+  final String price;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      decoration: BoxDecoration(
+        color: AppColors.greyLight,
+        borderRadius: AppValues.borderRadiusM,
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM, vertical: AppValues.spacingS),
+        decoration: BoxDecoration(
+          borderRadius: AppValues.borderRadiusM,
+        ),
+        child: Text(
+          price.isNotEmpty ? "₱ $price" : "₱ 0.00",
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.subTextColor
+              ),
+        ),
+      ),
+    );
+  }
+}
+//container gray with text description
+class _DescriptionBox extends StatelessWidget {
+  const _DescriptionBox({
+    required this.description,
+  });
+
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: AppValues.paddingAll,
+      decoration: BoxDecoration(
+        color: AppColors.greyLight,
+        borderRadius: AppValues.borderRadiusM,
+      ),
+      constraints:  BoxConstraints(minHeight: AppValues.boxMinConstraint100H.minHeight),
+      child: Text(
+            description,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.subTextColor,
+                    fontWeight: FontWeight.w600,
+
+                  ),
       ),
     );
   }

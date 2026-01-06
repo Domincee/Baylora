@@ -28,15 +28,15 @@ class PhotosSection extends StatelessWidget {
           children: [
             Text(
               PostStrings.photos,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    fontWeight: FontWeight.w600
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
                 ),
             ),
             AppValues.gapHS,
             Text(
               "${images.length}/3",
              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-              color: AppColors.subTextColor
+              color: AppColors.black,
+               fontWeight: FontWeight.w600
               ),
             ),
           ],

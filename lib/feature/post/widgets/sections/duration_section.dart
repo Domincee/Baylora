@@ -42,11 +42,11 @@ class DurationSection extends StatelessWidget {
               child: Switch(
                 value: isDurationEnabled,
                 onChanged: onToggleDuration,
-                activeColor: AppColors.white,
+                activeThumbColor: AppColors.white,
                 activeTrackColor: AppColors.royalBlue,
                 inactiveThumbColor: AppColors.white,
                 inactiveTrackColor: AppColors.grey400,
-                trackOutlineColor: MaterialStateProperty.all(Colors.transparent),
+                trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
               ),
             ),
           ],

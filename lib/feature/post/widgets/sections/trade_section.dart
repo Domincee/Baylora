@@ -199,7 +199,7 @@ class _TradeSectionState extends State<TradeSection> {
             onTap: () => widget.onTagRemoved(label),
             child: const Icon(
               Icons.close,
-              size: 14,
+              size: AppValues.iconS,
               color: AppColors.royalBlue,
             ),
           ),
