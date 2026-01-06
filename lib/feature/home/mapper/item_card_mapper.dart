@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
 
 class ItemCardMapper {
@@ -11,7 +12,7 @@ class ItemCardMapper {
     final images = item['images'] as List?;
     final firstImage = (images != null && images.isNotEmpty)
         ? images.first
-        : 'https://via.placeholder.com/300';
+        : HomeStrings.placeholderImage;
     
     // Parse End Time
     DateTime? endTime;
@@ -20,23 +21,23 @@ class ItemCardMapper {
     }
 
     return {
-      'title': item['title'] ?? 'No Title',
+      'title': item['title'] ?? HomeStrings.noTitle,
       'description': item['description'] ?? '',
       'price': (item['price'] ?? 0).toString(),
-      'type': item['type'] ?? 'cash',
-      'swapItem': item['swap_preference'] ?? 'Anything',
+      'type': item['type'] ?? HomeStrings.cash,
+      'swapItem': item['swap_preference'] ?? HomeStrings.anything,
       'imagePath': firstImage,
       'postedTime': DateUtil.getTimeAgo(item['created_at']),
 
       'isVerified': profile['is_verified'] ?? false,
-      'sellerName': profile['username'] ?? 'Unknown',
+      'sellerName': profile['username'] ?? HomeStrings.unknownUser,
 
       'sellerImage': profile['avatar_url'] ?? '',
       'rating': (profile['rating'] ?? 0.0).toString(),
       'totalTrade': (profile['total_trades'] ?? 0).toString(),
 
       'timeRemaining': endTime != null 
-          ? (DateTime.now().isAfter(endTime) ? "Ended" : DateUtil.getRemainingTime(endTime, short: false)) 
+          ? (DateTime.now().isAfter(endTime) ? HomeStrings.ended : DateUtil.getRemainingTime(endTime, short: false)) 
           : null,
     };
   }

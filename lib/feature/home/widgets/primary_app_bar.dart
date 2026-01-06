@@ -5,6 +5,7 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
@@ -13,6 +14,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../core/util/network_utils.dart';
 
 class PrimaryAppBar extends ConsumerWidget {
   const PrimaryAppBar({
@@ -27,7 +30,7 @@ class PrimaryAppBar extends ConsumerWidget {
       case 0:
         return AppStrings.home;
       case 1:
-        return "Post Item";
+        return HomeStrings.postItem;
       case 2:
         return AppStrings.profile;
       default:
@@ -111,30 +114,28 @@ class PrimaryAppBar extends ConsumerWidget {
                           size: 32,
                         ),
                         onSelected: (value) async {
-                          if (value == 'my_items') {
+                          if (value == HomeStrings.menuMyItems) {
                             // Navigate to My Items
-                          } else if (value == 'settings') {
+                          } else if (value == HomeStrings.menuSettings) {
                             // Navigate to Settings
-                          } else if (value == 'logout') {
+                          } else if (value == HomeStrings.menuLogout) {
                             // 1. Show Loading first
-                            await EasyLoading.show(status: 'Signing out...');
+                            await EasyLoading.show(status: HomeStrings.signingOut);
                             
                             try {
                               // 2. Clear Supabase Session
                               await Supabase.instance.client.auth.signOut();
                             } catch (e) {
                               if (!context.mounted) return;
-                              
-                              final isNetworkError = e is SocketException ||
-                                (e.toString().contains('SocketException')) ||
-                                (e.toString().contains('Network is unreachable')) ||
-                                (e.toString().contains('Connection refused'));
+
+                              final isNetworkError = NetworkUtils.isNetworkError(e);
+
 
                               if (isNetworkError) {
                                  await EasyLoading.dismiss();
                                  if (context.mounted) {
                                    ScaffoldMessenger.of(context).showSnackBar(
-                                     const SnackBar(content: Text(AppStrings.noInternetConnection)),
+                                     const SnackBar(content: Text(HomeStrings.noInternetConnection)),
                                    );
                                  }
                                  return;
@@ -157,15 +158,15 @@ class PrimaryAppBar extends ConsumerWidget {
                         itemBuilder: (BuildContext context) {
                           return [
                             const PopupMenuItem(
-                              value: 'my_items',
+                              value: HomeStrings.menuMyItems,
                               child: Text(ProfileStrings.myItems),
                             ),
                             const PopupMenuItem(
-                              value: 'settings',
+                              value: HomeStrings.menuSettings,
                               child: Text(ProfileStrings.settings),
                             ),
                             PopupMenuItem(
-                              value: 'logout',
+                              value: HomeStrings.menuLogout,
                               child: Text(
                                 AppStrings.logout,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(

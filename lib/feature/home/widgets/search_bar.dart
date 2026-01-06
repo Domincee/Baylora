@@ -1,5 +1,5 @@
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:flutter/material.dart';
-import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
@@ -64,7 +64,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               color: _focusNode.hasFocus ? AppColors.royalBlue : AppColors.textLblG,
               size: AppValues.iconM,
             ),
-            hintText: AppStrings.searchText,
+            hintText: HomeStrings.searchHint,
             hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.textLblG,
             ),

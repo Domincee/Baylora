@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:baylora_prjct/core/assets/images.dart';
@@ -24,7 +25,7 @@ class BuildUser extends StatelessWidget {
         Row(
           children: [
             Text(
-              "@$sellerName",
+              "${HomeStrings.atSymbol}$sellerName",
               style: Theme.of(context).textTheme.labelLarge!.copyWith(
                 color: AppColors.black,
               ),

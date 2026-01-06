@@ -1,6 +1,7 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/uni_image.dart';
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/widgets/build_price.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
 import 'package:baylora_prjct/feature/shared/widgets/user_rating_pill.dart';
@@ -162,12 +163,12 @@ class ItemCard extends StatelessWidget {
                         swapItem: swapItem,
                         context: context,
                       ),
-                      type == 'mix' ? AppValues.gapXXS : SizedBox.shrink(),
-                      type == 'mix'
+                      type == HomeStrings.mix ? AppValues.gapXXS : SizedBox.shrink(),
+                      type == HomeStrings.mix
                           ? Row(
                               children: [
                                 Text(
-                                  "Willing to swap for:",
+                                  HomeStrings.willingToSwapFor,
                                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                     color: AppColors.textGrey,
                                   ),

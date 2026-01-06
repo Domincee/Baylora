@@ -1,3 +1,4 @@
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
@@ -18,21 +19,21 @@ class BuildPrice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (type == 'cash') {
+    if (type == HomeStrings.cash) {
       return Text(
-        "₱ $price",
+        "${HomeStrings.currencySymbol} $price",
         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: AppColors.highLightTextColor,
         ),
       );
-    } else if (type == 'trade') {
+    } else if (type == HomeStrings.trade) {
       return Row(
         children: [
           Icon(Icons.swap_horiz, size: AppValues.iconS, color: AppColors.highLightTextColor),
           AppValues.gapHXXS,
           Expanded(
             child: Text(
-              swapItem.isNotEmpty ? swapItem : "Trade Only",
+              swapItem.isNotEmpty ? swapItem : HomeStrings.tradeOnly,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -47,7 +48,7 @@ class BuildPrice extends StatelessWidget {
       return Row(
         children: [
           Text(
-            "₱ ${price.replaceAll('000', 'k')}",
+            "${HomeStrings.currencySymbol} ${price.replaceAll(HomeStrings.thousandSuffix, HomeStrings.kSuffix)}",
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
               color: AppColors.highLightTextColor,
               fontWeight: FontWeight.w700,
@@ -55,7 +56,7 @@ class BuildPrice extends StatelessWidget {
           ),
           AppValues.gapHXXS,
           Text(
-            "or",
+            HomeStrings.or,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: AppColors.subTextColor,
               fontWeight: FontWeight.w700,

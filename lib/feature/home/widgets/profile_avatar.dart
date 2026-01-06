@@ -1,5 +1,6 @@
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:flutter/material.dart';
 
 class ProfileAvatar extends StatelessWidget {
@@ -16,7 +17,7 @@ class ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     // 1. Determine Image Source
     // If empty or doesn't start with http, treat as invalid/local placeholder needed
-    final bool isNetwork = imageUrl.isNotEmpty && imageUrl.startsWith('http');
+    final bool isNetwork = imageUrl.isNotEmpty && imageUrl.startsWith(HomeStrings.http);
     
     // 2. Resolve the final image provider
     final ImageProvider imageProvider;

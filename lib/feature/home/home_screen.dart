@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/item_details_screen.dart';
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/mapper/item_card_mapper.dart';
 import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
 import 'package:baylora_prjct/feature/home/util/item_filter_util.dart';
@@ -13,6 +14,7 @@ import 'package:baylora_prjct/feature/home/widgets/category.dart';
 import 'package:baylora_prjct/feature/home/widgets/item_card.dart';
 import 'package:baylora_prjct/feature/home/widgets/search_bar.dart';
 
+import '../../core/util/network_utils.dart';
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -21,7 +23,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  String selectedFilter = "All";
+  String selectedFilter = HomeStrings.categoryAll;
 
   void _onFilterChanged(String newFilter) {
     if (selectedFilter == newFilter) return;
@@ -67,15 +69,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) {
                   debugPrint('Error loading items: $err');
-                  
-                  final isNetworkError = err is SocketException ||
-                      (err.toString().contains('SocketException')) ||
-                      (err.toString().contains('Network is unreachable')) ||
-                      (err.toString().contains('Connection refused'));
+
+                  final isNetworkError = NetworkUtils.isNetworkError(err);
 
                   final String message = isNetworkError
-                      ? AppStrings.noInternetConnection
-                      : AppStrings.somethingWentWrong;
+                      ? HomeStrings.noInternetConnection
+                      : HomeStrings.somethingWentWrong;
 
                   final IconData icon = isNetworkError ? Icons.wifi_off : Icons.error_outline;
 
@@ -89,7 +88,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         AppValues.gapM,
                         ElevatedButton(
                           onPressed: _refreshItems,
-                          child: const Text(AppStrings.retry),
+                          child: const Text(HomeStrings.retry),
                         ),
                       ],
                     ),
@@ -112,7 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 color: AppColors.textGrey,
                               ),
                               AppValues.gapXS,
-                              Text('No "$selectedFilter" items found'),
+                              Text('${HomeStrings.no} "$selectedFilter" ${HomeStrings.itemsFound}'),
                             ],
                           ),
                         ),

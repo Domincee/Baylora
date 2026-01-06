@@ -1,31 +1,33 @@
+import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
+
 class DateUtil {
   static String getTimeAgo(String? dateString) {
-    if (dateString == null) return 'Just now';
+    if (dateString == null) return HomeStrings.justNow;
     
     final date = DateTime.parse(dateString).toLocal();
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays > 365) {
-      return '${(difference.inDays / 365).floor()}y ago';
+      return '${(difference.inDays / 365).floor()}${HomeStrings.suffixYearAgo}';
     }
     if (difference.inDays > 30) {
-      return '${(difference.inDays / 30).floor()}mo ago';
+      return '${(difference.inDays / 30).floor()}${HomeStrings.suffixMonthAgo}';
     }
     if (difference.inDays > 1) {
-      return '${difference.inDays} days ago';
+      return '${difference.inDays}${HomeStrings.suffixDaysAgo}';
     }
     if (difference.inDays == 1) {
-      return 'Yesterday';
+      return HomeStrings.yesterday;
     }
     if (difference.inHours >= 1) {
-      return '${difference.inHours}h ago';
+      return '${difference.inHours}${HomeStrings.suffixHoursAgo}';
     }
     if (difference.inMinutes >= 1) {
-      return '${difference.inMinutes}m ago';
+      return '${difference.inMinutes}${HomeStrings.suffixMinutesAgo}';
     }
     
-    return 'Just now';
+    return HomeStrings.justNow;
   }
 
   static String? getRemainingTime(DateTime? endTime, {bool short = false}) {
@@ -38,19 +40,19 @@ class DateUtil {
     
     if (short) {
       if (difference.inDays > 0) {
-        return "${difference.inDays}d left";
+        return "${difference.inDays}${HomeStrings.suffixDaysLeft}";
       } else if (difference.inHours > 0) {
-        return "${difference.inHours}h left";
+        return "${difference.inHours}${HomeStrings.suffixHoursLeft}";
       } else {
-        return "${difference.inMinutes}m left";
+        return "${difference.inMinutes}${HomeStrings.suffixMinutesLeft}";
       }
     } else {
       if (difference.inDays > 0) {
-        return "${difference.inDays}d ${difference.inHours % 24}h left";
+        return "${difference.inDays}${HomeStrings.unitDay} ${difference.inHours % 24}${HomeStrings.unitHour}${HomeStrings.left}";
       } else if (difference.inHours > 0) {
-        return "${difference.inHours}h ${difference.inMinutes % 60}m left";
+        return "${difference.inHours}${HomeStrings.unitHour} ${difference.inMinutes % 60}${HomeStrings.unitMinute}${HomeStrings.left}";
       } else {
-        return "${difference.inMinutes}m left";
+        return "${difference.inMinutes}${HomeStrings.unitMinute}${HomeStrings.left}";
       }
     }
   }
