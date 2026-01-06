@@ -28,16 +28,17 @@ class PricingSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Text(
-           PostStrings.minimumToBid,
-               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                   fontWeight: FontWeight.w600
-               )
+          Text(
+            PostStrings.minimumToBid,
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           AppValues.gapS,
 
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM, vertical: AppValues.spacing5),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppValues.spacingM, vertical: AppValues.spacing5),
             decoration: BoxDecoration(
               color: AppColors.primaryColor,
               borderRadius: AppValues.borderRadiusM,
@@ -59,27 +60,51 @@ class PricingSection extends StatelessWidget {
                         color: AppColors.black,
                         fontWeight: FontWeight.bold,
                       ),
-
                       hintText: "0.00",
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       errorBorder: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
-                      filled: false, // Ensure no background color when focused
+                      filled: false,
                       fillColor: Colors.transparent,
                     ),
                   ),
                 ),
                 Row(
                   children: [
-                    _buildStepperButton(Icons.remove, () {
+                    // REPLACED helper method with the new animated widget
+                    _BouncingStepperButton(
+                      icon: Icons.remove,
+                      onTap: () {
+                        double currentValue = double.tryParse(
+                            priceController.text.replaceAll(',', '')) ??
+                            0.0;
 
-                    }),
+                        double newValueDouble = currentValue - 100;
+                        if (newValueDouble < 0) {
+                          newValueDouble = 0;
+                        }
+
+                        String newValue = newValueDouble.toStringAsFixed(0);
+                        priceController.text = newValue;
+                        onChanged?.call(newValue);
+                      },
+                    ),
                     AppValues.gapH8,
-                    _buildStepperButton(Icons.add, () {
-
-                    }),
+                    // REPLACED helper method with the new animated widget
+                    _BouncingStepperButton(
+                      icon: Icons.add,
+                      onTap: () {
+                        double currentValue = double.tryParse(
+                            priceController.text.replaceAll(',', '')) ??
+                            0.0;
+                        String newValue =
+                        (currentValue + 100).toStringAsFixed(0);
+                        priceController.text = newValue;
+                        onChanged?.call(newValue);
+                      },
+                    ),
                   ],
                 ),
               ],
@@ -90,7 +115,7 @@ class PricingSection extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: AppValues.spacingXS),
               child: Text(
-               PostStrings.requiredErrMess,
+                PostStrings.requiredErrMess,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.errorColor,
                 ),
@@ -101,20 +126,57 @@ class PricingSection extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildStepperButton(IconData icon, VoidCallback onTap) {
-    return Container(
-      width: AppValues.container25.width,
-      height: AppValues.container25.height,
-      decoration: BoxDecoration(
-        color: AppColors.grey300,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Center(
-        child: Icon(
-          icon,
-          size: AppValues.iconS,
-          color: AppColors.black,
+
+class _BouncingStepperButton extends StatefulWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _BouncingStepperButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  State<_BouncingStepperButton> createState() => _BouncingStepperButtonState();
+}
+
+class _BouncingStepperButtonState extends State<_BouncingStepperButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      // 1. Detect touch down -> Shrink
+      onTapDown: (_) => setState(() => _isPressed = true),
+      // 2. Detect touch up -> Restore size & trigger action
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onTap();
+      },
+      // 3. Detect cancel (drag out) -> Restore size only
+      onTapCancel: () => setState(() => _isPressed = false),
+
+      // 4. AnimatedScale handles the smooth shrinking effect
+      child: AnimatedScale(
+        scale: _isPressed ? 0.85 : 1.0, // Shrinks to 85% when pressed
+        duration: const Duration(milliseconds: 100), // Fast snappy animation
+        curve: Curves.easeInOut,
+        child: Container(
+          width: AppValues.container25.width,
+          height: AppValues.container25.height,
+          decoration: BoxDecoration(
+            color: AppColors.grey300,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Center(
+            child: Icon(
+              widget.icon,
+              size: AppValues.iconS,
+              color: AppColors.black,
+            ),
+          ),
         ),
       ),
     );
