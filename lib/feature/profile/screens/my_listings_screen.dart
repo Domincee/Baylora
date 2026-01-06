@@ -55,9 +55,8 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
             }
 
             switch (_selectedFilter) {
-              case 'Expired': // Changed from 'Ended' to 'Expired'
-                // Logic: Show items that have ended (expired or explicit status)
-                // This covers items that ran out of time or were marked sold/ended/accepted
+              case 'Expired':
+
                 if (dbStatus == 'ended' || dbStatus == 'sold' || dbStatus == 'accepted') return true;
                 if (isExpired) return true;
                 return false;

@@ -22,6 +22,7 @@ class ProfileStrings {
   static const String defaultName = "User";
   static const String noListings = "No items listed yet.";
   static const String noBids = "You haven't placed any bids.";
+  static const String untitled = "Untitled";
 
   // Status
   static const String endsSoon = "Ends soon";
@@ -45,4 +46,30 @@ class ProfileStrings {
   static const String leaveReview = "Leave Review";
   static const String manageItem = "Manage Item";
   static const String viewItem = "View Item";
+
+  // Filters
+  static const String filterAll = 'All';
+  static const String filterForSale = 'For Sale';
+  static const String filterForTrade = 'For Trade';
+  static const String filterExpired = 'Expired';
+
+  // Status Labels
+  static const String statusActive = 'Active';
+  static const String statusSold = 'Sold';
+  static const String statusAccepted = 'Accepted';
+  static const String statusExpired = 'Expired';
+
+  // Item Types
+  static const String typeCash = 'cash';
+  static const String typeTrade = 'trade';
+
+  // DB Status Values
+  static const String dbStatusActive = 'active';
+  static const String dbStatusEnded = 'ended';
+  static const String dbStatusSold = 'sold';
+  static const String dbStatusAccepted = 'accepted';
+
+  // Messages
+  static const String noItemsFoundPrefix = 'No';
+  static const String noItemsFoundSuffix = 'items found';
 }
