@@ -7,32 +7,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SplashPage extends StatefulWidget {
-  
-  const SplashPage({super.key
-  });
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
 }
 
 class _SplashPageState extends State<SplashPage> {
-  // 1. DEFINE THE FLAG HERE
-  bool _isInit = false; 
+  /// Flag to ensure _initApp runs only once
+  bool _isInit = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // 2. MOVE LOGIC HERE (Where context is safe)
     if (!_isInit) {
-      _isInit = true; // Ensure we run this only ONCE
+      _isInit = true;
       _initApp();
     }
   }
-  
-Future<void> _initApp() async {
-    final minWait = Future.delayed(const Duration(seconds: 2));
 
-   try {
+  /// Initialize app: preload images, check session, navigate
+  Future<void> _initApp() async {
+    final minWait = Future.delayed(Duration(milliseconds: AppValues.durationSlow));
+
+    try {
       await Future.wait([
         precacheImage(const AssetImage(Images.onBoardingBg1), context),
         precacheImage(const AssetImage(Images.onBoardingImg1), context),
@@ -42,42 +40,38 @@ Future<void> _initApp() async {
         minWait,
       ]);
     } catch (e) {
-      debugPrint("❌ Error loading images: $e");
+      debugPrint(" Error loading images: $e");
     }
 
-    /* CHECK User Status */
+    if (!mounted) return;
+
     final session = supabase.auth.currentSession;
     final bool isSessionValid = session != null;
-    /* Destroy if screen is closed*/
-    if (!mounted) return; 
-   
-   /* check if already login */
+
     if (isSessionValid) {
-      /* already login */
-     _navigateTo(AppRoutes.main);
+      _navigateTo(AppRoutes.main);
     } else {
-      /* not login */
       _navigateTo(AppRoutes.onboarding);
     }
   }
-  
-void _navigateTo(String routeName) {
+
+  /// Navigate to the given route with fade transition
+  void _navigateTo(String routeName) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
           final widgetBuilder = AppRoutes.routes[routeName];
-          
           return widgetBuilder!(context);
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
-        transitionDuration: const Duration(milliseconds: 800), 
+        transitionDuration: Duration(milliseconds: AppValues.durationSlow),
       ),
     );
   }
-  
-@override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.royalBlue,
@@ -85,10 +79,19 @@ void _navigateTo(String routeName) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(Images.logoLight, width: 125),
+            SvgPicture.asset(
+              Images.logoLight,
+              width: AppValues.imageContainer.width, // standardized logo width
+            ),
             AppValues.gapM,
-            
-            CircularProgressIndicator(color: AppColors.white),
+            SizedBox(
+              height: AppValues.loadingIndicatorSize,
+              width: AppValues.loadingIndicatorSize,
+              child: CircularProgressIndicator(
+                color: AppColors.white,
+                strokeWidth: 2,
+              ),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'constant/shared_widgets_strings.dart';
+
 class SwapItemsWrap extends StatelessWidget {
   final String? swapItemString;
 
@@ -8,13 +10,13 @@ class SwapItemsWrap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (swapItemString == null || swapItemString!.trim().isEmpty) {
-      return _buildPill(context, "Open to any offers");
+      return _buildPill(context, SharedWidgetString.openToAnyOffers);
     }
 
     final items = swapItemString!.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
 
     if (items.isEmpty) {
-      return _buildPill(context, "Open to any offers");
+      return _buildPill(context, SharedWidgetString.openToAnyOffers);
     }
 
     return Wrap(

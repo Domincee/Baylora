@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:baylora_prjct/core/assets/images.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/core/widgets/text/section_header.dart';
+import 'package:baylora_prjct/core/util/network_utils.dart';
 import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/domain/user_profile.dart';
@@ -20,7 +18,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
-  void _showEditProfileDialog(BuildContext context, WidgetRef ref, UserProfile profile) {
+  void _showEditProfileDialog(
+      BuildContext context, WidgetRef ref, UserProfile profile) {
     showDialog(
       context: context,
       builder: (context) => EditProfileDialog(
@@ -32,7 +31,7 @@ class ProfileScreen extends ConsumerWidget {
 
           ref.invalidate(userProfileProvider);
           // Invalidate home providers to reflect name changes if necessary
-          ref.invalidate(homeItemsProvider("All"));
+          ref.invalidate(homeItemsProvider(ProfileStrings.filterAll));
         },
       ),
     );
@@ -55,11 +54,14 @@ class ProfileScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ProfileHeader(
-                avatarUrl: (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty)
+                avatarUrl: (profile.avatarUrl != null &&
+                        profile.avatarUrl!.isNotEmpty)
                     ? profile.avatarUrl!
                     : Images.defaultAvatar,
                 name: profile.fullName,
-                username: profile.username.isNotEmpty ? profile.username : ProfileStrings.defaultUsername,
+                username: profile.username.isNotEmpty
+                    ? profile.username
+                    : ProfileStrings.defaultUsername,
                 bio: profile.bio ?? ProfileStrings.noBio,
                 rating: profile.rating,
                 totalTrades: profile.totalTrades.toString(),
@@ -67,8 +69,22 @@ class ProfileScreen extends ConsumerWidget {
                 onEdit: () => _showEditProfileDialog(context, ref, profile),
               ),
               AppValues.gapL,
-              SectionHeader(title: ProfileStrings.listingsTitle, subTitle: ProfileStrings.listingsSubtitle),
-              AppValues.gapL,
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppValues.spacingM),
+                child: Text(
+                  ProfileStrings.listingsTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Text(
+                ProfileStrings.listingsSubtitle,
+                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textGrey,
+                  ),
+              ),
+              AppValues.gapM,
 
               const ProfileListingsSection(),
 
@@ -82,42 +98,41 @@ class ProfileScreen extends ConsumerWidget {
                 onEditProfile: () => _showEditProfileDialog(context, ref, profile),
                 onLogout: () => _handleLogout(context, ref),
               ),
-              
+
               AppValues.gapXXL,
             ],
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) {
-          final isNetworkError = err is SocketException ||
-            (err.toString().contains('SocketException')) ||
-            (err.toString().contains('Network is unreachable')) ||
-            (err.toString().contains('Connection refused'));
+        error: (err, stack) => _buildErrorState(ref, err),
+      ),
+    );
+  }
 
-          final String message = isNetworkError
-            ? AppStrings.noInternetConnection
-            : "${AppStrings.error}: $err";
-          
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  isNetworkError ? Icons.wifi_off : Icons.error_outline,
-                  color: AppColors.errorColor,
-                  size: 48,
-                ),
-                AppValues.gapM,
-                Text(message, textAlign: TextAlign.center),
-                AppValues.gapM,
-                ElevatedButton(
-                  onPressed: () => ref.refresh(userProfileProvider),
-                  child: const Text(AppStrings.retry),
-                ),
-              ],
-            ),
-          );
-        },
+  Widget _buildErrorState(WidgetRef ref, Object err) {
+    final isNetworkError = NetworkUtils.isNetworkError(err);
+
+    final String message = isNetworkError
+        ? AppStrings.noInternetConnection
+        : "${AppStrings.error}: $err";
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            isNetworkError ? Icons.wifi_off : Icons.error_outline,
+            color: AppColors.errorColor,
+            size: 48,
+          ),
+          AppValues.gapM,
+          Text(message, textAlign: TextAlign.center),
+          AppValues.gapM,
+          ElevatedButton(
+            onPressed: () => ref.refresh(userProfileProvider),
+            child: const Text(AppStrings.retry),
+          ),
+        ],
       ),
     );
   }

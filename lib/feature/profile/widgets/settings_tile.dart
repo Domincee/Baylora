@@ -1,58 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
 class SettingsTile extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final bool hideSubtitle;
   final VoidCallback? onTap;
+  final bool hideSubtitle;
 
   const SettingsTile({
     super.key,
     required this.title,
     this.subtitle,
+    this.onTap,
     this.hideSubtitle = false,
-    this.onTap
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return ListTile(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+      contentPadding: AppValues.paddingAll,
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+      ),
+      subtitle: (hideSubtitle || subtitle == null)
+          ? null
+          : Text(
+              subtitle!,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textGrey,
                   ),
-                  if (!hideSubtitle && subtitle != null) ...[
-                     const SizedBox(height: 4), // Added small gap
-                     Text(
-                      subtitle!,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textGrey,
-                        fontWeight: FontWeight.w400, // Reduced weight slightly for better hierarchy
-                      ),
-                    ),
-                  ],
-                ],
-              ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16, // Updated size to 16
-              color: AppColors.textGrey,
-            ),
-          ],
-        ),
+      trailing: Icon(
+        Icons.chevron_right,
+        size: 16,
+        color: AppColors.textGrey,
       ),
     );
   }

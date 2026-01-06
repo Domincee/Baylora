@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
+import 'constant/shared_widgets_strings.dart';
+
 class UserRatingPill extends StatelessWidget {
   final String rating;
   final String totalTrades;
@@ -60,7 +62,7 @@ class UserRatingPill extends StatelessWidget {
             ),
           if (tradeVal > 0)
             Text(
-              "$totalTrades trades",
+              "$totalTrades ${SharedWidgetString.trades}",
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
                 color: AppColors.white,
                 fontWeight: FontWeight.w600,

@@ -40,12 +40,16 @@ class ProfileStrings {
   static const String currentHighest = "Current Highest";
   static const String add = "Add";
   static const String myItems = "My Items";
+  static const String orTradeFor = "or trade for:";
+  static const String offersCount = "Offers";
   
   // Action Buttons
   static const String dealChat = "Deal Chat";
   static const String leaveReview = "Leave Review";
   static const String manageItem = "Manage Item";
   static const String viewItem = "View Item";
+  static const String manage = "Manage";
+  static const String review = "Review";
 
   // Filters
   static const String filterAll = 'All';
@@ -58,6 +62,7 @@ class ProfileStrings {
   static const String statusSold = 'Sold';
   static const String statusAccepted = 'Accepted';
   static const String statusExpired = 'Expired';
+  static const String statusEndsIn = 'Ends in';
 
   // Item Types
   static const String typeCash = 'cash';
@@ -72,4 +77,12 @@ class ProfileStrings {
   // Messages
   static const String noItemsFoundPrefix = 'No';
   static const String noItemsFoundSuffix = 'items found';
+
+  // Time
+  static const String today = 'today';
+  static const String oneDayAgo = '1 day ago';
+  static const String daysAgoSuffix = 'days ago';
+  static const String dayShort = 'd';
+  static const String hourShort = 'h';
+  static const String minuteShort = 'm';
 }
