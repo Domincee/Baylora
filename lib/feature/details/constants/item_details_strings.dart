@@ -16,4 +16,28 @@ class ItemDetailsStrings {
   static const String categoryPrefix = 'Category: ';
   static const String errorPrefix = 'Error fetching item details: ';
   static const String ownerDebugMsg = 'User is owner of this item';
+
+  // New strings
+  static const String placeYourBid = 'Place your Bid';
+  static const String placeYourOffer = 'Place your Offer';
+  static const String confirmBid = 'Confirm Bid';
+  static const String submitOffer = 'Submit Offer';
+  static const String reviewOffer = 'Review Offer';
+  static const String submitFinalOffer = 'Submit Final Offer';
+  static const String sellerLookingFor = 'Seller is looking for:';
+  static const String currentOffers = 'Current Offers';
+  
+  // Defaults
+  static const String defaultCategory = 'General';
+  static const String defaultCondition = 'Used';
+  
+  // Types
+  static const String typeCash = 'cash';
+  static const String typeTrade = 'trade';
+  static const String typeMix = 'mix';
+  
+  // Table names
+  static const String tableItems = 'items';
+  static const String fieldProfiles = 'profiles';
+  static const String fieldOffers = 'offers';
 }
