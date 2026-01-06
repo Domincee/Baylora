@@ -3,6 +3,8 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/post/widgets/shared/option_card.dart';
 
+import '../constants/post_strings.dart';
+
 class ListingStep1 extends StatelessWidget {
   final int selectedType;
   final ValueChanged<int> onTypeSelected;
@@ -21,7 +23,7 @@ class ListingStep1 extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "What type of listing is this?",
+            PostStrings.whatTypeOfListing,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           AppValues.gapXS,
@@ -30,11 +32,9 @@ class ListingStep1 extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Choose the best option for your item.",
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textGrey,
-                    ),
-              ),
+                PostStrings.chooseOptionItem,
+                style: Theme.of(context).textTheme.titleSmall
+          ),
               Text(
                 "1/3",
                 style: Theme.of(context)
@@ -46,24 +46,25 @@ class ListingStep1 extends StatelessWidget {
           ),
           AppValues.gapL,
           OptionCard(
-            title: "Sell Item",
-            subtitle: "For cash transactions only",
+            title:  PostStrings.sellItem,
+            subtitle: PostStrings.forTransaction,
             icon: Icons.attach_money,
             isSelected: selectedType == 0,
             onTap: () => onTypeSelected(0),
           ),
           AppValues.gapM,
           OptionCard(
-            title: "Trade Item",
-            subtitle: "Exchange items with others",
+            title: PostStrings.tradeItem,
+            subtitle: PostStrings.forExchange,
             icon: Icons.swap_horiz,
             isSelected: selectedType == 1,
             onTap: () => onTypeSelected(1),
           ),
           AppValues.gapM,
           OptionCard(
-            title: "Sell or Trade",
-            subtitle: "Open to both cash and trades (Recommended)",
+            title: PostStrings.sellTradeItem,
+            subtitle: PostStrings.forBothItem,
+
             icon: Icons.handshake_outlined,
             isRecommended: true,
             isSelected: selectedType == 2,

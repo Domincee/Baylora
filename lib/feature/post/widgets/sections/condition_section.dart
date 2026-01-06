@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/feature/post/widgets/shared/condition_chip.dart';
 
 import '../../constants/post_strings.dart';
 
@@ -57,7 +56,7 @@ class ConditionSection extends StatelessWidget {
       child: Container(
         height: AppValues.spacing36,
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.selectedColor : AppColors.greyLight,
+          color: isSelected ? AppColors.royalBlue : AppColors.greyLight,
           borderRadius: AppValues.borderRadiusL,
         ),
         alignment: Alignment.center,
