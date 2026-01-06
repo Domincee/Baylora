@@ -3,6 +3,8 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/post/widgets/shared/section_header.dart';
 
+import '../../constants/post_strings.dart';
+
 class ExchangePreferenceSection extends StatefulWidget {
   final TextEditingController cashController;
   final List<String> wishlistTags;
@@ -51,7 +53,7 @@ class _ExchangePreferenceSectionState extends State<ExchangePreferenceSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: "Exchange Preference"),
+        const SectionHeader(title: PostStrings.exchangePreference),
         AppValues.gapS,
         Container(
           padding: AppValues.paddingCard,
@@ -65,11 +67,11 @@ class _ExchangePreferenceSectionState extends State<ExchangePreferenceSection> {
               if (widget.showPriceInput) ...[
                 // Part A: Cash Input
                 Text(
-                  "I want cash OR..",
+                 PostStrings.iWantCashOr,
                   style: Theme.of(context)
                       .textTheme
-                      .titleSmall
-                      ?.copyWith(fontSize: 14),
+                      .bodyMedium,
+
                 ),
                 AppValues.gapXS,
                 Container(
@@ -199,11 +201,10 @@ class _ExchangePreferenceSectionState extends State<ExchangePreferenceSection> {
               ),
               if (widget.showWishlistError) ...[
                 const SizedBox(height: 4),
-                const Text(
-                  "This is required",
-                  style: TextStyle(
+                 Text(
+                   PostStrings.requiredErrMess,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.errorColor,
-                    fontSize: 12,
                   ),
                 ),
               ],

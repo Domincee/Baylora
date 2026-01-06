@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
+import '../../constants/post_strings.dart';
+
 class BasicInfoSection extends StatelessWidget {
   final TextEditingController titleController;
   final bool showError;
@@ -20,7 +22,7 @@ class BasicInfoSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
          Text(
-          "Basic info",
+          PostStrings.basicInfo,
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
             fontWeight: FontWeight.w600
           )
@@ -34,7 +36,7 @@ class BasicInfoSection extends StatelessWidget {
               maxLength: 25,
               onChanged: onChanged,
               decoration: InputDecoration(
-                hintText: "What are you selling?",
+                hintText:  PostStrings.yourSelling,
                 hintStyle: const TextStyle(color: AppColors.textGrey),
                 counterText: "",
                 suffixText: "${value.text.length}/25",
@@ -42,31 +44,30 @@ class BasicInfoSection extends StatelessWidget {
                 filled: true,
                 fillColor: AppColors.greyLight,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(100),
+                  borderRadius: AppValues.borderRadiusCircular,
                   borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(100),
+                  borderRadius: AppValues.borderRadiusCircular,
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(100),
+                  borderRadius: AppValues.borderRadiusCircular,
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                contentPadding: AppValues.paddingScreen,
               ),
             );
           }
         ),
         if (showError) ...[
           const SizedBox(height: 4),
-          const Padding(
+           Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: Text(
-              "This is required",
-              style: TextStyle(
+              PostStrings.requiredErrMess,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppColors.errorColor,
-                fontSize: 12,
               ),
             ),
           ),

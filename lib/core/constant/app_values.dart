@@ -30,7 +30,8 @@ class AppValues {
   
   /// Extra large spacing - 32px
   static const double spacingXL = 32.0;
-  
+  static const double spacing36 = 36.0;
+
   /// XXL spacing - 40px
   static const double spacingXXL = 40.0;
 
@@ -40,14 +41,15 @@ class AppValues {
   
   /// Horizontal padding - 16px left/right
   static const EdgeInsets paddingH = EdgeInsets.symmetric(horizontal: spacingM);
-  
+  static const EdgeInsets paddingH20 = EdgeInsets.symmetric(horizontal: spacing20);
+
   /// Vertical padding - 16px top/bottom
   /// All sides - 16px
   static const EdgeInsets paddingAll = EdgeInsets.all(spacingM);
   
   /// All sides - 12px
   static const EdgeInsets paddingS = EdgeInsets.all(spacingS);
-  
+
   /// Screen padding - 20px horizontal, 16px vertical
   static const EdgeInsets paddingScreen = EdgeInsets.symmetric(
     horizontal: 20.0,
@@ -75,7 +77,8 @@ class AppValues {
   
   /// 10px gap
   static const Widget gap10 = SizedBox(height: spacing10);
-  
+  static const Widget gap12 = SizedBox(height: spacingS);
+
   /// 12px gap
   static const Widget gapS = SizedBox(height: spacingS);
   
@@ -90,7 +93,8 @@ class AppValues {
   
   /// 32px gap
   static const Widget gapXL = SizedBox(height: spacingXL);
-  
+  static const Widget gap36 = SizedBox(height: spacing36);
+
   /// 40px gap
   static const Widget gapXXL = SizedBox(height: spacingXXL);
 
@@ -100,7 +104,8 @@ class AppValues {
   
   /// 4px horizontal gap
   static const Widget gapHXXS = SizedBox(width: 4.0);
-  
+  static const Widget gapH8 = SizedBox(width: spacingXS);
+
   /// 8px horizontal gap
   static const Widget gapHXS = SizedBox(width: spacingXS);
   
@@ -125,7 +130,8 @@ class AppValues {
   
   /// Large radius - 16px
   static const double radiusL = 16.0;
-  
+
+
   /// Extra large radius - 20px
   static const double radiusXL = 20.0;
   
@@ -137,7 +143,7 @@ class AppValues {
   
   /// Medium border radius
   static BorderRadius borderRadiusM = BorderRadius.circular(radiusM);
-  
+
   /// Large border radius
   static BorderRadius borderRadiusL = BorderRadius.circular(radiusL);
   
@@ -229,4 +235,10 @@ class AppValues {
   
   /// High elevation
   static const double elevationHigh = 8.0;
+
+  ///==container
+ ///image container
+  static const Size imageContainer = Size(150, 150) ;
+  static const Size container25 = Size(25, 25) ;
+
 }

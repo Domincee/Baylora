@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
+import '../../constants/post_strings.dart';
+
 class PricingSection extends StatelessWidget {
   final TextEditingController priceController;
   final bool showError;
@@ -27,18 +29,18 @@ class PricingSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
            Text(
-            "Minimum to Bid",
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-              fontWeight: FontWeight.bold
-            ),
+           PostStrings.minimumToBid,
+               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                   fontWeight: FontWeight.w600
+               )
           ),
           AppValues.gapS,
 
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM, vertical: AppValues.spacing5),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: AppColors.primaryColor,
+              borderRadius: AppValues.borderRadiusM,
             ),
             child: Row(
               children: [
@@ -47,17 +49,17 @@ class PricingSection extends StatelessWidget {
                     controller: priceController,
                     onChanged: onChanged,
                     keyboardType: TextInputType.number,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                     decoration: const InputDecoration(
                       prefixText: "₱ ",
                       prefixStyle: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                         color: AppColors.black,
+                        fontWeight: FontWeight.bold,
                       ),
+
                       hintText: "0.00",
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -74,7 +76,7 @@ class PricingSection extends StatelessWidget {
                     _buildStepperButton(Icons.remove, () {
 
                     }),
-                    const SizedBox(width: 8),
+                    AppValues.gapH8,
                     _buildStepperButton(Icons.add, () {
 
                     }),
@@ -84,14 +86,13 @@ class PricingSection extends StatelessWidget {
             ),
           ),
           if (showError) ...[
-            const SizedBox(height: 4),
-            const Padding(
-              padding: EdgeInsets.only(left: 8.0),
+            AppValues.gapXXS,
+            Padding(
+              padding: EdgeInsets.only(left: AppValues.spacingXS),
               child: Text(
-                "This is required",
-                style: TextStyle(
+               PostStrings.requiredErrMess,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.errorColor,
-                  fontSize: 12,
                 ),
               ),
             ),
@@ -103,8 +104,8 @@ class PricingSection extends StatelessWidget {
 
   Widget _buildStepperButton(IconData icon, VoidCallback onTap) {
     return Container(
-      width: 28,
-      height: 28,
+      width: AppValues.container25.width,
+      height: AppValues.container25.height,
       decoration: BoxDecoration(
         color: AppColors.grey300,
         borderRadius: BorderRadius.circular(4),
@@ -112,7 +113,7 @@ class PricingSection extends StatelessWidget {
       child: Center(
         child: Icon(
           icon,
-          size: 16,
+          size: AppValues.iconS,
           color: AppColors.black,
         ),
       ),

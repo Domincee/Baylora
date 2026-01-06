@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
+import '../../constants/post_strings.dart';
+
 class DescriptionSection extends StatelessWidget {
   final TextEditingController descriptionController;
   final bool showError;
@@ -19,12 +21,11 @@ class DescriptionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Description & Details",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+         Text(
+          PostStrings.descAndDetails,
+             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                 fontWeight: FontWeight.w600
+             ),
         ),
         AppValues.gapS,
         Container(
@@ -41,7 +42,8 @@ class DescriptionSection extends StatelessWidget {
             maxLength: 500,
             onChanged: onChanged,
             decoration: const InputDecoration(
-              hintText: "Describe the item, its condition and what buyers should know...",
+              hintText: PostStrings.hintDescription
+              ,
               hintStyle: TextStyle(color: AppColors.textGrey),
               filled: true,
               fillColor: Colors.transparent,
@@ -55,14 +57,14 @@ class DescriptionSection extends StatelessWidget {
           ),
         ),
         if (showError) ...[
-          const SizedBox(height: 4),
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0),
+          AppValues.gapXXS,
+
+           Padding(
+            padding: EdgeInsets.only(left: AppValues.spacingXS),
             child: Text(
-              "Description can't be empty",
-              style: TextStyle(
+              PostStrings.descriptionErrMess,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppColors.errorColor,
-                fontSize: 12,
               ),
             ),
           ),

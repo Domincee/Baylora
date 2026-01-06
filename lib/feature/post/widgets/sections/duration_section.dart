@@ -1,6 +1,9 @@
+import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+
+import '../../constants/post_strings.dart';
 
 class DurationSection extends StatelessWidget {
   final bool isDurationEnabled;
@@ -28,7 +31,7 @@ class DurationSection extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                "Set Duration",
+               PostStrings.setDuration,
                 style: Theme.of(context).textTheme.bodyLarge,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -48,25 +51,30 @@ class DurationSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+       AppValues.gap12,
+
         Container(
-          height: 40,
+          height: AppValues.spacingXXL,
           decoration: BoxDecoration(
             color: AppColors.greyLight  ,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: AppValues.borderRadiusCircular,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+
+          padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingS, vertical: AppValues.spacing5),
           child: isDurationEnabled
               ? Row(
                   children: [
                     _buildControlIcon(Icons.remove, onDecrement),
-                    const SizedBox(width: 8),
+                    AppValues.gapXS,
                     Expanded(
+
                       child: Container(
-                        height: 36,
+                        height: AppValues.spacing36,
+
                         decoration: BoxDecoration(
                           color: AppColors.white,
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: AppValues.borderRadiusM,
+
                         ),
                         alignment: Alignment.center,
                         child: TextField(
@@ -90,30 +98,34 @@ class DurationSection extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
+
+                    AppValues.gapXS,
+
+                     Text(
                       "hr",
-                      style: TextStyle(
-                        color: AppColors.textGrey,
-                        fontSize: 14,
-                      ),
+                      style:Theme.of(context).textTheme.bodyMedium
                     ),
-                    const SizedBox(width: 8),
+
+                    AppValues.gapXS,
+
                     _buildControlIcon(Icons.add, onIncrement),
                   ],
                 )
               : Center(
                   child: Container(
-                    height: 36,
+
+                    height: AppValues.spacing36,
                     width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    margin: AppValues.paddingH20,
                     decoration: BoxDecoration(
+
                       color: AppColors.white,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: AppValues.borderRadiusXL,
                     ),
+
                     alignment: Alignment.center,
                     child:  Text(
-                      "no limit",
+                      PostStrings.noLimit,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         color: AppColors.subTextColor,
                       )
@@ -131,7 +143,7 @@ class DurationSection extends StatelessWidget {
       child: Icon(
         icon,
         color: AppColors.grey600,
-        size: 18,
+        size: AppValues.iconS,
       ),
     );
   }

@@ -3,6 +3,8 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'dart:io';
 
+import '../../constants/post_strings.dart';
+
 class PhotosSection extends StatelessWidget {
   final List<File> images;
   final VoidCallback onAddPhoto;
@@ -25,17 +27,16 @@ class PhotosSection extends StatelessWidget {
         Row(
           children: [
             Text(
-              "Photos",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              PostStrings.photos,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w600
+                ),
             ),
-            const SizedBox(width: 8),
+            AppValues.gapHS,
             Text(
               "${images.length}/3",
-              style: const TextStyle(
-                color: AppColors.textGrey,
-                fontSize: 14,
+             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: AppColors.subTextColor
               ),
             ),
           ],
@@ -47,19 +48,21 @@ class PhotosSection extends StatelessWidget {
             children: [
               if (images.length < 3)
                 Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                  padding: EdgeInsets.only(right: AppValues.spacingM),
                   child: GestureDetector(
                     onTap: onAddPhoto,
                     child: Container(
-                      height: 150,
-                      width: 150,
+                      height:AppValues.imageContainer.height,
+                      width: AppValues.imageContainer.width
+                      ,
                       decoration: BoxDecoration(
                         color: AppColors.greyLight,
                         borderRadius: AppValues.borderRadiusM,
                       ),
                       child: Center(
                         child: Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: AppValues.paddingCard,
+
                           decoration: BoxDecoration(
                             color: AppColors.blueLight,
                             shape: BoxShape.circle,
@@ -67,7 +70,7 @@ class PhotosSection extends StatelessWidget {
                           child: const Icon(
                             Icons.camera_alt, 
                             color: AppColors.royalBlue, 
-                            size: 24
+                            size: AppValues.iconM,
                           ),
                         ),
                       ),
@@ -76,13 +79,13 @@ class PhotosSection extends StatelessWidget {
                 ),
               ...images.map(
                 (file) => Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                  padding:  EdgeInsets.only(right: AppValues.spacingM),
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
                       Container(
-                        height: 150,
-                        width: 150,
+                              height:AppValues.imageContainer.height,
+                              width: AppValues.imageContainer.width,
                         decoration: BoxDecoration(
                           color: AppColors.greyLight,
                           borderRadius: AppValues.borderRadiusM,
@@ -105,7 +108,7 @@ class PhotosSection extends StatelessWidget {
                             ),
                             child: const Icon(
                               Icons.close,
-                              size: 16,
+                              size: AppValues.iconS,
                               color: AppColors.black,
                             ),
                           ),
@@ -119,12 +122,11 @@ class PhotosSection extends StatelessWidget {
           ),
         ),
         if (showError) ...[
-          const SizedBox(height: 4),
-          const Text(
-            "You need to upload at least 1 image",
-            style: TextStyle(
+          AppValues.gapXS,
+           Text(
+             PostStrings.imageErrMess,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.errorColor,
-              fontSize: 12,
             ),
           ),
         ],
