@@ -2,6 +2,7 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 
 class BidCashSection extends StatelessWidget {
@@ -42,6 +43,9 @@ class BidCashSection extends StatelessWidget {
 
         TextField(
           keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           decoration: const InputDecoration(
 

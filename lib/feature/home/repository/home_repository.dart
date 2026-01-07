@@ -23,11 +23,11 @@ class HomeRepository {
           .order('end_time', ascending: true);
     } else if (filter == HomeStrings.categoryForSale) {
       query = query
-          .eq('type', HomeStrings.cash)
+          .or('type.eq.${HomeStrings.cash},type.eq.${HomeStrings.mix}')
           .order('created_at', ascending: false);
     } else if (filter == HomeStrings.categoryForTrade) {
       query = query
-          .eq('type', HomeStrings.trade)
+          .or('type.eq.${HomeStrings.trade},type.eq.${HomeStrings.mix}')
           .order('created_at', ascending: false);
     } else {
       // All or default
