@@ -1,6 +1,7 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/uni_image.dart';
+import 'package:baylora_prjct/core/widgets/tag_chip.dart';
 import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/widgets/build_price.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
@@ -128,19 +129,16 @@ class ItemCard extends StatelessWidget {
                           ),
                           if (timeRemaining != null) ...[
                             AppValues.gapHXXS,
-                            Container(
+                            TagChip(
+                              label: timeRemaining!,
+                              backgroundColor: AppColors.errorColor.withValues(alpha: 0.1),
+                              textColor: AppColors.errorColor,
+                              borderRadius: AppValues.radiusM,
+                              border: Border.all(color: AppColors.errorColor.withValues(alpha: 0.5)),
                               padding: EdgeInsets.symmetric(horizontal: AppValues.spacingXS, vertical: AppValues.spacingXXS),
-                              decoration: BoxDecoration(
-                                color: AppColors.errorColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(AppValues.radiusM),
-                                border: Border.all(color: AppColors.errorColor.withValues(alpha: 0.5)),
-                              ),
-                              child: Text(
-                                timeRemaining!,
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: AppColors.errorColor,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: AppColors.errorColor,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
@@ -174,18 +172,14 @@ class ItemCard extends StatelessWidget {
                                   ),
                                 ),
                                 AppValues.gapHXXS,
-                                ...swapItem.split(',').take(2).map((item) => Container(
-                                      margin: EdgeInsets.only(right: AppValues.spacingXXS),
-                                      padding: EdgeInsets.symmetric(horizontal: AppValues.spacingXS, vertical: AppValues.spacingXXS),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.blueLight,
-                                        borderRadius: AppValues.borderRadiusS,
-                                      ),
-                                      child: Text(
-                                        item.trim(),
-                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                          color: AppColors.blueText,
-                                        ),
+                                ...swapItem.split(',').take(2).map((item) => Padding(
+                                      padding: EdgeInsets.only(right: AppValues.spacingXXS),
+                                      child: TagChip(
+                                        label: item.trim(),
+                                        backgroundColor: AppColors.blueLight,
+                                        textColor: AppColors.blueText,
+                                        borderRadius: AppValues.radiusS,
+                                        padding: EdgeInsets.symmetric(horizontal: AppValues.spacingXS, vertical: AppValues.spacingXXS),
                                       ),
                                     )),
                               ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/widgets/tag_chip.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 
@@ -27,11 +28,27 @@ class TagsRow extends StatelessWidget {
       spacing: AppValues.spacingXS,
       runSpacing: AppValues.spacingXS,
       children: [
-        _buildPill(context, "${ItemDetailsStrings.categoryPrefix}$category", AppColors.greyLight, AppColors.textDarkGrey),
-        _buildPill(context, condition, AppColors.greyLight, AppColors.textDarkGrey),
-        _buildPill(context, _getTypeLabel(type), AppColors.tealLight, AppColors.tealText),
+        TagChip(
+          label: "${ItemDetailsStrings.categoryPrefix}$category",
+          backgroundColor: AppColors.greyLight,
+          textColor: AppColors.textDarkGrey,
+        ),
+        TagChip(
+          label: condition,
+          backgroundColor: AppColors.greyLight,
+          textColor: AppColors.textDarkGrey,
+        ),
+        TagChip(
+          label: _getTypeLabel(type),
+          backgroundColor: AppColors.tealLight,
+          textColor: AppColors.tealText,
+        ),
         if (remainingTime != null)
-          _buildPill(context, remainingTime, AppColors.errorColor.withValues(alpha: 0.1), AppColors.errorColor),
+          TagChip(
+            label: remainingTime,
+            backgroundColor: AppColors.errorColor.withValues(alpha: 0.1),
+            textColor: AppColors.errorColor,
+          ),
       ],
     );
   }
@@ -46,22 +63,5 @@ class TagsRow extends StatelessWidget {
       default:
         return ItemDetailsStrings.cashOnly;
     }
-  }
-
-  Widget _buildPill(BuildContext context, String text, Color bgColor, Color textColor) {
-    return Container(
-      padding:  EdgeInsets.symmetric(horizontal: AppValues.spacingS, vertical: AppValues.spacingXS),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(AppValues.radiusXL),
-      ),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: textColor,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
   }
 }

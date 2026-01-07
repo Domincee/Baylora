@@ -1,5 +1,6 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/widgets/action_bottom_sheet.dart';
 import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/controller/item_details_controller.dart';
@@ -35,8 +36,7 @@ class ItemDetailsScreen extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppValues.radiusXL)),
       ),
       builder: (context) {
-        return _buildBottomSheetContent(
-          context: context,
+        return ActionBottomSheet(
           heightFactor: 0.5,
           title: isCash
               ? ItemDetailsStrings.placeYourBid
@@ -44,10 +44,11 @@ class ItemDetailsScreen extends ConsumerWidget {
           titleStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
-          buttonText: isCash
+          actionLabel: isCash
               ? ItemDetailsStrings.confirmBid
               : ItemDetailsStrings.submitOffer,
-          onPressed: () => Navigator.pop(context, true),
+          onAction: () => Navigator.pop(context, true),
+          child: Container(), // Body Placeholder
         );
       },
     );
@@ -62,86 +63,20 @@ class ItemDetailsScreen extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppValues.radiusXL)),
       ),
       builder: (context) {
-        return _buildBottomSheetContent(
-          context: context,
+        return ActionBottomSheet(
           heightFactor: 0.4,
           title: ItemDetailsStrings.reviewOffer,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
-          buttonText: ItemDetailsStrings.submitFinalOffer,
-          onPressed: () {
+          actionLabel: ItemDetailsStrings.submitFinalOffer,
+          onAction: () {
             // Submit Final Offer logic
             Navigator.pop(context);
           },
+          child: Container(), // Body Placeholder
         );
       },
-    );
-  }
-
-  Widget _buildBottomSheetContent({
-    required BuildContext context,
-    required double heightFactor,
-    required String title,
-    required String buttonText,
-    required VoidCallback onPressed,
-    TextStyle? titleStyle,
-  }) {
-    return Container(
-      height: MediaQuery.of(context).size.height * heightFactor,
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle
-          Center(
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: AppValues.spacingS),
-              width: AppValues.spacingXXL,
-              height: AppValues.spacingXXS,
-              decoration: BoxDecoration(
-                color: AppColors.grey300,
-                borderRadius: BorderRadius.circular(AppValues.radiusXXS),
-              ),
-            ),
-          ),
-          // Title
-          Text(
-            title,
-            style: titleStyle,
-          ),
-          AppValues.gapM,
-          // Body Placeholder
-          Expanded(child: Container()),
-          // Button
-          Padding(
-            padding: AppValues.paddingAll,
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onPressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.royalBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(AppValues.radiusCircular),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
-                ),
-                child: Text(
-                  buttonText,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
