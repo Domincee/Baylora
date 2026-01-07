@@ -3,7 +3,6 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/provider/bid_provider.dart';
-import 'package:baylora_prjct/feature/post/repository/listing_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +13,7 @@ class BidInputModal extends ConsumerStatefulWidget {
   final double currentHighest;
   final double minimumBid;
   final String itemId; // Need itemId to insert into DB
+  final double? initialBidAmount;
 
   const BidInputModal({
     super.key,
@@ -21,6 +21,7 @@ class BidInputModal extends ConsumerStatefulWidget {
     required this.currentHighest,
     required this.minimumBid,
     required this.itemId,
+    this.initialBidAmount,
   });
 
   @override
@@ -34,7 +35,6 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
   final List<String> _categories = ['Electronics', 'Clothing', 'Furniture', 'Other'];
 
   // Added repository instance
-  final ListingRepository _listingRepository = ListingRepository();
 
   bool get _isCash => widget.listingType == ItemDetailsStrings.typeCash;
   bool get _isTrade => widget.listingType == ItemDetailsStrings.typeTrade;
@@ -43,11 +43,34 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
   @override
   void initState() {
     super.initState();
-    final state = ref.read(bidProvider);
+    // Initialize controllers with current state or initial amount
+    
+    // Check if we need to prefill
+    double startAmount = 0.0;
+    if (widget.initialBidAmount != null) {
+      startAmount = widget.initialBidAmount!;
+      // Important: update the provider state too so it matches immediately
+      // We do this in post frame callback to avoid provider modification during build/init
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+         ref.read(bidProvider.notifier).setCashAmount(startAmount);
+       });
+    } else {
+      final state = ref.read(bidProvider);
+      startAmount = state.cashAmount;
+    }
+
     _cashController = TextEditingController(
-      text: state.cashAmount > 0 ? state.cashAmount.toStringAsFixed(0) : "",
+      text: startAmount > 0 ? startAmount.toStringAsFixed(0) : "",
     );
-    _titleController = TextEditingController(text: state.tradeTitle);
+    _titleController = TextEditingController(text: ref.read(bidProvider).tradeTitle);
+
+    // Load existing offer fully (images, trade details) if any
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        ref.read(bidProvider.notifier).loadExistingOffer(widget.itemId, user.id);
+      }
+    });
   }
 
   @override
@@ -62,7 +85,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     final bidState = ref.watch(bidProvider);
     final bidNotifier = ref.read(bidProvider.notifier);
 
-    // Sync controllers with state for external changes (like Chips)
+    // Sync controllers with state for external changes (like Chips or Load Existing)
     ref.listen(bidProvider, (prev, next) {
       if (next.cashAmount != (double.tryParse(_cashController.text) ?? 0.0)) {
         final newText = next.cashAmount > 0 ? next.cashAmount.toStringAsFixed(0) : "";
@@ -72,6 +95,12 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
             TextPosition(offset: _cashController.text.length),
           );
         }
+      }
+      if (next.tradeTitle != _titleController.text) {
+         _titleController.text = next.tradeTitle;
+         _titleController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _titleController.text.length),
+          );
       }
     });
 
@@ -102,7 +131,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
           // Header
           Padding(
             padding: AppValues.paddingH,
-            child: _buildHeader(),
+            child: _buildHeader(bidState),
           ),
           
           const Divider(color: AppColors.greyLight),
@@ -155,17 +184,26 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BidState state) {
     String title = "";
     String? subtitle;
+    
 
-    if (_isCash) {
-      title = ItemDetailsStrings.placeYourBid;
-    } else if (_isTrade) {
-      title = "Place a Trade"; 
+    bool isEditing = state.existingImageUrls.isNotEmpty || widget.initialBidAmount != null; 
+    // Note: Checking initialBidAmount here is a quick way to know if we started in 'edit' mode for cash too.
+
+
+    if (isEditing) {
+       title = "Edit your Offer";
     } else {
-      title = ItemDetailsStrings.placeYourOffer;
-      subtitle = "Offer cash, trade an item, or combine both";
+      if (_isCash) {
+        title = ItemDetailsStrings.placeYourBid;
+      } else if (_isTrade) {
+        title = "Place a Trade"; 
+      } else {
+        title = ItemDetailsStrings.placeYourOffer;
+        subtitle = "Offer cash, trade an item, or combine both";
+      }
     }
 
     return Column(
@@ -177,7 +215,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        if (subtitle != null) ...[
+        if (subtitle != null && !isEditing) ...[
           AppValues.gapXS,
           Text(
             subtitle,
@@ -246,6 +284,8 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
   }
 
   Widget _buildTradeSection(BidState state, BidNotifier notifier) {
+    int totalImages = state.existingImageUrls.length + state.tradeImages.length;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -254,7 +294,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text("Photos", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("${state.tradeImages.length}/3", style: const TextStyle(color: AppColors.textGrey)),
+            Text("$totalImages/3", style: const TextStyle(color: AppColors.textGrey)),
           ],
         ),
         AppValues.gapS,
@@ -263,32 +303,69 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
           child: Row(
             children: [
               // Camera Button
-              GestureDetector(
-                onTap: () async {
-                  final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-                  if (photo != null) {
-                    notifier.addPhoto(File(photo.path));
-                  }
-                },
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  margin: const EdgeInsets.only(right: AppValues.spacingS),
-                  decoration: BoxDecoration(
-                    color: AppColors.greyLight,
-                    borderRadius: BorderRadius.circular(AppValues.radiusM),
-                    border: Border.all(color: AppColors.greyMedium, style: BorderStyle.solid), // Dashed border replacement
-                  ),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.camera_alt, color: AppColors.royalBlue),
-                      Text("Add photos", style: TextStyle(fontSize: 10, color: AppColors.textGrey)),
-                    ],
+              if (totalImages < 3)
+                GestureDetector(
+                  onTap: () async {
+                    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+                    if (photo != null) {
+                      notifier.addPhoto(File(photo.path));
+                    }
+                  },
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    margin: const EdgeInsets.only(right: AppValues.spacingS),
+                    decoration: BoxDecoration(
+                      color: AppColors.greyLight,
+                      borderRadius: BorderRadius.circular(AppValues.radiusM),
+                      border: Border.all(color: AppColors.greyMedium, style: BorderStyle.solid),
+                    ),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.camera_alt, color: AppColors.royalBlue),
+                        Text("Add photos", style: TextStyle(fontSize: 10, color: AppColors.textGrey)),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Selected Images
+              
+              // Existing Images (Network)
+              ...state.existingImageUrls.map((url) {
+                return Stack(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      margin: const EdgeInsets.only(right: AppValues.spacingS),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppValues.radiusM),
+                        image: DecorationImage(
+                          image: NetworkImage(url),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 4,
+                      right: 12,
+                      child: GestureDetector(
+                        onTap: () => notifier.removeExistingImage(url),
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: AppColors.errorColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close, size: 12, color: AppColors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }),
+
+              // New Images (File)
               ...state.tradeImages.map((file) {
                 return Stack(
                   children: [
@@ -413,6 +490,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         return;
       }
       if (state.tradeCategory == null) {
+
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select a category")));
         return;
       }
@@ -441,27 +519,19 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
                    return;
                 }
 
-                List<String> imageUrls = [];
-                // Upload images if any
-                if ((_isTrade || _isMix) && state.tradeImages.isNotEmpty) {
-                  imageUrls = await _listingRepository.uploadImages(state.tradeImages, user.id);
-                }
+                // Call submitOffer which handles upload and upsert
+                final success = await ref.read(bidProvider.notifier).submitOffer(
+                  itemId: widget.itemId,
+                  userId: user.id,
+                  isCash: _isCash,
+                  isTrade: _isTrade,
+                  isMix: _isMix,
+                );
 
-                final insertData = {
-                  'item_id': widget.itemId,
-                  'bidder_id': user.id,
-                  'cash_offer': _isCash || _isMix ? state.cashAmount : 0, 
-                  'swap_item_text': _isTrade || _isMix ? "${state.tradeTitle} (${state.tradeCondition})" : null,
-                  'swap_item_images': imageUrls.isNotEmpty ? imageUrls : null,
-                  'created_at': DateTime.now().toIso8601String(),
-                };
-
-                await Supabase.instance.client
-                  .from(ItemDetailsStrings.fieldOffers)
-                  .insert(insertData);
-
-                if (context.mounted) {
+                if (success && context.mounted) {
                   Navigator.pop(context, true); // Close Input Modal with success
+                } else if (!success && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to submit offer")));
                 }
               } catch (e) {
                 debugPrint("Error submitting offer: $e");

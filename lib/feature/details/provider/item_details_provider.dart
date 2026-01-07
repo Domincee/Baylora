@@ -10,3 +10,16 @@ final itemDetailsProvider = StreamProvider.autoDispose.family<Map<String, dynami
       .single()
       .asStream();
 });
+
+final userOfferProvider = StreamProvider.autoDispose.family<Map<String, dynamic>?, String>((ref, itemId) {
+  final userId = Supabase.instance.client.auth.currentUser?.id;
+  if (userId == null) return Stream.value(null);
+  
+  return Supabase.instance.client
+      .from(ItemDetailsStrings.fieldOffers)
+      .select()
+      .eq('item_id', itemId)
+      .eq('bidder_id', userId)
+      .maybeSingle()
+      .asStream();
+});

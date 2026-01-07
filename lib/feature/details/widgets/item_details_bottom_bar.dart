@@ -7,6 +7,7 @@ class ItemDetailsBottomBar extends StatelessWidget {
   final bool isOwner;
   final bool isTrade;
   final bool isMix;
+  final bool hasBid;
   final VoidCallback onPlaceBid;
 
   const ItemDetailsBottomBar({
@@ -14,6 +15,7 @@ class ItemDetailsBottomBar extends StatelessWidget {
     required this.isOwner,
     this.isTrade = false,
     this.isMix = false,
+    this.hasBid = false,
     required this.onPlaceBid,
   });
 
@@ -61,7 +63,17 @@ class ItemDetailsBottomBar extends StatelessWidget {
   String _getButtonText() {
     if (isOwner) {
       return ItemDetailsStrings.yourItem;
-    } else if (isMix) {
+    }
+    
+    if (hasBid) {
+      if (isTrade || isMix) {
+        return ItemDetailsStrings.editOffer;
+      } else {
+        return ItemDetailsStrings.editBid;
+      }
+    }
+
+    if (isMix) {
       return ItemDetailsStrings.makeAnOffer;
     } else if (isTrade) {
       return ItemDetailsStrings.offerATrade;

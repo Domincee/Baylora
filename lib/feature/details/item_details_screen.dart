@@ -16,18 +16,32 @@ class ItemDetailsScreen extends ConsumerWidget {
 
   const ItemDetailsScreen({super.key, required this.itemId});
 
-  Future<void> _handlePlaceBid(BuildContext context, WidgetRef ref, String type, double currentHighest, double minimumBid) async {
+  Future<void> _handlePlaceBid(
+    BuildContext context,
+    WidgetRef ref,
+    String type,
+    double currentHighest,
+    double minimumBid,
+    double? existingBidAmount,
+  ) async {
     // Step 1: Input Modal
-    final bool? success = await _showInputModal(context, type, currentHighest, minimumBid);
+    final bool? success = await _showInputModal(context, type, currentHighest, minimumBid, existingBidAmount);
 
     // Step 2: Success Modal
     if (success == true && context.mounted) {
       ref.invalidate(itemDetailsProvider(itemId));
+      ref.invalidate(userOfferProvider(itemId));
       await _showOfferStatusModal(context);
     }
   }
 
-  Future<bool?> _showInputModal(BuildContext context, String type, double currentHighest, double minimumBid) {
+  Future<bool?> _showInputModal(
+    BuildContext context,
+    String type,
+    double currentHighest,
+    double minimumBid,
+    double? existingBidAmount,
+  ) {
     return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -38,6 +52,7 @@ class ItemDetailsScreen extends ConsumerWidget {
           currentHighest: currentHighest,
           minimumBid: minimumBid,
           itemId: itemId,
+          initialBidAmount: existingBidAmount,
         );
       },
     );
@@ -59,7 +74,12 @@ class ItemDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, Map<String, dynamic> item) {
+  Widget _buildContent(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> item,
+    Map<String, dynamic>? userOffer,
+  ) {
     // 1. Data Processing via Controller
     final seller = item[ItemDetailsStrings.fieldProfiles] ?? {};
     final rawOffers = item[ItemDetailsStrings.fieldOffers] ?? [];
@@ -69,7 +89,6 @@ class ItemDetailsScreen extends ConsumerWidget {
         offers, item['price']);
     final isOwner = ItemDetailsController.isOwner(item, seller);
 
-    // 2. Parsed Fields
     final images = (item['images'] as List<dynamic>?) ?? [];
     final title = item['title'] ?? ItemDetailsStrings.noTitle;
     final description = item['description'] ?? '';
@@ -80,8 +99,12 @@ class ItemDetailsScreen extends ConsumerWidget {
     final createdAtStr = item['created_at'];
 
     final double currentHighest = (displayPrice is num) ? displayPrice.toDouble() : 0.0;
-    // Assuming minimum bid is current highest for now as logic wasn't specified beyond "Minimum Bid: P..."
-    final double minimumBid = currentHighest; 
+    final double minimumBid = currentHighest;
+    
+    final bool hasOffered = userOffer != null;
+    final double? existingBidAmount = hasOffered && userOffer['cash_offer'] != null
+        ? (userOffer['cash_offer'] as num).toDouble()
+        : null;
 
     return Stack(
       children: [
@@ -118,7 +141,8 @@ class ItemDetailsScreen extends ConsumerWidget {
             isOwner: isOwner,
             isTrade: type == ItemDetailsStrings.typeTrade,
             isMix: type == ItemDetailsStrings.typeMix,
-            onPlaceBid: () => _handlePlaceBid(context, ref, type, currentHighest, minimumBid),
+            hasBid: hasOffered,
+            onPlaceBid: () => _handlePlaceBid(context, ref, type, currentHighest, minimumBid, existingBidAmount),
           ),
         ),
       ],
@@ -128,6 +152,7 @@ class ItemDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final itemAsync = ref.watch(itemDetailsProvider(itemId));
+    final userOfferAsync = ref.watch(userOfferProvider(itemId));
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -135,9 +160,22 @@ class ItemDetailsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => _buildErrorState(
           error,
-          () => ref.invalidate(itemDetailsProvider(itemId)),
+          () {
+            ref.invalidate(itemDetailsProvider(itemId));
+            ref.invalidate(userOfferProvider(itemId));
+          },
         ),
-        data: (item) => _buildContent(context, ref, item),
+        data: (item) {
+          // We can show content even if user offer is loading, just default to no offer
+          // OR show loading. Given requirements, probably better to wait or handle gracefully.
+          // Since it's a separate provider, let's treat it as data needed for the bottom bar.
+          
+          return userOfferAsync.when(
+            data: (userOffer) => _buildContent(context, ref, item, userOffer),
+            loading: () => const Center(child: CircularProgressIndicator()), // Or render content with skeleton bottom bar
+            error: (e, st) => _buildContent(context, ref, item, null), // Fallback to "Place Bid" if error
+          );
+        },
       ),
     );
   }

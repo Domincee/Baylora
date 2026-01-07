@@ -8,6 +8,8 @@ class ItemDetailsStrings {
   static const String currentBids = 'Current Bids';
   static const String offers = 'Offers';
   static const String placeBid = 'Place Bid';
+  static const String editBid = 'Edit Bid'; // Added
+  static const String editOffer = 'Edit Offer'; // Added
   static const String yourItem = 'Your Item';
   static const String currencySymbol = '₱';
   static const String auction = 'Auction';
