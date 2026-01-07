@@ -127,7 +127,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ItemDetailsScreen(
-                                  itemId: item['id'].toString(),
+                                  itemId: item.id,
                                 ),
                               ),
                             );

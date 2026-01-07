@@ -2,43 +2,34 @@
 
 import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
-import 'package:baylora_prjct/feature/post/constants/post_db_values.dart';
+import 'package:baylora_prjct/core/models/item_model.dart';
 
 class ItemCardMapper {
   ItemCardMapper._();
 
-  static Map<String, dynamic> map(Map<String, dynamic> item) {
-    final profile = item['profiles'] ?? {};
-
-    final images = item['images'] as List?;
-    final firstImage = (images != null && images.isNotEmpty)
-        ? images.first
+  static Map<String, dynamic> map(ItemModel item) {
+    final firstImage = item.images.isNotEmpty
+        ? item.images.first
         : HomeStrings.placeholderImage;
     
-    // Parse End Time
-    DateTime? endTime;
-    if (item['end_time'] != null) {
-      endTime = DateTime.tryParse(item['end_time']);
-    }
-
     return {
-      'title': item['title'] ?? HomeStrings.noTitle,
-      'description': item['description'] ?? '',
-      'price': (item['price'] ?? 0).toString(),
-      'type': item['type'] ?? PostDbValues.typeCash,
-      'swapItem': item['swap_preference'] ?? HomeStrings.anything,
+      'title': item.title,
+      'description': item.description,
+      'price': item.price.toString(),
+      'type': item.type,
+      'swapItem': item.swapPreference ?? HomeStrings.anything,
       'imagePath': firstImage,
-      'postedTime': DateUtil.getTimeAgo(item['created_at']),
+      'postedTime': DateUtil.getTimeAgo(item.createdAt.toIso8601String()),
 
-      'isVerified': profile['is_verified'] ?? false,
-      'sellerName': profile['username'] ?? HomeStrings.unknownUser,
+      'isVerified': item.profile?.isVerified ?? false,
+      'sellerName': item.profile?.username ?? HomeStrings.unknownUser,
 
-      'sellerImage': profile['avatar_url'] ?? '',
-      'rating': (profile['rating'] ?? 0.0).toString(),
-      'totalTrade': (profile['total_trades'] ?? 0).toString(),
+      'sellerImage': item.profile?.avatarUrl ?? '',
+      'rating': (item.profile?.rating ?? 0.0).toString(),
+      'totalTrade': (item.profile?.totalTrades ?? 0).toString(),
 
-      'timeRemaining': endTime != null 
-          ? (DateTime.now().isAfter(endTime) ? HomeStrings.ended : DateUtil.getRemainingTime(endTime, short: false)) 
+      'timeRemaining': item.endTime != null 
+          ? (DateTime.now().isAfter(item.endTime!) ? HomeStrings.ended : DateUtil.getRemainingTime(item.endTime!, short: false)) 
           : null,
     };
   }

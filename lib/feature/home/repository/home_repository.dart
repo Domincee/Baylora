@@ -1,12 +1,13 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
+import 'package:baylora_prjct/core/models/item_model.dart';
 
 class HomeRepository {
   final SupabaseClient _client;
 
   HomeRepository(this._client);
 
-  Stream<List<Map<String, dynamic>>> fetchItems(String filter) {
+  Future<List<ItemModel>> fetchItems(String filter) async {
     // Start the query
     var query = _client
         .from('items')
@@ -16,26 +17,25 @@ class HomeRepository {
 
     // Apply specific filters
     if (filter == HomeStrings.categoryEnding) {
-      return query
+      query = query
           .not('end_time', 'is', null) // Ensure has duration
           .gt('end_time', DateTime.now().toUtc().toIso8601String())
-          .order('end_time', ascending: true)
-          .asStream();
+          .order('end_time', ascending: true);
     } else if (filter == HomeStrings.categoryForSale) {
-      return query
+      query = query
           .eq('type', HomeStrings.cash)
-          .order('created_at', ascending: false)
-          .asStream();
+          .order('created_at', ascending: false);
     } else if (filter == HomeStrings.categoryForTrade) {
-      return query
+      query = query
           .eq('type', HomeStrings.trade)
-          .order('created_at', ascending: false)
-          .asStream();
+          .order('created_at', ascending: false);
     } else {
       // All or default
-      return query
-          .order('created_at', ascending: false)
-          .asStream();
+      query = query
+          .order('created_at', ascending: false);
     }
+
+    final response = await query;
+    return (response as List<dynamic>).map((e) => ItemModel.fromJson(e)).toList();
   }
 }
