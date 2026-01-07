@@ -167,7 +167,7 @@ class ItemDetailsBody extends StatelessWidget {
       children: [
         _buildPriceColumn(
           context,
-          "Minimum Bid",
+          "Minimum Bid ",
           minPrice.toStringAsFixed(0),
         ),
 
@@ -218,6 +218,6 @@ class ItemDetailsBody extends StatelessWidget {
   }
 
   TextStyle? _getHeaderStyle(BuildContext context) => Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold);
-  TextStyle? _getSubHeaderStyle(BuildContext context) => Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.textGrey);
+  TextStyle? _getSubHeaderStyle(BuildContext context) => Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.black);
   TextStyle? _getPriceStyle(BuildContext context) => Theme.of(context).textTheme.headlineMedium?.copyWith(color: AppColors.highLightTextColor, fontWeight: FontWeight.bold);
 }

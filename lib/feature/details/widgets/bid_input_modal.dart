@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/constant/listing_constants.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/provider/bid_provider.dart';
@@ -12,7 +13,7 @@ class BidInputModal extends ConsumerStatefulWidget {
   final String listingType;
   final double currentHighest;
   final double minimumBid;
-  final String itemId; // Need itemId to insert into DB
+  final String itemId;
   final double? initialBidAmount;
 
   const BidInputModal({
@@ -32,9 +33,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
   final ImagePicker _picker = ImagePicker();
   late TextEditingController _cashController;
   late TextEditingController _titleController;
-  final List<String> _categories = ['Electronics', 'Clothing', 'Furniture', 'Other'];
-
-  // Added repository instance
+  final List<String> _categories = ListingConstants.categories;
 
   bool get _isCash => widget.listingType == ItemDetailsStrings.typeCash;
   bool get _isTrade => widget.listingType == ItemDetailsStrings.typeTrade;
@@ -43,34 +42,31 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with current state or initial amount
-    
-    // Check if we need to prefill
+
     double startAmount = 0.0;
-    if (widget.initialBidAmount != null) {
+
+    // Only pre-fill amount if it is a CASH listing
+    if (_isCash && widget.initialBidAmount != null) {
       startAmount = widget.initialBidAmount!;
-      // Important: update the provider state too so it matches immediately
-      // We do this in post frame callback to avoid provider modification during build/init
-       WidgetsBinding.instance.addPostFrameCallback((_) {
-         ref.read(bidProvider.notifier).setCashAmount(startAmount);
-       });
-    } else {
-      final state = ref.read(bidProvider);
-      startAmount = state.cashAmount;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(bidProvider.notifier).setCashAmount(startAmount);
+      });
     }
 
     _cashController = TextEditingController(
       text: startAmount > 0 ? startAmount.toStringAsFixed(0) : "",
     );
-    _titleController = TextEditingController(text: ref.read(bidProvider).tradeTitle);
+    _titleController = TextEditingController(text: "");
 
-    // Load existing offer fully (images, trade details) if any
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user != null) {
-        ref.read(bidProvider.notifier).loadExistingOffer(widget.itemId, user.id);
-      }
-    });
+    // Only load existing offer data from DB if it is CASH
+    if (_isCash) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final user = Supabase.instance.client.auth.currentUser;
+        if (user != null) {
+          ref.read(bidProvider.notifier).loadExistingOffer(widget.itemId, user.id);
+        }
+      });
+    }
   }
 
   @override
@@ -85,7 +81,6 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     final bidState = ref.watch(bidProvider);
     final bidNotifier = ref.read(bidProvider.notifier);
 
-    // Sync controllers with state for external changes (like Chips or Load Existing)
     ref.listen(bidProvider, (prev, next) {
       if (next.cashAmount != (double.tryParse(_cashController.text) ?? 0.0)) {
         final newText = next.cashAmount > 0 ? next.cashAmount.toStringAsFixed(0) : "";
@@ -97,10 +92,10 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         }
       }
       if (next.tradeTitle != _titleController.text) {
-         _titleController.text = next.tradeTitle;
-         _titleController.selection = TextSelection.fromPosition(
-            TextPosition(offset: _titleController.text.length),
-          );
+        _titleController.text = next.tradeTitle;
+        _titleController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _titleController.text.length),
+        );
       }
     });
 
@@ -127,31 +122,20 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
               ),
             ),
           ),
-          
+
           // Header
           Padding(
             padding: AppValues.paddingH,
             child: _buildHeader(bidState),
           ),
-          
+
           const Divider(color: AppColors.greyLight),
 
-          // Scrollable Body
+          // Scrollable Body with Dynamic Layouts
           Expanded(
             child: SingleChildScrollView(
               padding: AppValues.paddingAll,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_isCash || _isMix) ...[
-                    _buildCashSection(bidState, bidNotifier),
-                    if (_isMix) const Divider(height: AppValues.spacingXL),
-                  ],
-                  if (_isTrade || _isMix) ...[
-                    _buildTradeSection(bidState, bidNotifier),
-                  ],
-                ],
-              ),
+              child: _buildBodyLayout(bidState, bidNotifier),
             ),
           ),
 
@@ -184,112 +168,42 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     );
   }
 
-  Widget _buildHeader(BidState state) {
-    String title = "";
-    String? subtitle;
-    
-
-    bool isEditing = state.existingImageUrls.isNotEmpty || widget.initialBidAmount != null; 
-    // Note: Checking initialBidAmount here is a quick way to know if we started in 'edit' mode for cash too.
-
-
-    if (isEditing) {
-       title = "Edit your Offer";
-    } else {
-      if (_isCash) {
-        title = ItemDetailsStrings.placeYourBid;
-      } else if (_isTrade) {
-        title = "Place a Trade"; 
-      } else {
-        title = ItemDetailsStrings.placeYourOffer;
-        subtitle = "Offer cash, trade an item, or combine both";
-      }
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        if (subtitle != null && !isEditing) ...[
-          AppValues.gapXS,
-          Text(
-            subtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.textGrey,
-            ),
-          ),
+  // --- Layout Selector ---
+  Widget _buildBodyLayout(BidState state, BidNotifier notifier) {
+    if (_isMix) {
+      // 1. MIX LAYOUT: Photos -> Price -> Details
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildPhotosPart(state, notifier), // Top
+          AppValues.gapL,
+          _buildPricePart(state, notifier),  // Middle
+          AppValues.gapL,
+          _buildTradeDetailsPart(state, notifier), // Bottom
         ],
-        AppValues.gapS,
-      ],
-    );
+      );
+    } else if (_isCash) {
+      // 2. CASH LAYOUT: Price Only
+      return _buildPricePart(state, notifier);
+    } else {
+      // 3. TRADE LAYOUT: Photos -> Details
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildPhotosPart(state, notifier),
+          AppValues.gapL,
+          _buildTradeDetailsPart(state, notifier),
+        ],
+      );
+    }
   }
 
-  Widget _buildCashSection(BidState state, BidNotifier notifier) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Stats Row
-        Row(
-          children: [
-            Text(
-              "Current Highest: ${ItemDetailsStrings.currencySymbol}${widget.currentHighest.toStringAsFixed(0)}",
-              style: const TextStyle(color: AppColors.textGrey, fontSize: 12),
-            ),
-            AppValues.gapHM,
-            Text(
-              "Minimum Bid: ${ItemDetailsStrings.currencySymbol}${widget.minimumBid.toStringAsFixed(0)}",
-              style: const TextStyle(color: AppColors.errorColor, fontSize: 12),
-            ),
-          ],
-        ),
-        AppValues.gapM,
-
-        // Input
-        TextField(
-          keyboardType: TextInputType.number,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          decoration: const InputDecoration(
-            prefixText: ItemDetailsStrings.currencySymbol,
-            border: InputBorder.none,
-            hintText: "0",
-          ),
-          onChanged: (value) {
-            final val = double.tryParse(value) ?? 0.0;
-            notifier.setCashAmount(val);
-          },
-          controller: _cashController,
-        ),
-        
-        // Quick Add Chips
-        Row(
-          children: [100, 500, 1000].map((amount) {
-            return Padding(
-              padding: const EdgeInsets.only(right: AppValues.spacingS),
-              child: ActionChip(
-                label: Text("+${ItemDetailsStrings.currencySymbol}$amount"),
-                backgroundColor: AppColors.greyLight,
-                onPressed: () => notifier.addToCashAmount(amount.toDouble()),
-                shape: const StadiumBorder(side: BorderSide.none),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTradeSection(BidState state, BidNotifier notifier) {
+  // --- Reusable Part: Photos ---
+  Widget _buildPhotosPart(BidState state, BidNotifier notifier) {
     int totalImages = state.existingImageUrls.length + state.tradeImages.length;
-    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Photos
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -302,7 +216,6 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              // Camera Button
               if (totalImages < 3)
                 GestureDetector(
                   onTap: () async {
@@ -329,8 +242,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
                     ),
                   ),
                 ),
-              
-              // Existing Images (Network)
+
               ...state.existingImageUrls.map((url) {
                 return Stack(
                   children: [
@@ -365,7 +277,6 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
                 );
               }),
 
-              // New Images (File)
               ...state.tradeImages.map((file) {
                 return Stack(
                   children: [
@@ -402,9 +313,67 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
             ],
           ),
         ),
+      ],
+    );
+  }
+
+  // --- Reusable Part: Price Input ---
+  Widget _buildPricePart(BidState state, BidNotifier notifier) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "Current Highest: ${ItemDetailsStrings.currencySymbol}${widget.currentHighest.toStringAsFixed(0)}",
+              style: const TextStyle(color: AppColors.textGrey, fontSize: 12),
+            ),
+            AppValues.gapHM,
+            Text(
+              "Minimum Bid: ${ItemDetailsStrings.currencySymbol}${widget.minimumBid.toStringAsFixed(0)}",
+              style: const TextStyle(color: AppColors.errorColor, fontSize: 12),
+            ),
+          ],
+        ),
         AppValues.gapM,
 
-        // Item Title
+        TextField(
+          keyboardType: TextInputType.number,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          decoration: const InputDecoration(
+            prefixText: ItemDetailsStrings.currencySymbol,
+            border: InputBorder.none,
+            hintText: "0",
+          ),
+          onChanged: (value) {
+            final val = double.tryParse(value) ?? 0.0;
+            notifier.setCashAmount(val);
+          },
+          controller: _cashController,
+        ),
+
+        Row(
+          children: [100, 500, 1000].map((amount) {
+            return Padding(
+              padding: const EdgeInsets.only(right: AppValues.spacingS),
+              child: ActionChip(
+                label: Text("+${ItemDetailsStrings.currencySymbol}$amount"),
+                backgroundColor: AppColors.greyLight,
+                onPressed: () => notifier.addToCashAmount(amount.toDouble()),
+                shape: const StadiumBorder(side: BorderSide.none),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  // --- Reusable Part: Details (Title, Category, Condition) ---
+  Widget _buildTradeDetailsPart(BidState state, BidNotifier notifier) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         const Text("Item title", style: TextStyle(fontWeight: FontWeight.bold)),
         AppValues.gapS,
         TextField(
@@ -422,7 +391,6 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         ),
         AppValues.gapM,
 
-        // Category
         const Text("Category", style: TextStyle(fontWeight: FontWeight.bold)),
         AppValues.gapS,
         DropdownButtonFormField<String>(
@@ -443,7 +411,6 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         ),
         AppValues.gapM,
 
-        // Condition
         const Text("Condition", style: TextStyle(fontWeight: FontWeight.bold)),
         AppValues.gapS,
         Row(
@@ -454,7 +421,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
               child: ChoiceChip(
                 label: Text(cond),
                 selected: isSelected,
-                selectedColor: AppColors.royalBlue, 
+                selectedColor: AppColors.royalBlue,
                 backgroundColor: AppColors.greyLight,
                 labelStyle: TextStyle(
                   color: isSelected ? AppColors.white : AppColors.textGrey,
@@ -476,8 +443,50 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     );
   }
 
+  Widget _buildHeader(BidState state) {
+    String title = "";
+    String? subtitle;
+
+    // Only consider it "Editing" if it is a Cash listing
+    bool isEditing = _isCash && widget.initialBidAmount != null;
+
+    if (isEditing) {
+      title = ItemDetailsStrings.editBid;
+    } else {
+      if (_isCash) {
+        title = ItemDetailsStrings.placeYourBid;
+      } else if (_isTrade) {
+        title = "Place a Trade";
+      } else {
+        title = ItemDetailsStrings.placeYourOffer;
+        subtitle = "Offer cash, trade an item, or combine both";
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (subtitle != null && !isEditing) ...[
+          AppValues.gapXS,
+          Text(
+            subtitle,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textGrey,
+            ),
+          ),
+        ],
+        AppValues.gapS,
+      ],
+    );
+  }
+
   Future<void> _handleAction(BuildContext context, BidState state) async {
-    // Validate
     if (_isCash || _isMix) {
       if (state.cashAmount <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter a valid amount")));
@@ -490,13 +499,11 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         return;
       }
       if (state.tradeCategory == null) {
-
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select a category")));
         return;
       }
     }
 
-    // Show Confirmation Modal
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -509,17 +516,15 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
           ),
           TextButton(
             onPressed: () async {
-              // Confirm Logic
               Navigator.pop(dialogContext); // Close Dialog
-              
+
               try {
                 final user = Supabase.instance.client.auth.currentUser;
                 if (user == null) {
-                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please login to submit an offer")));
-                   return;
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please login to submit an offer")));
+                  return;
                 }
 
-                // Call submitOffer which handles upload and upsert
                 final success = await ref.read(bidProvider.notifier).submitOffer(
                   itemId: widget.itemId,
                   userId: user.id,
@@ -529,14 +534,14 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
                 );
 
                 if (success && context.mounted) {
-                  Navigator.pop(context, true); // Close Input Modal with success
+                  Navigator.pop(context, true);
                 } else if (!success && context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to submit offer")));
                 }
               } catch (e) {
                 debugPrint("Error submitting offer: $e");
                 if (context.mounted) {
-                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
                 }
               }
             },
@@ -547,3 +552,10 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     );
   }
 }
+
+
+TextStyle? _getTitleStyle(BuildContext context) => Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold);
+TextStyle? _getSubtitleStyle(BuildContext context) => Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.black);
+TextStyle? _getLabel(BuildContext context) => Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.highLightTextColor, fontWeight: FontWeight.w600);
+TextStyle? _getLabelError(BuildContext context) => Theme.of(context).textTheme.labelMedium?.copyWith(color: AppColors.errorColor, fontWeight: FontWeight.w600);
+
