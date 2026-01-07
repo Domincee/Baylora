@@ -1,9 +1,9 @@
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
+import 'package:baylora_prjct/feature/bid/widgets/modals/bid_input_modal.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/controller/item_details_controller.dart';
 import 'package:baylora_prjct/feature/details/provider/item_details_provider.dart';
-import 'package:baylora_prjct/feature/details/widgets/bid_input_modal.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_app_bar.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_body.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_bottom_bar.dart';
