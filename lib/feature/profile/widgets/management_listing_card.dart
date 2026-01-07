@@ -1,11 +1,12 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:flutter/material.dart';
 
 class ManagementListingCard extends StatelessWidget {
   final String title;
-  final String imageUrl; // Pass the FIRST image from the list here. If empty, pass ''.
-  final String status; // 'active', 'sold', 'accepted', 'expired'
+  final String imageUrl;
+  final String status;
   final double? price;
   final List<String> lookingFor;
   final int offerCount;
@@ -99,7 +100,7 @@ class ManagementListingCard extends StatelessWidget {
             children: [
               _buildStatusBadge(context),
               AppValues.gapL,
-              if (onAction != null || status != 'expired')
+              if (onAction != null || status != ProfileStrings.statusExpiredSmall)
                 _buildActionButton(context),
             ],
           ),
@@ -110,19 +111,15 @@ class ManagementListingCard extends StatelessWidget {
 
   Widget _buildVariantContent(BuildContext context) {
     if (isCash) {
-      return Text(
-        "₱${price!.toStringAsFixed(0)}",
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.highLightTextColor,
-              fontWeight: FontWeight.bold,
-            ),
-      );
-    } else if (isTrade) {
-      return _buildLookingFor(context);
-    } else if (isMix) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+           ProfileStrings.price,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: AppColors.subTextColor,
+            ),
+          ),
           Text(
             "₱${price!.toStringAsFixed(0)}",
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -130,15 +127,57 @@ class ManagementListingCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          const SizedBox(height: 2),
+        ],
+      );
+    } else if (isTrade) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            "or trade for:",
+            ProfileStrings.lookingFor,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.subTextColor,
-                  fontSize: 10,
-                ),
+              color: AppColors.subTextColor,
+              fontSize: 10,
+            ),
           ),
           const SizedBox(height: 2),
+          _buildLookingFor(context),
+        ],
+      );
+    } else if (isMix) {
+      return Row(
+
+        children: [
+
+           Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               Text(
+                ProfileStrings.price,
+                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                   color: AppColors.subTextColor,
+                   fontSize: 10,
+                 ),
+               ),
+               Text(
+                 "₱${price!.toStringAsFixed(0)}",
+                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                   color: AppColors.highLightTextColor,
+                   fontWeight: FontWeight.bold,
+                 ),
+               ),
+
+             ],
+           ),
+          AppValues.gapHS,
+          Text(
+           ProfileStrings.or,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: AppColors.subTextColor,
+                ),
+          ),
+          AppValues.gapHS,
+
           _buildLookingFor(context),
         ],
       );
@@ -176,7 +215,7 @@ class ManagementListingCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          offerCount == 0 ? "No offers yet" : "$offerCount Offers",
+          offerCount == 0 ? ProfileStrings.noOffersYet : "$offerCount ${ProfileStrings.offers}",
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: AppColors.textDarkGrey,
                 fontWeight: FontWeight.w600,
@@ -214,17 +253,17 @@ class ManagementListingCard extends StatelessWidget {
 
       if (endTime != null && endTime!.isBefore(now)) {
         // Case: Expired
-        text = 'Expired';
+        text = ProfileStrings.filterExpired;
         bgColor = AppColors.grey200;
         textColor = AppColors.textDarkGrey;
       } else if (endTime != null && endTime!.isAfter(now)) {
         // Case: Time-Sensitive
-        text = 'Ends in ${_formatDuration(endTime!.difference(now))}';
+        text = '${ProfileStrings.statusEndsIn} ${_formatDuration(endTime!.difference(now))}';
         bgColor = const Color(0xFFFFEBEE);
         textColor = AppColors.errorColor;
       } else {
         // Case: Active (Default)
-        text = 'Active';
+        text = ProfileStrings.filterActive;
         bgColor = AppColors.tealLight.withValues(alpha:  0.5);
         textColor = AppColors.tealText;
       }
@@ -248,18 +287,18 @@ class ManagementListingCard extends StatelessWidget {
   }
 
   Widget _buildActionButton(BuildContext context) {
-    String label = 'Manage';
+    String label = ProfileStrings.manage;
     Color bgColor = AppColors.grey200;
     Color textColor = AppColors.textDarkGrey;
     
     final s = status.toLowerCase();
 
     if (s == 'accepted') {
-      label = 'Deal Chat';
+      label = ProfileStrings.dealChat;
       bgColor = AppColors.selectedColor;
       textColor = AppColors.white;
     } else if (s == 'sold') {
-      label = 'Review';
+      label = ProfileStrings.review;
       bgColor = const Color(0xFFFFEBEE);
       textColor = AppColors.successColor;
     }
@@ -288,18 +327,18 @@ class ManagementListingCard extends StatelessWidget {
   String _getRelativeTime(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    if (difference.inDays == 0) return 'today';
-    if (difference.inDays == 1) return '1 day ago';
-    return '${difference.inDays} days ago';
+    if (difference.inDays == 0) return ProfileStrings.today;
+    if (difference.inDays == 1) return ProfileStrings.oneDayAgo;
+    return '${difference.inDays} ${ProfileStrings.daysAgoSuffix}';
   }
 
   String _formatDuration(Duration duration) {
     if (duration.inDays > 0) {
-      return '${duration.inDays}d';
+      return '${duration.inDays}${ProfileStrings.dayShort}';
     } else if (duration.inHours > 0) {
-      return '${duration.inHours}h';
+      return '${duration.inHours}${ProfileStrings.hourShort}';
     } else {
-      return '${duration.inMinutes}m';
+      return '${duration.inMinutes}${ProfileStrings.minuteShort}';
     }
   }
 }

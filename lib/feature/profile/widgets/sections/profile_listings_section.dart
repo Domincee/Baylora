@@ -9,6 +9,8 @@ import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:baylora_prjct/feature/profile/screens/my_listings_screen.dart';
 import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart';
 
+import '../see_all_button.dart';
+
 class ProfileListingsSection extends ConsumerWidget {
   const ProfileListingsSection({super.key});
 
@@ -76,7 +78,6 @@ class ProfileListingsSection extends ConsumerWidget {
                     displayStatus = 'Expired'; // Changed from 'Ended' to 'Expired'
                   }
                 }
-
                 return ManagementListingCard(
                   title: item['title'] ?? 'Untitled',
                   imageUrl: (images != null && images.isNotEmpty) ? images[0] : '',
@@ -93,40 +94,9 @@ class ProfileListingsSection extends ConsumerWidget {
             // "See All" Logic: Only show if there are MORE items than we are previewing (4)
             if (listings.length > 4) ...[
               AppValues.gapM,
-              InkWell(
-                onTap: () {
-                   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyListingsScreen()),
-                  );
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "See all",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textGrey,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 14,
-                        color: AppColors.textGrey,
-                      ),
-                    ],
-                  ),
-                ),
+              AppValues.gapM,
+              SeeAllButton(
+                destination : MyListingsScreen(),
               ),
             ],
           ],

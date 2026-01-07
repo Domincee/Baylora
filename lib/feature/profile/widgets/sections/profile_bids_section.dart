@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
+import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/text/section_header.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:baylora_prjct/feature/profile/screens/my_bids_screen.dart';
 import 'package:baylora_prjct/feature/profile/widgets/bid_card.dart';
+
+import '../see_all_button.dart';
 
 class ProfileBidsSection extends ConsumerWidget {
   const ProfileBidsSection({super.key});
@@ -22,21 +25,15 @@ class ProfileBidsSection extends ConsumerWidget {
 
         return Column(
           children: [
-            SectionHeader(
+            const SectionHeader(
               title: ProfileStrings.bidsTitle,
               subTitle: ProfileStrings.bidsSubtitle,
-              showSeeAll: showSeeAll,
-              onSeeAll: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MyBidsScreen()),
-                );
-              },
+              showSeeAll: false, // Hidden from top
             ),
             AppValues.gapM,
             if (displayList.isEmpty)
               const Text(ProfileStrings.noBids)
-            else
+            else ...[
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -49,7 +46,17 @@ class ProfileBidsSection extends ConsumerWidget {
                   if (item == null) return const SizedBox.shrink();
 
                   final images = item['images'] as List?;
-                  String myOfferText = bid['cash_offer'] != null ? "P${bid['cash_offer']}" : (bid['swap_item_text'] ?? "Unknown Offer");
+                  String myOfferText = "Unknown";
+                  final double cash = (bid['cash_offer'] as num?)?.toDouble() ?? 0.0;
+                  final String? swap = bid['swap_item_text'];
+                  
+                  if (cash > 0 && swap != null && swap.isNotEmpty) {
+                    myOfferText = "P${cash.toStringAsFixed(0)} + $swap";
+                  } else if (cash > 0) {
+                    myOfferText = "P${cash.toStringAsFixed(0)}";
+                  } else if (swap != null) {
+                    myOfferText = swap;
+                  }
 
                   return BidCard(
                     title: item['title'] ?? 'Unknown Item',
@@ -62,6 +69,14 @@ class ProfileBidsSection extends ConsumerWidget {
                   );
                 },
               ),
+              if (showSeeAll) ...[
+                AppValues.gapM,
+                AppValues.gapM,
+                SeeAllButton(
+                   destination : MyBidsScreen(),
+                ),
+              ],
+            ]
           ],
         );
       },

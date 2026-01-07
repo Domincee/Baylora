@@ -121,6 +121,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
         child: Row(
           children: _filters.map((filter) {
             final isSelected = _selectedFilter == filter;
+
             return Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: ChoiceChip(
