@@ -9,7 +9,7 @@ class HomeRepository {
 
   Future<List<ItemModel>> fetchItems(String filter) async {
     // Start the query
-    var query = _client
+    dynamic query = _client
         .from('items')
         .select('*, profiles:owner_id(username, avatar_url, rating, total_trades, is_verified)');
 
