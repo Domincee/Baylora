@@ -2,6 +2,7 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
+import 'package:baylora_prjct/feature/manage_listing/screens/manage_listing_screen.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart';
@@ -230,6 +231,14 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
       price: price,
       lookingFor: lookingFor,
       endTime: endTime,
+      onAction: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ManageListingScreen(itemId: item['id'].toString()),
+          ),
+        );
+      },
     );
   }
 
