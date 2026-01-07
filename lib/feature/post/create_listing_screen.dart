@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/util/network_utils.dart';
 import 'package:baylora_prjct/feature/post/constants/post_db_values.dart';
 import 'package:baylora_prjct/feature/post/constants/post_storage.dart';
 import 'package:baylora_prjct/feature/post/constants/post_strings.dart';
@@ -136,14 +137,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     }
   }
 
-  bool _isNetworkError(Object e) {
-    final errorString = e.toString();
-    return e is SocketException ||
-        errorString.contains('SocketException') ||
-        errorString.contains('Network is unreachable') ||
-        errorString.contains('Connection refused');
-  }
-
   void _showSnackBar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -177,9 +170,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       } catch (e) {
         debugPrint("Error uploading image: $e");
         if (mounted) {
-          final message = _isNetworkError(e)
-              ? AppStrings.noInternetConnection
-              : '${PostStrings.msgImageUploadFailed}$e';
+          final message = NetworkUtils.getErrorMessage(e,
+              prefix: PostStrings.msgImageUploadFailed);
           _showSnackBar(message);
         }
       }
@@ -288,9 +280,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final message = _isNetworkError(e)
-            ? AppStrings.noInternetConnection
-            : '${PostStrings.msgPublishError}$e';
+        final message = NetworkUtils.getErrorMessage(e,
+            prefix: PostStrings.msgPublishError);
         _showSnackBar(message);
       }
     } finally {

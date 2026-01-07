@@ -2,6 +2,7 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
+import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/controller/item_details_controller.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_app_bar.dart';
@@ -77,37 +78,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   }
 
   Widget _buildErrorState(Object? error) {
-    final bool isNetworkError = NetworkUtils.isNetworkError(error);
-
-    final String message = isNetworkError
-        ? AppStrings.noInternetConnection
-        : '${ItemDetailsStrings.failedToLoad} ${error.toString()}';
-
-    return Center(
-      child: Padding(
-        padding: AppValues.paddingL,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              isNetworkError ? Icons.wifi_off : Icons.error_outline,
-              color: AppColors.errorColor,
-              size: AppValues.iconXL,
-            ),
-            AppValues.gapM,
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textGrey),
-            ),
-            AppValues.gapM,
-            ElevatedButton(
-              onPressed: _retryFetch,
-              child: const Text(AppStrings.retry),
-            )
-          ],
-        ),
-      ),
+    return CommonErrorWidget(
+      error: error,
+      onRetry: _retryFetch,
+      customErrorMessage: '${ItemDetailsStrings.failedToLoad} ${error.toString()}',
     );
   }
 

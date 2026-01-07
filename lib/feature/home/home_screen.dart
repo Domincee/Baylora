@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:baylora_prjct/core/constant/app_strings.dart';
+import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
@@ -69,29 +70,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (err, stack) {
                   debugPrint('Error loading items: $err');
-
-                  final isNetworkError = NetworkUtils.isNetworkError(err);
-
-                  final String message = isNetworkError
-                      ? HomeStrings.noInternetConnection
-                      : HomeStrings.somethingWentWrong;
-
-                  final IconData icon = isNetworkError ? Icons.wifi_off : Icons.error_outline;
-
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(icon, color: AppColors.textGrey, size: 48),
-                        AppValues.gapS,
-                        Text(message, textAlign: TextAlign.center),
-                        AppValues.gapM,
-                        ElevatedButton(
-                          onPressed: _refreshItems,
-                          child: const Text(HomeStrings.retry),
-                        ),
-                      ],
-                    ),
+                  return CommonErrorWidget(
+                    error: err,
+                    onRetry: _refreshItems,
                   );
                 },
                 data: (items) {
