@@ -152,28 +152,28 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   String _getTypeDbValue() {
     switch (_selectedType) {
       case 0:
-        return 'cash';
+        return PostDbValues.typeCash;
       case 1:
-        return 'trade';
+        return PostDbValues.typeTrade;
       case 2:
-        return 'mix';
+        return PostDbValues.typeMix;
       default:
-        return 'cash';
+        return PostDbValues.typeCash;
     }
   }
 
   String _getConditionDbValue() {
     switch (_selectedCondition) {
       case 0:
-        return 'new';
+        return PostDbValues.conditionNew;
       case 1:
-        return 'used';
+        return PostDbValues.conditionUsed;
       case 2:
-        return 'broken';
+        return PostDbValues.conditionBroken;
       case 3:
-        return 'fair';
+        return PostDbValues.conditionFair;
       default:
-        return 'used';
+        return PostDbValues.conditionUsed;
     }
   }
 
@@ -244,9 +244,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       }
     } catch (e) {
       if (mounted) {
-        // Try to distinguish upload errors vs generic errors if possible,
-        // or just use generic error handler.
-        // Assuming NetworkUtils is a helper that can format exceptions.
+
         final message = NetworkUtils.getErrorMessage(e,
             prefix: PostStrings.msgPublishError);
         _showSnackBar(message);

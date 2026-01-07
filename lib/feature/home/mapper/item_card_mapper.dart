@@ -2,6 +2,7 @@
 
 import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
+import 'package:baylora_prjct/feature/post/constants/post_db_values.dart';
 
 class ItemCardMapper {
   ItemCardMapper._();
@@ -24,7 +25,7 @@ class ItemCardMapper {
       'title': item['title'] ?? HomeStrings.noTitle,
       'description': item['description'] ?? '',
       'price': (item['price'] ?? 0).toString(),
-      'type': item['type'] ?? HomeStrings.cash,
+      'type': item['type'] ?? PostDbValues.typeCash,
       'swapItem': item['swap_preference'] ?? HomeStrings.anything,
       'imagePath': firstImage,
       'postedTime': DateUtil.getTimeAgo(item['created_at']),
