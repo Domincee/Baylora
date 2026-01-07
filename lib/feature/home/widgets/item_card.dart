@@ -56,8 +56,8 @@ class ItemCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowColor.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: AppValues.spacingXS,
+            offset: const Offset(0, AppValues.elevationLow),
           ),
         ],
       ),
@@ -77,7 +77,7 @@ class ItemCard extends StatelessWidget {
                     children: [
                       ProfileAvatar(
                         imageUrl: sellerImage,
-                        size: 40,
+                        size: AppValues.spacingXXL,
                       ),
                       AppValues.gapHS,
                       Expanded(
@@ -129,10 +129,10 @@ class ItemCard extends StatelessWidget {
                           if (timeRemaining != null) ...[
                             AppValues.gapHXXS,
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: EdgeInsets.symmetric(horizontal: AppValues.spacingXS, vertical: AppValues.spacingXXS),
                               decoration: BoxDecoration(
                                 color: AppColors.errorColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(AppValues.radiusM),
                                 border: Border.all(color: AppColors.errorColor.withValues(alpha: 0.5)),
                               ),
                               child: Text(
@@ -175,17 +175,16 @@ class ItemCard extends StatelessWidget {
                                 ),
                                 AppValues.gapHXXS,
                                 ...swapItem.split(',').take(2).map((item) => Container(
-                                      margin: EdgeInsets.only(right: 4),
-                                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      margin: EdgeInsets.only(right: AppValues.spacingXXS),
+                                      padding: EdgeInsets.symmetric(horizontal: AppValues.spacingXS, vertical: AppValues.spacingXXS),
                                       decoration: BoxDecoration(
                                         color: AppColors.blueLight,
                                         borderRadius: AppValues.borderRadiusS,
                                       ),
                                       child: Text(
                                         item.trim(),
-                                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                           color: AppColors.blueText,
-                                          fontSize: 10,
                                         ),
                                       ),
                                     )),

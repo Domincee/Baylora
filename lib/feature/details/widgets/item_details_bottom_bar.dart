@@ -76,8 +76,8 @@ class ItemDetailsBottomBar extends StatelessWidget {
       boxShadow: [
         BoxShadow(
           color: AppColors.shadowColor.withValues(alpha: 0.5),
-          blurRadius: 10,
-          offset: const Offset(0, -4),
+          blurRadius: AppValues.spacing10,
+          offset: const Offset(0, -AppValues.elevationMedium),
         ),
       ],
     );

@@ -24,8 +24,8 @@ class TagsRow extends StatelessWidget {
     final remainingTime = DateUtil.getRemainingTime(endTime);
 
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: AppValues.spacingXS,
+      runSpacing: AppValues.spacingXS,
       children: [
         _buildPill(context, "${ItemDetailsStrings.categoryPrefix}$category", AppColors.greyLight, AppColors.textDarkGrey),
         _buildPill(context, condition, AppColors.greyLight, AppColors.textDarkGrey),
@@ -53,7 +53,7 @@ class TagsRow extends StatelessWidget {
       padding:  EdgeInsets.symmetric(horizontal: AppValues.spacingS, vertical: AppValues.spacingXS),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppValues.radiusXL),
       ),
       child: Text(
         text,

@@ -44,7 +44,7 @@ class ItemDetailsBody extends StatelessWidget {
     final isMix = type == ItemDetailsStrings.typeMix;
 
     return Positioned.fill(
-      bottom: 80, // Leave space for the bottom action bar
+      bottom: AppValues.buttonHeight + AppValues.spacingXL, // Leave space for the bottom action bar
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +88,7 @@ class ItemDetailsBody extends StatelessWidget {
                   BidList(offers: offers, isTrade: isTrade, isMix: isMix),
 
                   // Extra padding at bottom for scrolling past the floating button
-                  const SizedBox(height: 40),
+                  AppValues.gapXXL,
                 ],
               ),
             ),
@@ -233,7 +233,7 @@ class ItemDetailsBody extends StatelessWidget {
           (isTrade || isMix)
               ? ItemDetailsStrings.currentOffers
               : ItemDetailsStrings.currentBids,
-          style: _getHeaderStyle(context),
+              style: _getHeaderStyle(context),
         ),
         Text(
           ItemDetailsStrings.offers,
