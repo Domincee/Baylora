@@ -49,11 +49,11 @@ class BidList extends StatelessWidget {
       itemBuilder: (context, index) {
         final offer = offers[index];
         final bidder = offer['profiles'] ?? {};
-        final amount = (offer['amount'] ?? 0) as num;
+        final cashOffer = (offer['cash_offer'] ?? 0) as num;
         final timeAgo = DateUtil.getTimeAgo(offer['created_at']);
         final swapItemText = offer['swap_item_text'];
         
-        final hasCash = amount > 0;
+        final hasCash = cashOffer > 0;
         final hasTrade = swapItemText != null && swapItemText.toString().isNotEmpty;
 
         return Row(
@@ -88,7 +88,7 @@ class BidList extends StatelessWidget {
                 children: [
                   if (hasCash)
                     Text(
-                      "₱ ${amount.toString()}",
+                      "₱ ${cashOffer.toString()}",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -112,7 +112,7 @@ class BidList extends StatelessWidget {
             ] else ...[
               // Cash Only
               Text(
-                "₱ ${amount.toString()}",
+                "₱ ${cashOffer.toString()}",
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
