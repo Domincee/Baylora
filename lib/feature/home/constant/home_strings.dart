@@ -18,6 +18,7 @@ class HomeStrings {
   // ItemCard
   static const String willingToSwapFor = "Willing to swap for:";
   static const String defaultNumeric = "0.0";
+  static const String defaultZero = "0.0";
 
   // BuildPrice
   static const String tradeOnly = "Trade Only";

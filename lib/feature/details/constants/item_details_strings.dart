@@ -13,6 +13,7 @@ class ItemDetailsStrings {
   static const String auction = 'Auction';
   static const String tradeOnly = 'Trade Only';
   static const String cashOnly = 'Cash Only';
+  static const String mixed = 'Mixed';
   static const String categoryPrefix = 'Category: ';
   static const String errorPrefix = 'Error fetching item details: ';
   static const String ownerDebugMsg = 'User is owner of this item';
@@ -43,4 +44,6 @@ class ItemDetailsStrings {
   static const String tableItems = 'items';
   static const String fieldProfiles = 'profiles';
   static const String fieldOffers = 'offers';
+
+  static String getLoadingErrorMessage(String error) => '$failedToLoad $error';
 }

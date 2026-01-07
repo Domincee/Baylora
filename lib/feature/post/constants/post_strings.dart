@@ -56,4 +56,5 @@ class PostStrings {
   static const String labelBroken = "Broken";
   static const String labelFair = "Fair";
   static const String labelNA = "N/A";
+  static const String hoursSuffix = " hrs";
 }

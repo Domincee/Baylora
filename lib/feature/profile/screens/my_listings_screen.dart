@@ -82,7 +82,9 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
       if (_selectedFilter == ProfileStrings.filterExpired) {
         if (dbStatus == ProfileStrings.dbStatusEnded || 
             dbStatus == ProfileStrings.dbStatusSold || 
-            dbStatus == ProfileStrings.dbStatusAccepted) return true;
+            dbStatus == ProfileStrings.dbStatusAccepted) {
+          return true;
+        }
         if (isExpired) return true;
         return false;
       }

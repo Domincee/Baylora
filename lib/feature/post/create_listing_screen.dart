@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
@@ -431,7 +430,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                 category: _selectedCategory ?? PostStrings.labelNA,
                 condition: _getConditionLabel(_selectedCondition),
                 duration: _isDurationEnabled
-                    ? "${_durationController.text} hrs"
+                    ? "${_durationController.text}${PostStrings.hoursSuffix}"
                     : null,
                 description: _descriptionController.text,
                 price: _priceController.text,

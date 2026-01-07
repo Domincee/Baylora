@@ -66,6 +66,7 @@ class RegisterFormController extends AuthFormController {
   }
 
   /// Returns a map of all registration field values
+  @override
   Map<String, String> getValues() {
     final base = super.getValues();
     base.addAll({

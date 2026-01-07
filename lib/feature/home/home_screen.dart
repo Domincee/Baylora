@@ -1,6 +1,4 @@
-import 'dart:io';
 
-import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +13,6 @@ import 'package:baylora_prjct/feature/home/widgets/category.dart';
 import 'package:baylora_prjct/feature/home/widgets/item_card.dart';
 import 'package:baylora_prjct/feature/home/widgets/search_bar.dart';
 
-import '../../core/util/network_utils.dart';
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 

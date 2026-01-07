@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
+import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 
 import '../../../core/constant/app_values.dart';
 
@@ -26,7 +27,7 @@ class TagsRow extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: [
-        _buildPill(context, "Category: $category", AppColors.greyLight, AppColors.textDarkGrey),
+        _buildPill(context, "${ItemDetailsStrings.categoryPrefix}$category", AppColors.greyLight, AppColors.textDarkGrey),
         _buildPill(context, condition, AppColors.greyLight, AppColors.textDarkGrey),
         _buildPill(context, _getTypeLabel(type), AppColors.tealLight, AppColors.tealText),
         if (remainingTime != null)
@@ -38,12 +39,12 @@ class TagsRow extends StatelessWidget {
   String _getTypeLabel(String type) {
     switch (type) {
       case 'trade':
-        return 'Trade Only';
+        return ItemDetailsStrings.tradeOnly;
       case 'mix':
-        return 'Mixed';
+        return ItemDetailsStrings.mixed;
       case 'cash':
       default:
-        return 'Cash Only';
+        return ItemDetailsStrings.cashOnly;
     }
   }
 

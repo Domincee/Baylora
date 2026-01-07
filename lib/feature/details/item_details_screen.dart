@@ -149,7 +149,7 @@ class ItemDetailsScreen extends ConsumerWidget {
     return CommonErrorWidget(
       error: error,
       onRetry: onRetry,
-      customErrorMessage: '${ItemDetailsStrings.failedToLoad} ${error.toString()}',
+      customErrorMessage: ItemDetailsStrings.getLoadingErrorMessage(error.toString()),
     );
   }
 
