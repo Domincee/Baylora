@@ -7,7 +7,6 @@ import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
 import 'package:baylora_prjct/feature/home/constant/home_strings.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
-import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -159,11 +158,11 @@ class PrimaryAppBar extends ConsumerWidget {
                           return [
                             const PopupMenuItem(
                               value: HomeStrings.menuMyItems,
-                              child: Text(ProfileStrings.myItems),
+                              child: Text(HomeStrings.myItems),
                             ),
                             const PopupMenuItem(
                               value: HomeStrings.menuSettings,
-                              child: Text(ProfileStrings.settings),
+                              child: Text(HomeStrings.settings),
                             ),
                             PopupMenuItem(
                               value: HomeStrings.menuLogout,

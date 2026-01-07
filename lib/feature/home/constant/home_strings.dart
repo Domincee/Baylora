@@ -73,6 +73,9 @@ class HomeStrings {
   static const String menuSettings = "settings";
   static const String menuLogout = "logout";
 
+  static const String myItems = "My Items";
+  static const String settings = "Settings";
+
   // Provider
   static const String statusActive = "active";
 }
