@@ -11,6 +11,7 @@ import 'package:baylora_prjct/feature/auth/controllers/auth_form_controller.dart
 import 'package:baylora_prjct/feature/auth/pages/login.dart';
 import 'package:baylora_prjct/feature/auth/services/auth_service.dart';
 import 'package:baylora_prjct/feature/auth/widget/register_form.dart';
+import 'package:baylora_prjct/feature/auth/widgets/auth_layout.dart';
 import 'package:baylora_prjct/main.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -146,54 +147,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
+    return AuthLayout(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(
-            Images.onBoardingBg1,
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+          const LogoName(
+            image: Images.logo,
+            fromColor: AppColors.royalBlue,
+            toColor: AppColors.logoGradientEnd,
           ),
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: AppValues.paddingScreen,
-                child: Container(
-                  padding: AppValues.paddingLarge,
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.95),
-                    borderRadius: AppValues.borderRadiusXL,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const LogoName(
-                        image: Images.logo,
-                        fromColor: AppColors.royalBlue,
-                        toColor: AppColors.logoGradientEnd,
-                      ),
-                      AppValues.gapL,
-                      RegisterForm(
-                        form: _form,
-                        isLoading: _isLoading,
-                        onRegister: _handleRegister,
-                        onLoginTap: _navigateToLogin,
-                        agreeToTerms: _agreeToTerms,
-                        onAgreeChanged: (val) {
-                          setState(() {
-                            _agreeToTerms = val;
-                            if (val) _showTermsError = false;
-                          });
-                        },
-                        onTermsTap: _showTermsDialog,
-                        showTermsError: _showTermsError,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          AppValues.gapL,
+          RegisterForm(
+            form: _form,
+            isLoading: _isLoading,
+            onRegister: _handleRegister,
+            onLoginTap: _navigateToLogin,
+            agreeToTerms: _agreeToTerms,
+            onAgreeChanged: (val) {
+              setState(() {
+                _agreeToTerms = val;
+                if (val) _showTermsError = false;
+              });
+            },
+            onTermsTap: _showTermsDialog,
+            showTermsError: _showTermsError,
           ),
         ],
       ),
