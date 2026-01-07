@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
+import 'package:baylora_prjct/feature/auth/services/auth_service.dart';
 import 'package:baylora_prjct/feature/post/constants/post_db_values.dart';
 import 'package:baylora_prjct/feature/post/constants/post_strings.dart';
 import 'package:baylora_prjct/feature/post/repository/listing_repository.dart';
@@ -13,17 +14,18 @@ import 'package:baylora_prjct/feature/post/widgets/listing_step_2.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_3.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class CreateListingScreen extends StatefulWidget {
+class CreateListingScreen extends ConsumerStatefulWidget {
   const CreateListingScreen({super.key});
 
   @override
-  State<CreateListingScreen> createState() => _CreateListingScreenState();
+  ConsumerState<CreateListingScreen> createState() => _CreateListingScreenState();
 }
 
-class _CreateListingScreenState extends State<CreateListingScreen> {
+class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
   // --- Dependencies ---
   final ListingRepository _repository = ListingRepository();
 
@@ -201,7 +203,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   }
 
   Future<void> _handlePublish() async {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = ref.read(userProvider);
     if (user == null) {
       _showSnackBar(PostStrings.msgUserNotLoggedIn);
       return;

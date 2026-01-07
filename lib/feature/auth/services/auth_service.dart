@@ -1,4 +1,13 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+final authProvider = Provider<AuthService>((ref) {
+  return AuthService(Supabase.instance.client);
+});
+
+final userProvider = Provider.autoDispose<User?>((ref) {
+  return Supabase.instance.client.auth.currentUser;
+});
 
 class AuthService {
   final SupabaseClient supabase;
@@ -22,4 +31,16 @@ class AuthService {
       },
     );
   }
+
+  Future<AuthResponse> login({
+    required String email,
+    required String password,
+  }) async {
+    return await supabase.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  User? get currentUser => supabase.auth.currentUser;
 }

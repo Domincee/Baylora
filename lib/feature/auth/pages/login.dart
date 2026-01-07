@@ -12,18 +12,20 @@ import 'package:baylora_prjct/core/widgets/logo_name.dart';
 import 'package:baylora_prjct/feature/auth/constant/auth_strings.dart';
 import 'package:baylora_prjct/feature/auth/controllers/auth_form_controller.dart';
 import 'package:baylora_prjct/feature/auth/pages/register.dart';
+import 'package:baylora_prjct/feature/auth/services/auth_service.dart';
 import 'package:baylora_prjct/feature/auth/widget/login_form.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _form = LoginFormController();
   bool _isLoading = false;
 
@@ -45,8 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final AuthResponse res = await Supabase.instance.client.auth
-          .signInWithPassword(
+      final AuthResponse res = await ref.read(authProvider).login(
         email: _form.emailCtrl.text.trim(),
         password: _form.passCtrl.text.trim(),
       );
