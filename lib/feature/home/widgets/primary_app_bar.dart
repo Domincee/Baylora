@@ -59,8 +59,8 @@ class PrimaryAppBar extends ConsumerWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  width: 44,
-                  height: 44,
+                  width: AppValues.size44,
+                  height: AppValues.size44,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
@@ -90,13 +90,13 @@ class PrimaryAppBar extends ConsumerWidget {
                     IconButton(
                       icon: const Icon(
                         Icons.notifications_outlined,
-                        size: 28,
+                        size: AppValues.icon28,
                         color: AppColors.black,
                       ),
                       onPressed: () {
                         // Handle notifications
                       },
-                      padding: const EdgeInsets.all(8),
+                      padding: AppValues.paddingS,
                       constraints: const BoxConstraints(),
                     ),
                     
@@ -108,10 +108,10 @@ class PrimaryAppBar extends ConsumerWidget {
                         // Show menu or navigate
                       },
                       child: PopupMenuButton<String>(
-                        offset: const Offset(0, 50),
+                        offset: const Offset(0, AppValues.spacing50),
                         child: ProfileAvatar(
                           imageUrl: avatarUrl ?? "",
-                          size: 32,
+                          size: AppValues.iconL,
                         ),
                         onSelected: (value) async {
                           if (value == HomeStrings.menuMyItems) {

@@ -489,7 +489,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         if (_isLoading)
           Positioned.fill(
             child: Container(
-              color: Colors.black.withValues(alpha: 0.5),
+              color: AppColors.black.withValues(alpha: 0.5),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

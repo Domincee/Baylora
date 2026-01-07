@@ -7,6 +7,10 @@ class AppValues {
   // SPACING - Padding & Margins (8px grid)
   // ============================================
   
+  /// 4px spacing
+  static const double spacing4 = 4.0;
+  static const double spacingXXS = 4.0;
+
   /// 5px spacing
   static const double spacing5 = 5.0;
 
@@ -34,6 +38,12 @@ class AppValues {
 
   /// XXL spacing - 40px
   static const double spacingXXL = 40.0;
+  
+  /// 50px spacing
+  static const double spacing50 = 50.0;
+
+  /// Custom sizing
+  static const double size44 = 44.0;
 
   // ============================================
   // EDGE INSETS - Common padding patterns
@@ -64,6 +74,9 @@ class AppValues {
   
   /// Large padding - 24px all sides
   static const EdgeInsets paddingLarge = EdgeInsets.all(spacingL);
+
+  /// Padding L - 24px all sides (Alias for paddingLarge)
+  static const EdgeInsets paddingL = paddingLarge;
 
   // ============================================
   // GAPS - Vertical spacing widgets
@@ -122,6 +135,9 @@ class AppValues {
   // BORDER RADIUS
   // ============================================
   
+  /// Extra small radius - 2px
+  static const double radiusXXS = 2.0;
+
   /// Small radius - 8px
   static const double radiusS = 8.0;
   
@@ -168,6 +184,9 @@ class AppValues {
   
   /// Extra large icon - 48px
   static const double iconXL = 48.0;
+
+  /// Custom icon size
+  static const double icon28 = 28.0;
 
   // ============================================
   // COMPONENT SIZES

@@ -85,20 +85,20 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: AppValues.paddingL,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               isNetworkError ? Icons.wifi_off : Icons.error_outline,
               color: AppColors.errorColor,
-              size: 48,
+              size: AppValues.iconXL,
             ),
             AppValues.gapM,
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textGrey),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textGrey),
             ),
             AppValues.gapM,
             ElevatedButton(
@@ -190,7 +190,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppValues.radiusXL)),
       ),
       builder: (context) {
         return _buildBottomSheetContent(
@@ -217,7 +217,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppValues.radiusXL)),
       ),
       builder: (context) {
         return _buildBottomSheetContent(
@@ -256,12 +256,12 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           // Handle
           Center(
             child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              width: 40,
-              height: 4,
+              margin: const EdgeInsets.symmetric(vertical: AppValues.spacingS),
+              width: AppValues.spacingXXL,
+              height: AppValues.spacingXXS,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                color: AppColors.grey300,
+                borderRadius: BorderRadius.circular(AppValues.radiusXXS),
               ),
             ),
           ),
@@ -275,7 +275,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
           Expanded(child: Container()),
           // Button
           Padding(
-            padding: const EdgeInsets.all(AppValues.spacingM),
+            padding: AppValues.paddingAll,
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -286,7 +286,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     borderRadius:
                         BorderRadius.circular(AppValues.radiusCircular),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
                 ),
                 child: Text(
                   buttonText,
