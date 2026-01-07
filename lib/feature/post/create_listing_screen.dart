@@ -5,8 +5,8 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
 import 'package:baylora_prjct/feature/post/constants/post_db_values.dart';
-import 'package:baylora_prjct/feature/post/constants/post_storage.dart';
 import 'package:baylora_prjct/feature/post/constants/post_strings.dart';
+import 'package:baylora_prjct/feature/post/repository/listing_repository.dart';
 import 'package:baylora_prjct/feature/post/screens/post_success_screen.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_app_bar.dart';
 import 'package:baylora_prjct/feature/post/widgets/listing_step_1.dart';
@@ -25,6 +25,9 @@ class CreateListingScreen extends StatefulWidget {
 }
 
 class _CreateListingScreenState extends State<CreateListingScreen> {
+  // --- Dependencies ---
+  final ListingRepository _repository = ListingRepository();
+
   // --- State Variables ---
   int _currentStep = 0;
   int _selectedType = -1;
@@ -146,39 +149,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   // ====== Data Handling ======
 
-  Future<List<String>> _uploadImages(List<File> images) async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) return [];
-
-    List<String> uploadedUrls = [];
-
-    for (var image in images) {
-      try {
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final name = image.path.split(Platform.pathSeparator).last;
-        final path = '${user.id}/${timestamp}_$name';
-
-        await Supabase.instance.client.storage
-            .from(PostStorage.bucketItemImages)
-            .upload(path, image);
-
-        final url = Supabase.instance.client.storage
-            .from(PostStorage.bucketItemImages)
-            .getPublicUrl(path);
-
-        uploadedUrls.add(url);
-      } catch (e) {
-        debugPrint("Error uploading image: $e");
-        if (mounted) {
-          final message = NetworkUtils.getErrorMessage(e,
-              prefix: PostStrings.msgImageUploadFailed);
-          _showSnackBar(message);
-        }
-      }
-    }
-    return uploadedUrls;
-  }
-
   String _getTypeDbValue() {
     switch (_selectedType) {
       case 0:
@@ -246,7 +216,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final imageUrls = await _uploadImages(_selectedImages);
+      final imageUrls = await _repository.uploadImages(_selectedImages, user.id);
 
       final insertData = {
         'owner_id': user.id,
@@ -262,13 +232,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'status': PostDbValues.statusActive,
       };
 
-      final response = await Supabase.instance.client
-          .from(PostStorage.tableItems)
-          .insert(insertData)
-          .select()
-          .single();
-
-      final newItemId = response['id'].toString();
+      final newItemId = await _repository.createListing(insertData);
 
       if (mounted) {
         Navigator.pushReplacement(
@@ -280,6 +244,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       }
     } catch (e) {
       if (mounted) {
+        // Try to distinguish upload errors vs generic errors if possible,
+        // or just use generic error handler.
+        // Assuming NetworkUtils is a helper that can format exceptions.
         final message = NetworkUtils.getErrorMessage(e,
             prefix: PostStrings.msgPublishError);
         _showSnackBar(message);
