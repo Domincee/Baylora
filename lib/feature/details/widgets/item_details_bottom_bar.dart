@@ -9,6 +9,7 @@ class ItemDetailsBottomBar extends StatelessWidget {
   final bool isMix;
   final bool hasBid;
   final VoidCallback onPlaceBid;
+  final VoidCallback? onOwnerTap; // 1. NEW: Callback for owner actions
 
   const ItemDetailsBottomBar({
     super.key,
@@ -17,7 +18,10 @@ class ItemDetailsBottomBar extends StatelessWidget {
     this.isMix = false,
     this.hasBid = false,
     required this.onPlaceBid,
+    this.onOwnerTap, // Optional: Pass this from parent when you are ready to implement nav
   });
+
+  bool get _isPendingOffer => hasBid && (isTrade || isMix);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +34,10 @@ class ItemDetailsBottomBar extends StatelessWidget {
           width: double.infinity,
           height: AppValues.buttonHeight,
           child: ElevatedButton(
-            onPressed: isOwner ? null : onPlaceBid,
+            // 2. UPDATED: Enable click for owner (executes onOwnerTap or empty function)
+            onPressed: isOwner
+                ? (onOwnerTap ?? () {})
+                : onPlaceBid,
             style: _buildButtonStyle(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -41,12 +48,8 @@ class ItemDetailsBottomBar extends StatelessWidget {
                     _getButtonText(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(
-                      color: AppColors.white,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: _isPendingOffer ? AppColors.royalBlue : AppColors.white,
                       fontWeight: FontWeight.bold,
                       height: 1.2,
                     ),
@@ -64,21 +67,19 @@ class ItemDetailsBottomBar extends StatelessWidget {
     if (isOwner) {
       return ItemDetailsStrings.yourItem;
     }
-    
     if (hasBid) {
       if (isTrade || isMix) {
-        return ItemDetailsStrings.editOffer;
+        return ItemDetailsStrings.pendingOffer;
       } else {
         return ItemDetailsStrings.editBid;
       }
     }
-
-    if (isMix) {
-      return ItemDetailsStrings.makeAnOffer;
-    } else if (isTrade) {
-      return ItemDetailsStrings.offerATrade;
-    } else {
-      return ItemDetailsStrings.placeBid;
+    else {
+      if (isTrade || isMix) {
+        return ItemDetailsStrings.makeAnOffer;
+      } else {
+        return ItemDetailsStrings.placeBid;
+      }
     }
   }
 
@@ -96,9 +97,26 @@ class ItemDetailsBottomBar extends StatelessWidget {
   }
 
   ButtonStyle _buildButtonStyle() {
+    // A. Pending Offer Style (Outline Blue)
+    if (_isPendingOffer) {
+      return ElevatedButton.styleFrom(
+        backgroundColor: AppColors.white,
+        foregroundColor: AppColors.royalBlue,
+        disabledBackgroundColor: AppColors.greyDisabled,
+        shadowColor: Colors.transparent,
+        side: const BorderSide(color: AppColors.royalBlue, width: 1.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppValues.radiusCircular),
+        ),
+        elevation: 0,
+      );
+    }
+
+    // B. Standard Style
     return ElevatedButton.styleFrom(
+      // 3. UPDATED: Use royalBlue for owner so it looks active/clickable
       backgroundColor: isOwner
-          ? AppColors.greyDisabled
+          ? AppColors.royalBlue
           : (isTrade ? AppColors.tradeIconColor : AppColors.royalBlue),
       disabledBackgroundColor: AppColors.greyDisabled,
       shape: RoundedRectangleBorder(
@@ -109,33 +127,40 @@ class ItemDetailsBottomBar extends StatelessWidget {
   }
 
   Widget _buildButtonIcon() {
-    if (isMix) {
-      return Row(
+    if (_isPendingOffer) {
+      return const Row(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.handshake_outlined, color: AppColors.white),
-          AppValues.gapHS,
-        ],
-      );
-    } else if (isTrade) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.swap_horiz, color: AppColors.white),
-          AppValues.gapHS,
-        ],
-      );
-    } else if (!isOwner) {
-      // Bid case
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(Icons.gavel_outlined, color: AppColors.white), // bid icon
+        children: [
+          Icon(Icons.hourglass_empty_rounded, color: AppColors.royalBlue),
           AppValues.gapHS,
         ],
       );
     }
 
-    return const SizedBox.shrink();
+    if (isMix) {
+      return const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.handshake_outlined, color: AppColors.white),
+          AppValues.gapHS,
+        ],
+      );
+    } else if (isTrade) {
+      return const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.swap_horiz, color: AppColors.white),
+          AppValues.gapHS,
+        ],
+      );
+    } else {
+      return const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.gavel_outlined, color: AppColors.white),
+          AppValues.gapHS,
+        ],
+      );
+    }
   }
 }

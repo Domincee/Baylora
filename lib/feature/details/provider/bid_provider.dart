@@ -1,8 +1,8 @@
-import 'dart:io';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/post/repository/listing_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BidState {
@@ -10,8 +10,8 @@ class BidState {
   final String tradeTitle;
   final String? tradeCategory;
   final String tradeCondition;
-  final List<File> tradeImages;
-  final List<String> existingImageUrls; // New field for pre-filled images
+  final List<XFile> tradeImages; // Changed from File to XFile
+  final List<String> existingImageUrls;
 
   const BidState({
     this.cashAmount = 0.0,
@@ -27,7 +27,7 @@ class BidState {
     String? tradeTitle,
     String? tradeCategory,
     String? tradeCondition,
-    List<File>? tradeImages,
+    List<XFile>? tradeImages,
     List<String>? existingImageUrls,
   }) {
     return BidState(
@@ -66,13 +66,13 @@ class BidNotifier extends StateNotifier<BidState> {
     state = state.copyWith(tradeCondition: condition);
   }
 
-  void addPhoto(File photo) {
+  void addPhoto(XFile photo) { // Changed from File to XFile
     if (state.tradeImages.length + state.existingImageUrls.length < 3) {
       state = state.copyWith(tradeImages: [...state.tradeImages, photo]);
     }
   }
 
-  void removePhoto(File photo) {
+  void removePhoto(XFile photo) { // Changed from File to XFile
     state = state.copyWith(
       tradeImages: state.tradeImages.where((img) => img != photo).toList(),
     );
@@ -206,8 +206,6 @@ class BidNotifier extends StateNotifier<BidState> {
             
             if (response.isEmpty) {
               debugPrint("Fallback update returned 0 rows.");
-              // Don't throw exception here to avoid breaking the flow if it's just a return value issue
-              // return false; 
             }
           } else {
             rethrow;

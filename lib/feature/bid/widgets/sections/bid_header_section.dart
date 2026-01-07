@@ -26,10 +26,10 @@ class BidHeaderSection extends StatelessWidget {
       if (isCash) {
         title = ItemDetailsStrings.placeYourBid;
       } else if (isTrade) {
-        title = "Place a Trade";
+        title = ItemDetailsStrings.placeATrade;
       } else {
         title = ItemDetailsStrings.placeYourOffer;
-        subtitle = "Offer cash, trade an item, or combine both";
+        subtitle = ItemDetailsStrings.offerCombine;
       }
     }
 
@@ -38,7 +38,7 @@ class BidHeaderSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),

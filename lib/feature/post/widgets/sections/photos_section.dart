@@ -1,14 +1,16 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 import '../../constants/post_strings.dart';
 
 class PhotosSection extends StatelessWidget {
-  final List<File> images;
+  final List<XFile> images; // Changed to XFile
   final VoidCallback onAddPhoto;
-  final ValueChanged<File>? onRemovePhoto;
+  final ValueChanged<XFile>? onRemovePhoto; // Changed to XFile
   final bool showError;
 
   const PhotosSection({
@@ -78,7 +80,7 @@ class PhotosSection extends StatelessWidget {
                   ),
                 ),
               ...images.map(
-                (file) => Padding(
+                (xFile) => Padding(
                   padding:  EdgeInsets.only(right: AppValues.spacingM),
                   child: Stack(
                     clipBehavior: Clip.none,
@@ -90,7 +92,9 @@ class PhotosSection extends StatelessWidget {
                           color: AppColors.greyLight,
                           borderRadius: AppValues.borderRadiusM,
                           image: DecorationImage(
-                            image: FileImage(file),
+                            image: kIsWeb 
+                                ? NetworkImage(xFile.path) 
+                                : FileImage(File(xFile.path)) as ImageProvider,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -99,7 +103,7 @@ class PhotosSection extends StatelessWidget {
                         top: 8,
                         right: 8,
                         child: GestureDetector(
-                          onTap: () => onRemovePhoto?.call(file),
+                          onTap: () => onRemovePhoto?.call(xFile),
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             decoration: const BoxDecoration(

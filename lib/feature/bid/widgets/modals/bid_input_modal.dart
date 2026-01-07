@@ -119,7 +119,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
               height: AppValues.spacingXXS,
               decoration: BoxDecoration(
                 color: AppColors.grey300,
-                borderRadius: BorderRadius.circular(AppValues.radiusXXS),
+                borderRadius: AppValues.borderRadiusCircular,
               ),
             ),
           ),
@@ -154,7 +154,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.royalBlue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppValues.radiusCircular),
+                    borderRadius: AppValues.borderRadiusCircular,
                   ),
                   padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
                 ),
@@ -213,17 +213,17 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
   Future<void> _handleAction(BuildContext context, BidState state) async {
     if (_isCash || _isMix) {
       if (state.cashAmount <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter a valid amount")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ItemDetailsStrings.enterValidAmount)));
         return;
       }
     }
     if (_isTrade || _isMix) {
       if (state.tradeTitle.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter item title")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ItemDetailsStrings.enterTitle)));
         return;
       }
       if (state.tradeCategory == null) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please select a category")));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ItemDetailsStrings.enterCategory)));
         return;
       }
     }
@@ -231,12 +231,12 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text("Confirm Offer?"),
-        content: const Text("Are you sure you want to submit this offer?"),
+        title: const Text(ItemDetailsStrings.confirmOffer),
+        content: const Text(ItemDetailsStrings.areYouSure),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text("Cancel"),
+            child: const Text(ItemDetailsStrings.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -245,7 +245,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
               try {
                 final user = Supabase.instance.client.auth.currentUser;
                 if (user == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please login to submit an offer")));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ItemDetailsStrings.pleaseLogin)));
                   return;
                 }
 
@@ -260,16 +260,16 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
                 if (success && context.mounted) {
                   Navigator.pop(context, true);
                 } else if (!success && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to submit offer")));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ItemDetailsStrings.failedSubmitOffer)));
                 }
               } catch (e) {
-                debugPrint("Error submitting offer: $e");
+                debugPrint("${ItemDetailsStrings.errorSubmit} $e");
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
                 }
               }
             },
-            child: const Text("Yes, Submit"),
+            child: const Text(ItemDetailsStrings.yesSubmit),
           ),
         ],
       ),

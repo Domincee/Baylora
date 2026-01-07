@@ -3,6 +3,7 @@ import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:flutter/material.dart';
 
+
 class BidCashSection extends StatelessWidget {
   final double currentHighest;
   final double minimumBid;
@@ -27,12 +28,12 @@ class BidCashSection extends StatelessWidget {
         Row(
           children: [
             Text(
-              "Current Highest: ${ItemDetailsStrings.currencySymbol}${currentHighest.toStringAsFixed(0)}",
+              "${ItemDetailsStrings.currentHighest}: ${ItemDetailsStrings.currencySymbol}${currentHighest.toStringAsFixed(0)}",
               style: const TextStyle(color: AppColors.textGrey, fontSize: 12),
             ),
             AppValues.gapHM,
             Text(
-              "Minimum Bid: ${ItemDetailsStrings.currencySymbol}${minimumBid.toStringAsFixed(0)}",
+              "${ItemDetailsStrings.miniMumBid}:  ${ItemDetailsStrings.currencySymbol}${minimumBid.toStringAsFixed(0)}",
               style: const TextStyle(color: AppColors.errorColor, fontSize: 12),
             ),
           ],
@@ -43,9 +44,10 @@ class BidCashSection extends StatelessWidget {
           keyboardType: TextInputType.number,
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           decoration: const InputDecoration(
+
             prefixText: ItemDetailsStrings.currencySymbol,
             border: InputBorder.none,
-            hintText: "0",
+            hintText: ItemDetailsStrings.hint0,
           ),
           onChanged: (value) {
             final val = double.tryParse(value) ?? 0.0;
@@ -53,6 +55,7 @@ class BidCashSection extends StatelessWidget {
           },
           controller: controller,
         ),
+        AppValues.gapM,
 
         Row(
           children: [100, 500, 1000].map((amount) {

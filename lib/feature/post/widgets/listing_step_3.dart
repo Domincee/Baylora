@@ -1,12 +1,14 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../constants/post_strings.dart';
 
 class ListingStep3 extends StatelessWidget {
-  final List<File> images;
+  final List<XFile> images; // Changed to XFile
   final String title;
   final String category;
   final String condition;
@@ -163,7 +165,9 @@ class ListingStep3 extends StatelessWidget {
                     borderRadius: AppValues.borderRadiusM,
                     border: Border.all(color: AppColors.greyMedium),
                     image: DecorationImage(
-                      image: FileImage(images[index]),
+                      image: kIsWeb 
+                          ? NetworkImage(images[index].path) 
+                          : FileImage(File(images[index].path)) as ImageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),

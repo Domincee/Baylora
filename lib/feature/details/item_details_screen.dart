@@ -8,6 +8,7 @@ import 'package:baylora_prjct/feature/details/widgets/item_details_app_bar.dart'
 import 'package:baylora_prjct/feature/details/widgets/item_details_body.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_bottom_bar.dart';
 import 'package:baylora_prjct/feature/details/widgets/offer_status_modal.dart';
+import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,25 +24,25 @@ class ItemDetailsScreen extends ConsumerWidget {
       double currentHighest,
       double minimumBid,
       double? existingBidAmount,
-      bool hasOffered, // <--- CHANGE 1: Added hasOffered parameter
+      bool hasOffered,
       ) async {
     final isTradeOrMix = type == ItemDetailsStrings.typeTrade || type == ItemDetailsStrings.typeMix;
 
-    // --- CHANGE 2: Logic to block Input Modal for Trade/Mix if offer exists ---
     if (hasOffered && isTradeOrMix) {
-      await _showOfferStatusModal(context);
+      // FIX: Added 'ref' here
+      await _showOfferStatusModal(context, ref);
       return;
     }
-    // --------------------------------------------------------------------------
 
-    // Step 1: Input Modal (Only runs if Cash, or if New Offer)
     final bool? success = await _showInputModal(context, type, currentHighest, minimumBid, existingBidAmount);
 
     // Step 2: Success Modal
     if (success == true && context.mounted) {
       ref.invalidate(itemDetailsProvider(itemId));
       ref.invalidate(userOfferProvider(itemId));
-      await _showOfferStatusModal(context);
+      ref.invalidate(myBidsProvider);
+      // FIX: 'ref' was already correct here
+      await _showOfferStatusModal(context, ref);
     }
   }
 
@@ -68,14 +69,30 @@ class ItemDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _showOfferStatusModal(BuildContext context) {
+  Future<void> _showOfferStatusModal(BuildContext context, WidgetRef ref) async {
+    // 1. Get current data from providers
+    final itemState = ref.read(itemDetailsProvider(itemId));
+    final offerState = ref.read(userOfferProvider(itemId));
+
+    // 2. Extract Data (Safe Unwrap)
+    final listingItem = itemState.valueOrNull;
+    final myOffer = offerState.valueOrNull;
+
+    if (listingItem == null || myOffer == null) return;
+
+    // 3. Show Modal with Data
     return showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const OfferStatusModal(),
+      builder: (context) => OfferStatusModal(
+        listingItem: listingItem,
+        myOffer: myOffer,
+      ),
     );
   }
 
+  // Added back to ensure compilation
   Widget _buildErrorState(Object? error, VoidCallback onRetry) {
     return CommonErrorWidget(
       error: error,
@@ -90,7 +107,6 @@ class ItemDetailsScreen extends ConsumerWidget {
       Map<String, dynamic> item,
       Map<String, dynamic>? userOffer,
       ) {
-    // 1. Data Processing via Controller
     final seller = item[ItemDetailsStrings.fieldProfiles] ?? {};
     final rawOffers = item[ItemDetailsStrings.fieldOffers] ?? [];
 
@@ -108,8 +124,14 @@ class ItemDetailsScreen extends ConsumerWidget {
     final endTime = ItemDetailsController.parseEndTime(item['end_time']);
     final createdAtStr = item['created_at'];
 
-    final double currentHighest = (displayPrice is num) ? displayPrice.toDouble() : 0.0;
-    final double minimumBid = currentHighest;
+    final bool hasBids = offers.isNotEmpty;
+    final double startingPrice = (item['price'] as num?)?.toDouble() ?? 0.0;
+
+    // Logic: If there are bids, the highest is the first one (since we sorted).
+    // If no bids, current highest is 0 (or you could set it to startingPrice if you prefer).
+    final double highestBidAmount = hasBids ? ((offers.first['cash_offer'] ?? 0) as num).toDouble() : 0.0;
+
+    final double minimumBid = startingPrice;
 
     final bool hasOffered = userOffer != null;
     final double? existingBidAmount = hasOffered && userOffer['cash_offer'] != null
@@ -152,12 +174,11 @@ class ItemDetailsScreen extends ConsumerWidget {
             isTrade: type == ItemDetailsStrings.typeTrade,
             isMix: type == ItemDetailsStrings.typeMix,
             hasBid: hasOffered,
-            // --- CHANGE 3: Pass 'hasOffered' to the function ---
             onPlaceBid: () => _handlePlaceBid(
                 context,
                 ref,
                 type,
-                currentHighest,
+                highestBidAmount,
                 minimumBid,
                 existingBidAmount,
                 hasOffered

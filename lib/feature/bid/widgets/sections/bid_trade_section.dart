@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/constant/listing_constants.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/provider/bid_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -46,8 +48,8 @@ class BidTradeSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("Photos", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text("$totalImages/3", style: const TextStyle(color: AppColors.textGrey)),
+            const Text(ItemDetailsStrings.photos, style: TextStyle(fontWeight: FontWeight.bold)),
+            Text("$totalImages${ItemDetailsStrings.over3}", style: const TextStyle(color: AppColors.textGrey)),
           ],
         ),
         AppValues.gapS,
@@ -60,7 +62,7 @@ class BidTradeSection extends StatelessWidget {
                   onTap: () async {
                     final XFile? photo = await picker.pickImage(source: ImageSource.camera);
                     if (photo != null) {
-                      notifier.addPhoto(File(photo.path));
+                      notifier.addPhoto(photo);
                     }
                   },
                   child: Container(
@@ -76,7 +78,7 @@ class BidTradeSection extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.camera_alt, color: AppColors.royalBlue),
-                        Text("Add photos", style: TextStyle(fontSize: 10, color: AppColors.textGrey)),
+                        Text(ItemDetailsStrings.addPhotos, style: TextStyle(fontSize: 10, color: AppColors.textGrey)),
                       ],
                     ),
                   ),
@@ -116,7 +118,7 @@ class BidTradeSection extends StatelessWidget {
                 );
               }),
 
-              ...state.tradeImages.map((file) {
+              ...state.tradeImages.map((xFile) {
                 return Stack(
                   children: [
                     Container(
@@ -126,7 +128,9 @@ class BidTradeSection extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppValues.radiusM),
                         image: DecorationImage(
-                          image: FileImage(file),
+                          image: kIsWeb 
+                              ? NetworkImage(xFile.path) 
+                              : FileImage(File(xFile.path)) as ImageProvider,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -135,7 +139,7 @@ class BidTradeSection extends StatelessWidget {
                       top: 4,
                       right: 12,
                       child: GestureDetector(
-                        onTap: () => notifier.removePhoto(file),
+                        onTap: () => notifier.removePhoto(xFile),
                         child: Container(
                           padding: const EdgeInsets.all(2),
                           decoration: const BoxDecoration(
@@ -160,7 +164,7 @@ class BidTradeSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Item title", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text(ItemDetailsStrings.itemTitle, style: TextStyle(fontWeight: FontWeight.bold)),
         AppValues.gapS,
         TextField(
           decoration: InputDecoration(
@@ -170,14 +174,14 @@ class BidTradeSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppValues.radiusM),
               borderSide: BorderSide.none,
             ),
-            hintText: "e.g. Nike Air Max",
+            hintText: ItemDetailsStrings.hintTextTitle,
           ),
           onChanged: notifier.setTradeTitle,
           controller: titleController,
         ),
         AppValues.gapM,
 
-        const Text("Category", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text(ItemDetailsStrings.categoryPrefix, style: TextStyle(fontWeight: FontWeight.bold)),
         AppValues.gapS,
         DropdownButtonFormField<String>(
           value: state.tradeCategory,
@@ -188,7 +192,7 @@ class BidTradeSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppValues.radiusM),
               borderSide: BorderSide.none,
             ),
-            hintText: "Select Category",
+            hintText: ItemDetailsStrings.hintTextCategory,
           ),
           items: ListingConstants.categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
           onChanged: (val) {
@@ -197,10 +201,14 @@ class BidTradeSection extends StatelessWidget {
         ),
         AppValues.gapM,
 
-        const Text("Condition", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text(ItemDetailsStrings.condition, style: TextStyle(fontWeight: FontWeight.bold)),
         AppValues.gapS,
         Row(
-          children: ['New', 'Used', 'Broken'].map((cond) {
+          children: [ItemDetailsStrings.labelNew,
+                     ItemDetailsStrings.labelFair,
+                      ItemDetailsStrings.labelUsed,
+                      ItemDetailsStrings.labelBroken,
+          ].map((cond) {
             final isSelected = state.tradeCondition == cond;
             return Padding(
               padding: const EdgeInsets.only(right: AppValues.spacingS),
