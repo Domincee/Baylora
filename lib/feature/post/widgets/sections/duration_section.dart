@@ -51,7 +51,7 @@ class DurationSection extends StatelessWidget {
             ),
           ],
         ),
-       AppValues.gap12,
+       AppValues.gapS,
 
         Container(
           height: AppValues.spacingXXL,
@@ -60,7 +60,7 @@ class DurationSection extends StatelessWidget {
             borderRadius: AppValues.borderRadiusCircular,
           ),
 
-          padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingS, vertical: AppValues.spacing5),
+          padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingS, vertical: AppValues.spacingXXS),
           child: isDurationEnabled
               ? Row(
                   children: [
@@ -69,7 +69,7 @@ class DurationSection extends StatelessWidget {
                     Expanded(
 
                       child: Container(
-                        height: AppValues.spacing36,
+                        height: AppValues.spacingXL,
 
                         decoration: BoxDecoration(
                           color: AppColors.white,
@@ -114,9 +114,9 @@ class DurationSection extends StatelessWidget {
               : Center(
                   child: Container(
 
-                    height: AppValues.spacing36,
+                    height: AppValues.spacingXL,
                     width: double.infinity,
-                    margin: AppValues.paddingH20,
+                    margin: AppValues.paddingHL,
                     decoration: BoxDecoration(
 
                       color: AppColors.white,

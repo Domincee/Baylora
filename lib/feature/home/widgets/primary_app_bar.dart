@@ -57,8 +57,8 @@ class PrimaryAppBar extends ConsumerWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  width: AppValues.size44,
-                  height: AppValues.size44,
+                  width: AppValues.spacingXXL,
+                  height: AppValues.spacingXXL,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
@@ -88,7 +88,7 @@ class PrimaryAppBar extends ConsumerWidget {
                     IconButton(
                       icon: const Icon(
                         Icons.notifications_outlined,
-                        size: AppValues.icon28,
+                        size: AppValues.iconM,
                         color: AppColors.black,
                       ),
                       onPressed: () {
@@ -106,7 +106,7 @@ class PrimaryAppBar extends ConsumerWidget {
                         // Show menu or navigate
                       },
                       child: PopupMenuButton<String>(
-                        offset: const Offset(0, AppValues.spacing50),
+                        offset: const Offset(0, AppValues.spacingXXXL),
                         child: ProfileAvatar(
                           imageUrl: avatarUrl ?? "",
                           size: AppValues.iconL,

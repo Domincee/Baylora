@@ -204,7 +204,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             Align(
                               alignment: Alignment.bottomCenter,
                               child: Padding(
-                                padding: const EdgeInsets.only(bottom: AppValues.spacing10),
+                                padding: const EdgeInsets.only(bottom: AppValues.spacingXS),
                                 child: Text(
                                   AuthStrings.copyRightText,
                                   style: Theme.of(context).textTheme.labelSmall?.copyWith(

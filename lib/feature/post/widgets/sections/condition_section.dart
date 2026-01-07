@@ -33,7 +33,7 @@ class ConditionSection extends StatelessWidget {
                 onTap: () => onConditionChanged(0),
               ),
             ),
-            AppValues.gapH8,
+            AppValues.gapHXS,
             Expanded(
               child: _AnimatedConditionChip(
                 label: "Used",
@@ -41,7 +41,7 @@ class ConditionSection extends StatelessWidget {
                 onTap: () => onConditionChanged(1),
               ),
             ),
-            AppValues.gapH8,
+            AppValues.gapHXS,
             Expanded(
               child: _AnimatedConditionChip(
                 label: "Fair",
@@ -49,7 +49,7 @@ class ConditionSection extends StatelessWidget {
                 onTap: () => onConditionChanged(3),
               ),
             ),
-            AppValues.gapH8,
+            AppValues.gapHXS,
             Expanded(
               child: _AnimatedConditionChip(
                 label: "Broken",
@@ -103,7 +103,7 @@ class _AnimatedConditionChipState extends State<_AnimatedConditionChip> {
           // 5. Color Animation (Smooth fade)
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
-          height: AppValues.spacing36,
+          height: AppValues.spacingXL,
           decoration: BoxDecoration(
             color: widget.isSelected ? AppColors.royalBlue : AppColors.greyLight,
             borderRadius: AppValues.borderRadiusL,

@@ -38,7 +38,7 @@ class PricingSection extends StatelessWidget {
 
           Container(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppValues.spacingM, vertical: AppValues.spacing5),
+                horizontal: AppValues.spacingM, vertical: AppValues.spacingXXS),
             decoration: BoxDecoration(
               color: AppColors.primaryColor,
               borderRadius: AppValues.borderRadiusM,
@@ -91,7 +91,7 @@ class PricingSection extends StatelessWidget {
                         onChanged?.call(newValue);
                       },
                     ),
-                    AppValues.gapH8,
+                    AppValues.gapHXS,
                     // REPLACED helper method with the new animated widget
                     _BouncingStepperButton(
                       icon: Icons.add,
@@ -164,8 +164,8 @@ class _BouncingStepperButtonState extends State<_BouncingStepperButton> {
         duration: const Duration(milliseconds: 100), // Fast snappy animation
         curve: Curves.easeInOut,
         child: Container(
-          width: AppValues.container25.width,
-          height: AppValues.container25.height,
+          width: AppValues.containerSizeS.width,
+          height: AppValues.containerSizeS.height,
           decoration: BoxDecoration(
             color: AppColors.grey300,
             borderRadius: BorderRadius.circular(4),

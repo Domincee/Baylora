@@ -149,15 +149,15 @@ class ListingStep3 extends StatelessWidget {
   //image box widget
   SizedBox _imageBox() {
     return SizedBox(
-            height: AppValues.imageContainer.height,
+            height: AppValues.containerSizeImage.height,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: images.length,
               separatorBuilder: (context, index) => AppValues.gapM,
               itemBuilder: (context, index) {
                 return Container(
-                  width: AppValues.imageContainer.width,
-                  height: AppValues.imageContainer.height,
+                  width: AppValues.containerSizeImage.width,
+                  height: AppValues.containerSizeImage.height,
                   decoration: BoxDecoration(
                     color: AppColors.greyLight,
                     borderRadius: AppValues.borderRadiusM,
@@ -359,7 +359,7 @@ class _DescriptionBox extends StatelessWidget {
         color: AppColors.greyLight,
         borderRadius: AppValues.borderRadiusM,
       ),
-      constraints:  BoxConstraints(minHeight: AppValues.boxMinConstraint100H.minHeight),
+      constraints:  BoxConstraints(minHeight: AppValues.constraintsMinHeight.minHeight),
       child: Text(
             description,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(

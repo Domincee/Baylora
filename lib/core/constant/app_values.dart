@@ -8,42 +8,28 @@ class AppValues {
   // ============================================
   
   /// 4px spacing
-  static const double spacing4 = 4.0;
   static const double spacingXXS = 4.0;
 
-  /// 5px spacing
-  static const double spacing5 = 5.0;
-
-  /// Extra small spacing - 8px
+  /// 8px spacing
   static const double spacingXS = 8.0;
   
-  /// 10px spacing - (Custom)
-  static const double spacing10 = 10.0;
-  
-  /// Small spacing - 12px
+  /// 12px spacing
   static const double spacingS = 12.0;
   
-  /// Medium spacing - 16px
+  /// 16px spacing
   static const double spacingM = 16.0;
   
-  /// 20px spacing - (Custom)
-  static const double spacing20 = 20.0;
-  
-  /// Large spacing - 24px
+  /// 24px spacing
   static const double spacingL = 24.0;
   
-  /// Extra large spacing - 32px
+  /// 32px spacing
   static const double spacingXL = 32.0;
-  static const double spacing36 = 36.0;
 
-  /// XXL spacing - 40px
+  /// 40px spacing
   static const double spacingXXL = 40.0;
   
-  /// 50px spacing
-  static const double spacing50 = 50.0;
-
-  /// Custom sizing
-  static const double size44 = 44.0;
+  /// 48px spacing
+  static const double spacingXXXL = 48.0;
 
   // ============================================
   // EDGE INSETS - Common padding patterns
@@ -51,7 +37,9 @@ class AppValues {
   
   /// Horizontal padding - 16px left/right
   static const EdgeInsets paddingH = EdgeInsets.symmetric(horizontal: spacingM);
-  static const EdgeInsets paddingH20 = EdgeInsets.symmetric(horizontal: spacing20);
+  
+  /// Horizontal padding - 24px left/right
+  static const EdgeInsets paddingHL = EdgeInsets.symmetric(horizontal: spacingL);
 
   /// Vertical padding - 16px top/bottom
   /// All sides - 16px
@@ -60,9 +48,9 @@ class AppValues {
   /// All sides - 12px
   static const EdgeInsets paddingS = EdgeInsets.all(spacingS);
 
-  /// Screen padding - 20px horizontal, 16px vertical
+  /// Screen padding - 24px horizontal, 16px vertical
   static const EdgeInsets paddingScreen = EdgeInsets.symmetric(
-    horizontal: 20.0,
+    horizontal: spacingL,
     vertical: spacingM,
   );
   
@@ -83,41 +71,35 @@ class AppValues {
   // ============================================
   
   /// 4px gap
-  static const Widget gapXXS = SizedBox(height: 4.0);
+  static const Widget gapXXS = SizedBox(height: spacingXXS);
   
   /// 8px gap
   static const Widget gapXS = SizedBox(height: spacingXS);
   
-  /// 10px gap
-  static const Widget gap10 = SizedBox(height: spacing10);
-  static const Widget gap12 = SizedBox(height: spacingS);
-
   /// 12px gap
   static const Widget gapS = SizedBox(height: spacingS);
   
   /// 16px gap
   static const Widget gapM = SizedBox(height: spacingM);
   
-  /// 20px gap
-  static const Widget gap20 = SizedBox(height: spacing20);
-  
   /// 24px gap
   static const Widget gapL = SizedBox(height: spacingL);
   
   /// 32px gap
   static const Widget gapXL = SizedBox(height: spacingXL);
-  static const Widget gap36 = SizedBox(height: spacing36);
 
   /// 40px gap
   static const Widget gapXXL = SizedBox(height: spacingXXL);
+
+  /// 48px gap
+  static const Widget gapXXXL = SizedBox(height: spacingXXXL);
 
   // ============================================
   // HORIZONTAL GAPS
   // ============================================
   
   /// 4px horizontal gap
-  static const Widget gapHXXS = SizedBox(width: 4.0);
-  static const Widget gapH8 = SizedBox(width: spacingXS);
+  static const Widget gapHXXS = SizedBox(width: spacingXXS);
 
   /// 8px horizontal gap
   static const Widget gapHXS = SizedBox(width: spacingXS);
@@ -146,7 +128,6 @@ class AppValues {
   
   /// Large radius - 16px
   static const double radiusL = 16.0;
-
 
   /// Extra large radius - 20px
   static const double radiusXL = 20.0;
@@ -184,9 +165,6 @@ class AppValues {
   
   /// Extra large icon - 48px
   static const double iconXL = 48.0;
-
-  /// Custom icon size
-  static const double icon28 = 28.0;
 
   // ============================================
   // COMPONENT SIZES
@@ -255,14 +233,23 @@ class AppValues {
   /// High elevation
   static const double elevationHigh = 8.0;
 
-  ///==container
- ///image container
-  static const Size imageContainer = Size(150, 150) ;
-  static const Size container25 = Size(25, 25) ;
-  static const Size size300 = Size(300, 300) ;
+  // ============================================
+  // CONTAINER SIZES
+  // ============================================
+  
+  /// Image container size
+  static const Size containerSizeImage = Size(150, 150);
+  
+  /// Small container size - 24px
+  static const Size containerSizeS = Size(24, 24);
+  
+  /// Extra Large container size - 300px
+  static const Size containerSizeXL = Size(300, 300);
 
-
-  //constraint
-  static const BoxConstraints boxMinConstraint100H = BoxConstraints(minHeight: 100) ;
+  // ============================================
+  // CONSTRAINTS
+  // ============================================
+  
+  static const BoxConstraints constraintsMinHeight = BoxConstraints(minHeight: 100);
 
 }

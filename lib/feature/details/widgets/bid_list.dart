@@ -23,7 +23,7 @@ class BidList extends StatelessWidget {
     if (offers.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppValues.spacing20),
+          padding: const EdgeInsets.symmetric(vertical: AppValues.spacingL),
           child: Column(
             children: [
               Icon(Icons.local_offer_outlined, size: AppValues.spacingXXL, color: AppColors.grey300),
@@ -58,7 +58,7 @@ class BidList extends StatelessWidget {
 
         return Row(
           children: [
-            ProfileAvatar(imageUrl: bidder['avatar_url'] ?? '', size: AppValues.spacing36),
+            ProfileAvatar(imageUrl: bidder['avatar_url'] ?? '', size: AppValues.spacingXL),
             AppValues.gapHS,
             Expanded(
               child: Column(

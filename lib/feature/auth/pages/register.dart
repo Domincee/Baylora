@@ -173,7 +173,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         fromColor: AppColors.royalBlue,
                         toColor: AppColors.logoGradientEnd,
                       ),
-                      AppValues.gap20,
+                      AppValues.gapL,
                       RegisterForm(
                         form: _form,
                         isLoading: _isLoading,

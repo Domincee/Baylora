@@ -81,7 +81,7 @@ class _SplashPageState extends State<SplashPage> {
           children: [
             SvgPicture.asset(
               Images.logoLight,
-              width: AppValues.imageContainer.width, // standardized logo width
+              width: AppValues.containerSizeImage.width, // standardized logo width
             ),
             AppValues.gapM,
             SizedBox(

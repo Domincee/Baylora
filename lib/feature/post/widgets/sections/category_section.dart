@@ -31,12 +31,12 @@ class CategorySection extends StatelessWidget {
           ),
         ),
 
-        AppValues.gap12,
+        AppValues.gapS,
 
         Container(
           height: AppValues.spacingXXL,
 
-          padding: AppValues.paddingH20,
+          padding: AppValues.paddingHL,
 
           decoration: BoxDecoration(
             color: AppColors.greyLight,

@@ -52,8 +52,8 @@ class PhotosSection extends StatelessWidget {
                   child: GestureDetector(
                     onTap: onAddPhoto,
                     child: Container(
-                      height:AppValues.imageContainer.height,
-                      width: AppValues.imageContainer.width
+                      height:AppValues.containerSizeImage.height,
+                      width: AppValues.containerSizeImage.width
                       ,
                       decoration: BoxDecoration(
                         color: AppColors.greyLight,
@@ -84,8 +84,8 @@ class PhotosSection extends StatelessWidget {
                     clipBehavior: Clip.none,
                     children: [
                       Container(
-                              height:AppValues.imageContainer.height,
-                              width: AppValues.imageContainer.width,
+                              height:AppValues.containerSizeImage.height,
+                              width: AppValues.containerSizeImage.width,
                         decoration: BoxDecoration(
                           color: AppColors.greyLight,
                           borderRadius: AppValues.borderRadiusM,
