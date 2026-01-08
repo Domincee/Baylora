@@ -39,7 +39,7 @@ class AuthLayout extends StatelessWidget {
                     ),
                     child: Card(
                       color: AppColors.white.withValues(alpha: 0.95),
-                      shape: const RoundedRectangleBorder(
+                      shape:  RoundedRectangleBorder(
                         borderRadius: AppValues.borderRadiusXL,
                       ),
                       elevation: 8,
