@@ -59,10 +59,7 @@ class _TradeSectionState extends State<TradeSection> {
           // 1. Title
           Text(
             PostStrings.lookingFor,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColors.black,
-            ),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
           AppValues.gapS,
 
@@ -98,6 +95,9 @@ class _TradeSectionState extends State<TradeSection> {
                       child: TextField(
                         controller: _controller,
                         focusNode: _focusNode,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                         cursorColor: AppColors.royalBlue,
                         decoration: const InputDecoration(
                           isDense: true,
@@ -109,10 +109,6 @@ class _TradeSectionState extends State<TradeSection> {
                           filled: true,
                           fillColor: Colors.transparent,
                           hintText: "",
-                        ),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.royalBlue,
-                          fontWeight: FontWeight.w600,
                         ),
                         onSubmitted: _handleSubmitted,
                         textInputAction: TextInputAction.done,

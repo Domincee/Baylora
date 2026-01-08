@@ -34,9 +34,12 @@ class BasicInfoSection extends StatelessWidget {
               controller: titleController,
               maxLength: 25,
               onChanged: onChanged,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
               decoration: InputDecoration(
                 hintText:  PostStrings.yourSelling,
-                hintStyle: const TextStyle(color: AppColors.textGrey),
+                hintStyle: const TextStyle(color: AppColors.textGrey,),
                 counterText: "",
                 suffixText: "${value.text.length}/25",
                 suffixStyle: const TextStyle(color: AppColors.textGrey),

@@ -71,7 +71,7 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 Text(
                   bio.isEmpty ? "No bio yet" : bio,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textGrey,
                   ),
                 ),

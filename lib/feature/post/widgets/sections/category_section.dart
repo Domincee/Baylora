@@ -27,7 +27,7 @@ class CategorySection extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             PostStrings.category,
-            style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
 

@@ -26,7 +26,7 @@ class ManageListingScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        title: const Text("Manage Listing", style: TextStyle(fontWeight: FontWeight.bold)),
+        title:  Text("Manage Listing", style: Theme.of(context).textTheme.titleSmall),
         backgroundColor: AppColors.white,
         elevation: 0,
         foregroundColor: AppColors.black,
@@ -35,7 +35,7 @@ class ManageListingScreen extends ConsumerWidget {
       floatingActionButton: itemAsync.when(
         data: (item) => _buildFab(context, item),
         loading: () => null,
-        error: (_, __) => null,
+        error: (_, _) => null,
       ),
       body: itemAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -73,9 +73,9 @@ class ManageListingScreen extends ConsumerWidget {
               ),
             );
           },
-          label: const Text("Open Deal Chat"),
-          icon: const Icon(Icons.chat_bubble),
-          backgroundColor: AppColors.royalBlue,
+          label: const Text("Open Deal Chat", style: TextStyle(color: AppColors.highLightTextColor),),
+          icon: const Icon(Icons.chat_bubble, color: AppColors.highLightTextColor,),
+          backgroundColor: AppColors.lavenderBlue,
         );
       }
     }

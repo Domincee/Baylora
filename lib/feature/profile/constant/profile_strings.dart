@@ -71,6 +71,8 @@ class ProfileStrings {
   static const String statusExpired = 'Expired';
   static const String statusExpiredSmall = 'expired';
   static const String statusEndsIn = 'Ends in';
+  static const String filterAccepted =  "Accepted";
+  static const String filterSold =  "Sold";
 
   // Item Types
   static const String typeCash = 'cash';
@@ -107,4 +109,9 @@ class ProfileStrings {
   
   // Separators
   static const String separatorComma = ',';
+
+
+
+
+
 }

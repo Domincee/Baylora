@@ -12,14 +12,8 @@ class PostSuccessScreen extends ConsumerWidget {
   const PostSuccessScreen({super.key, required this.newItemId});
 
   void _refreshAllData(WidgetRef ref) {
-    // Invalidate home feed with a common default filter.
-    // Using ProfileStrings.filterAll which is likely 'All'.
-    ref.invalidate(homeItemsProvider(ProfileStrings.filterAll));
-    
-    // You might want to invalidate other common filters if your home screen uses them.
-    // e.g., ref.invalidate(homeItemsProvider('For Sale'));
 
-    // Force refresh of User's Listings in their profile
+    ref.invalidate(homeItemsProvider(ProfileStrings.filterAll));
     ref.invalidate(myListingsProvider);
     // Force refresh of User Profile stats
     ref.invalidate(userProfileProvider);

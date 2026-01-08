@@ -107,7 +107,7 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
               if (item == null) return const SizedBox.shrink();
 
               return Container(
-                color: AppColors.greyLight.withOpacity(0.3),
+                color: AppColors.greyLight.withValues(alpha: 0.3),
                 padding: const EdgeInsets.all(AppValues.spacingS),
                 child: ListingSummaryCard(
                   item: item,
@@ -116,7 +116,7 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
               );
             },
             loading: () => const LinearProgressIndicator(minHeight: 2, color: AppColors.royalBlue),
-            error: (_, __) => const SizedBox.shrink(), // Hide header on error to keep chat usable
+            error: (_, _) => const SizedBox.shrink(), // Hide header on error to keep chat usable
           ),
 
           // 3. Chat Area

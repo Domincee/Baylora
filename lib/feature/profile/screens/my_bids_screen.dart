@@ -2,7 +2,6 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
-import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/item_details_screen.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
@@ -19,11 +18,13 @@ class MyBidsScreen extends ConsumerStatefulWidget {
 
 class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
   String _selectedFilter = ProfileStrings.filterAll;
-  
+
   final List<String> _filters = [
-    ProfileStrings.filterAll, 
-    ProfileStrings.filterForSale, // Represents items I bid cash on
-    ProfileStrings.filterForTrade, // Represents items I offered a trade for
+    ProfileStrings.filterAll,
+    ProfileStrings.filterForSale,
+    ProfileStrings.filterForTrade,
+    ProfileStrings.filterAccepted, // Add this
+    ProfileStrings.filterSold,     // Add this
     ProfileStrings.filterExpired
   ];
 
@@ -66,54 +67,49 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
   }
 
   // --- Logic Helpers ---
-
   List<Map<String, dynamic>> _getFilteredList(List<Map<String, dynamic>> bids) {
     return bids.where((bid) {
       final item = bid['items'] as Map<String, dynamic>?;
       if (item == null) return false;
 
-      final endTimeStr = item['end_time'] as String?;
-      final dbStatus = item['status']?.toString().toLowerCase(); // Existing code, keeping as is or could update.
+      final dbItemStatus = item['status']?.toString().toLowerCase();
+      final dbBidStatus = bid['status']?.toString().toLowerCase();
 
-
-      final double cashOffer = (bid['cash_offer'] as num?)?.toDouble() ?? 0.0;
-      final String? swapText = bid['swap_item_text'];
-      final bool hasCash = cashOffer > 0;
-      final bool hasTrade = swapText != null && swapText.isNotEmpty;
-
-      bool isExpired = false;
-      if (endTimeStr != null) {
-        try {
-          final endTime = DateTime.parse(endTimeStr);
-          isExpired = DateTime.now().isAfter(endTime);
-        } catch (_) {}
+      // --- NEW: Filter Accepted ---
+      if (_selectedFilter == ProfileStrings.filterAccepted) {
+        return dbBidStatus == ProfileStrings.dbStatusAccepted;
       }
 
+      // --- NEW: Filter Sold ---
+      if (_selectedFilter == ProfileStrings.filterSold) {
+        return dbItemStatus == ProfileStrings.dbStatusSold;
+      }
+
+      // --- Existing Expired Logic (Modified to be cleaner) ---
       if (_selectedFilter == ProfileStrings.filterExpired) {
-        // Check if item status is ended/sold or time expired
-        if (dbStatus == ProfileStrings.dbStatusEnded || 
-            dbStatus == ProfileStrings.dbStatusSold || 
-            dbStatus == ProfileStrings.dbStatusAccepted) {
-          return true;
+        final endTimeStr = item['end_time'] as String?;
+        bool isTimeExpired = false;
+        if (endTimeStr != null) {
+          final endTime = DateTime.tryParse(endTimeStr);
+          isTimeExpired = endTime != null && DateTime.now().isAfter(endTime);
         }
-        if (isExpired) return true;
-        return false;
+        // Show if time ran out OR if it's explicitly marked as ended/rejected
+        return isTimeExpired || dbBidStatus == ProfileStrings.dbStatusRejected;
       }
 
-      if (_selectedFilter == ProfileStrings.filterForSale) {
-        if (dbStatus != ProfileStrings.dbStatusActive) return false;
-        if (isExpired) return false;
-        return hasCash && !hasTrade; 
+      // --- Existing Sale/Trade logic (ensure we only show active ones) ---
+      if (_selectedFilter == ProfileStrings.filterForSale || _selectedFilter == ProfileStrings.filterForTrade) {
+        // Don't show accepted/sold items in the general sale/trade tabs
+        if (dbItemStatus != ProfileStrings.dbStatusActive) return false;
+
+        final double cashOffer = (bid['cash_offer'] as num?)?.toDouble() ?? 0.0;
+        final bool hasTrade = bid['swap_item_text'] != null && bid['swap_item_text']!.isNotEmpty;
+
+        if (_selectedFilter == ProfileStrings.filterForSale) return cashOffer > 0 && !hasTrade;
+        if (_selectedFilter == ProfileStrings.filterForTrade) return hasTrade;
       }
 
-      if (_selectedFilter == ProfileStrings.filterForTrade) {
-        if (dbStatus != ProfileStrings.dbStatusActive) return false;
-        if (isExpired) return false;
-        return hasTrade && !hasCash;
-      }
-
-      // Default: All
-      return true;
+      return true; // Default: All
     }).toList();
   }
 
@@ -202,8 +198,6 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
           lookingFor = [cleanTitle];
         }
 
-        // Determine Status based on BID status, not just ITEM status
-        // bid['status'] could be pending, accepted, rejected
         String displayStatus = ProfileStrings.statusActive;
         final bidStatus = bid['status']?.toString().toLowerCase(); // Safe check?
         final itemStatus = item['status']?.toString().toLowerCase();
@@ -245,33 +239,15 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
           lookingFor: lookingFor,
           endTime: endTime,
           onAction: () {
-            // Using safe access to avoid null pointer exceptions on logic
-            final currentBidStatus = bid['status']?.toString().toLowerCase();
 
-            if (currentBidStatus == ProfileStrings.dbStatusAccepted) {
-              final sellerProfile = item['profiles'] as Map<String, dynamic>?;
-              final sellerName = sellerProfile?['username'] ?? 'Seller';
-              final offerId = bid['id'].toString();
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DealChatScreen(
-                    chatTitle: sellerName,
-                    itemName: item['title'] ?? 'Unknown Item',
-                    contextId: offerId,
-                  ),
-                ),
-              );
-            } else {
-              // Navigate to Item Details Screen
-              final itemId = item['id'].toString();
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ItemDetailsScreen(itemId: itemId)),
-              );
-            }
-          }, 
+            final itemId = item['id'].toString();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ItemDetailsScreen(itemId: itemId),
+              ),
+            );
+          },
           isMyBid: true,
         );
       },

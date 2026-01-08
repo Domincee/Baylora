@@ -331,15 +331,10 @@ class ManagementListingCard extends StatelessWidget {
     }
     // 3. Normal Buyer Logic
     else if (isMyBid) {
-      if (s == 'accepted') {
-        label = ProfileStrings.manageItem;
-        bgColor = AppColors.successColor; // Green/Blue
-        textColor = AppColors.white;
-      } else {
+
         label = ProfileStrings.viewItem;
         bgColor = AppColors.royalBlue.withValues(alpha: 0.1);
         textColor = AppColors.royalBlue;
-      }
     }
     // 4. Normal Seller Logic
     else {
