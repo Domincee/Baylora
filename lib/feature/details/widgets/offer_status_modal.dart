@@ -1,9 +1,13 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OfferStatusModal extends StatelessWidget {
+import '../../profile/widgets/management_listing_card.dart';
+
+class OfferStatusModal extends ConsumerWidget {
   final Map<String, dynamic> listingItem;
   final Map<String, dynamic> myOffer;
 
@@ -14,16 +18,34 @@ class OfferStatusModal extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final status = myOffer['status'] ?? 'pending'; // pending, accepted, rejected
+  Widget build(BuildContext context, WidgetRef ref) {
+    final itemId = listingItem['id'];
+    final offerId = myOffer['id'];
+
+    // 1. LISTEN TO LIVE STATUS
+    // We watch the stream for this item. If the seller changes status, this rebuilds.
+    final offersAsync = ref.watch(offerSubscriptionProvider(itemId));
+
+    // 2. Extract Latest Data
+    // Find our specific offer from the live list. Fallback to 'myOffer' if loading/error.
+    final currentOffer = offersAsync.when(
+      data: (offers) => offers.firstWhere(
+            (o) => o['id'] == offerId,
+        orElse: () => myOffer,
+      ),
+      error: (_, _) => myOffer,
+      loading: () => myOffer,
+    );
+
+    final status = currentOffer['status'] ?? 'pending';
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.85,
       padding: const EdgeInsets.fromLTRB(
-        AppValues.spacingL, // Left (double)
-        AppValues.spacingS, // Top (double)
-        AppValues.spacingL, // Right (double)
-        AppValues.spacingL, // Bottom (double)
+        AppValues.spacingL,
+        AppValues.spacingS,
+        AppValues.spacingL,
+        AppValues.spacingL,
       ),
       decoration: const BoxDecoration(
         color: AppColors.white,
@@ -32,7 +54,7 @@ class OfferStatusModal extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Drag Handle
+          // Drag Handle
           Center(
             child: Container(
               margin: const EdgeInsets.only(bottom: AppValues.spacingL),
@@ -45,59 +67,35 @@ class OfferStatusModal extends StatelessWidget {
             ),
           ),
 
-          // Wrap the scrollable content in Expanded + SingleChildScrollView
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 2. Dynamic Header
+                  // 3. Header (Updates on status change)
                   _buildHeader(context, status),
                   AppValues.gapL,
 
-                  // 3. Comparison Card (Your Item vs Seller Item)
-                  _buildComparisonCard(context),
+                  // Comparison Card
+                  _buildComparisonCard(context, currentOffer),
                   AppValues.gapXL,
 
-                  // 4. Timeline / Next Steps
+                  // 4. Timeline (Updates colors/icons)
                   const Text(ItemDetailsStrings.whatHappensNext, style: TextStyle(fontWeight: FontWeight.bold)),
                   AppValues.gapM,
-                  _buildTimelineStep(
-                    context,
-                    icon: Icons.check_circle,
-                    color: AppColors.royalBlue.withValues(alpha:  0.3),
-                    iconColor: AppColors.royalBlue,
-                    title: ItemDetailsStrings.offerSent,
-                    subtitle: ItemDetailsStrings.offerSentSubtitle,
-                  ),
-                  _buildTimelineStep(
-                    context,
-                    icon: Icons.hourglass_bottom,
-                    color: AppColors.greyLight,
-                    iconColor: AppColors.textGrey,
-                    title: ItemDetailsStrings.sellerReview,
-                    subtitle: ItemDetailsStrings.sellerReviewSubtitle,
-                  ),
-                  _buildTimelineStep(
-                    context,
-                    icon: Icons.chat_bubble_outline,
-                    color: AppColors.greyLight,
-                    iconColor: AppColors.textGrey,
-                    title: ItemDetailsStrings.chatAndMeet,
-                    subtitle: ItemDetailsStrings.chatAndMeetSubtitle,
-                  ),
-                  
-                  // Add some bottom padding to ensure content isn't flush with the button/bottom
+
+                  _buildTimeline(context, status),
+
                   AppValues.gapL,
                 ],
               ),
             ),
           ),
 
-          // 5. Dynamic Footer Button (Fixed at bottom)
+          // 5. Footer Button (Updates state)
           Padding(
             padding: const EdgeInsets.only(top: AppValues.spacingS),
-            child: _buildFooterButton(context, status),
+            child: _buildFooterButton(context, status, currentOffer),
           ),
         ],
       ),
@@ -105,6 +103,67 @@ class OfferStatusModal extends StatelessWidget {
   }
 
   // --- WIDGET BUILDERS ---
+
+  Widget _buildTimeline(BuildContext context, String status) {
+    // Default / Pending Colors
+    Color step1Color = AppColors.royalBlue.withValues(alpha: 0.1);
+    Color step1Icon = AppColors.royalBlue;
+
+    Color step2Color = AppColors.greyLight;
+    Color step2Icon = AppColors.textGrey;
+    IconData step2IconData = Icons.hourglass_bottom;
+
+    Color step3Color = AppColors.greyLight;
+    Color step3Icon = AppColors.textGrey;
+
+    // Logic for Accepted/Rejected
+    if (status == 'accepted') {
+      // Step 2: Blue Check
+      step2Color = AppColors.royalBlue.withValues(alpha: 0.1);
+      step2Icon = AppColors.royalBlue;
+      step2IconData = Icons.check_circle;
+
+      // Step 3: Blue Chat
+      step3Color = AppColors.royalBlue.withValues(alpha: 0.1);
+      step3Icon = AppColors.royalBlue;
+    } else if (status == 'rejected') {
+      // Step 2: Red X
+      step2Color = AppColors.errorColor.withValues(alpha: 0.1);
+      step2Icon = AppColors.errorColor;
+      step2IconData = Icons.cancel;
+    }
+
+    return Column(
+      children: [
+        _buildTimelineStep(
+          context,
+          icon: Icons.check_circle,
+          color: step1Color,
+          iconColor: step1Icon,
+          title: ItemDetailsStrings.offerSent,
+          subtitle: ItemDetailsStrings.offerSentSubtitle,
+        ),
+        _buildTimelineStep(
+          context,
+          icon: step2IconData,
+          color: step2Color,
+          iconColor: step2Icon,
+          title: status == 'rejected' ? "Offer Rejected" : ItemDetailsStrings.sellerReview, // Change text if rejected
+          subtitle: status == 'rejected'
+              ? "The seller has declined this offer."
+              : ItemDetailsStrings.sellerReviewSubtitle,
+        ),
+        _buildTimelineStep(
+          context,
+          icon: Icons.chat_bubble_outline,
+          color: step3Color,
+          iconColor: step3Icon,
+          title: ItemDetailsStrings.chatAndMeet,
+          subtitle: ItemDetailsStrings.chatAndMeetSubtitle,
+        ),
+      ],
+    );
+  }
 
   Widget _buildHeader(BuildContext context, String status) {
     String title = ItemDetailsStrings.statusUnderReview;
@@ -114,10 +173,10 @@ class OfferStatusModal extends StatelessWidget {
     if (status == 'accepted') {
       title = ItemDetailsStrings.statusAccepted;
       subtitle = ItemDetailsStrings.statusAcceptedSubtitle;
-      color = AppColors.successColor; 
+      color = AppColors.successColor;
     } else if (status == 'rejected') {
-      title = ItemDetailsStrings.statusRejected;
-      subtitle = ItemDetailsStrings.statusRejectedSubtitle;
+      title = "Offer Rejected"; // Updated Title
+      subtitle = "This offer was not accepted by the seller.";
       color = AppColors.errorColor;
     }
 
@@ -142,21 +201,18 @@ class OfferStatusModal extends StatelessWidget {
     );
   }
 
-  Widget _buildComparisonCard(BuildContext context) {
-    // A. Parse Seller Data (Right Side)
+  Widget _buildComparisonCard(BuildContext context, Map<String, dynamic> offerData) {
+    // Seller Data
     final sellerImages = listingItem['images'] as List<dynamic>? ?? [];
     final sellerImage = sellerImages.isNotEmpty ? sellerImages.first : '';
     final sellerProfile = listingItem[ItemDetailsStrings.fieldProfiles] ?? {};
     final sellerName = sellerProfile['username'] ?? 'Seller';
 
-    // B. Parse Buyer Offer Data (Left Side)
-    final swapImages = myOffer['swap_item_images'] as List<dynamic>? ?? [];
+    // Buyer Offer Data (Use live data)
+    final swapImages = offerData['swap_item_images'] as List<dynamic>? ?? [];
     final swapImage = swapImages.isNotEmpty ? swapImages.first : '';
-    // Offer might store "Nike (Used)" -> Just take "Nike"
-    final swapTitle = (myOffer['swap_item_text'] ?? ItemDetailsStrings.labelCashOffer).toString().split('(').first;
-
-    // Check for Cash component
-    final cashAmount = (myOffer['cash_offer'] ?? 0).toDouble();
+    final swapTitle = (offerData['swap_item_text'] ?? ItemDetailsStrings.labelCashOffer).toString().split('(').first;
+    final cashAmount = (offerData['cash_offer'] ?? 0).toDouble();
     final hasCash = cashAmount > 0;
 
     return Container(
@@ -166,9 +222,9 @@ class OfferStatusModal extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppValues.radiusL),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start, // Align to top
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. YOUR ITEM (Left)
+          // Your Item
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,14 +245,12 @@ class OfferStatusModal extends StatelessWidget {
               ],
             ),
           ),
-
-          // 2. ARROW (Center)
+          // Arrow
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingS, vertical: 40),
             child: const Icon(Icons.arrow_forward, color: AppColors.royalBlue, size: 20),
           ),
-
-          // 3. SELLER ITEM (Right)
+          // Seller Item
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +298,7 @@ class OfferStatusModal extends StatelessWidget {
         ),
         if (cashBadge != null) ...[
           Transform.translate(
-            offset: const Offset(0, -10), // Float up slightly overlap
+            offset: const Offset(0, -10),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM, vertical: 4),
               decoration: BoxDecoration(
@@ -273,7 +327,7 @@ class OfferStatusModal extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppValues.spacingS),
             decoration: BoxDecoration(
-              color: color, // Light Blue or Grey
+              color: color,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 16, color: iconColor),
@@ -291,7 +345,7 @@ class OfferStatusModal extends StatelessWidget {
     );
   }
 
-  Widget _buildFooterButton(BuildContext context, String status) {
+  Widget _buildFooterButton(BuildContext context, String status, Map<String, dynamic> offer) {
     String text = ItemDetailsStrings.btnPending;
     Color bgColor = AppColors.white;
     Color textColor = AppColors.royalBlue;
@@ -304,19 +358,33 @@ class OfferStatusModal extends StatelessWidget {
       textColor = AppColors.white;
       side = BorderSide.none;
       onTap = () {
-        // TODO: Navigate to Chat Screen
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ItemDetailsStrings.msgNavigatingChat)));
+        Navigator.pop(context); // Close the modal
+        // 1. EXTRACT SELLER INFO CORRECTLY
+        final rawSeller = listingItem[ItemDetailsStrings.fieldProfiles];
+        // Ensure we have a valid map or use defaults
+        final sellerProfile = rawSeller != null ? Map<String, dynamic>.from(rawSeller) : <String, dynamic>{};
+        final sellerName = sellerProfile['username'] ?? 'Seller';
+        
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DealChatScreen(
+              chatTitle: sellerName,
+              itemName: listingItem['title'] ?? 'Item',
+              contextId: offer['id'], // Use the offer ID as the chat room / context ID
+            ),
+          ),
+        );
       };
     } else if (status == 'rejected') {
-      text = ItemDetailsStrings.btnRejected;
-      bgColor = AppColors.greyDisabled; // Or Red Light
-      textColor = AppColors.errorColor; // Or Red Dark
+      text = "Rejected"; 
+      bgColor = AppColors.greyDisabled;
+      textColor = AppColors.grey400; // Disabled text look
       side = BorderSide.none;
       onTap = null; // Disabled
     } else {
       // Pending
-      onTap = null; // Disabled
+      onTap = null;
     }
 
     return SizedBox(
@@ -327,6 +395,8 @@ class OfferStatusModal extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
           foregroundColor: textColor,
+          disabledBackgroundColor: bgColor, // Keep grey when disabled
+          disabledForegroundColor: textColor, // Keep text grey
           side: side,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppValues.radiusCircular)),

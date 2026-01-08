@@ -2,12 +2,14 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
+import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/manage_listing/screens/manage_listing_screen.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 class MyListingsScreen extends ConsumerStatefulWidget {
   const MyListingsScreen({super.key});
@@ -232,12 +234,52 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
       lookingFor: lookingFor,
       endTime: endTime,
       onAction: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ManageListingScreen(itemId: item['id'].toString()),
-          ),
-        );
+        if (dbStatus == ProfileStrings.dbStatusAccepted) {
+          // Logic: Find the accepted offer in the list of offers
+          final offers = item['offers'] as List<dynamic>? ?? [];
+          
+          final acceptedOffer = offers.firstWhere(
+            (offer) => offer['status']?.toString().toLowerCase() == ProfileStrings.dbStatusAccepted,
+            orElse: () => null,
+          );
+
+          if (acceptedOffer != null) {
+            // Found the accepted offer. 
+            // Extract Buyer Username
+            final buyerProfile = acceptedOffer['profiles'] as Map<String, dynamic>?;
+            final buyerName = buyerProfile?['username'] ?? 'Buyer';
+            
+            // Extract Offer ID
+            final offerId = acceptedOffer['id'].toString();
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DealChatScreen(
+                  chatTitle: buyerName,
+                  itemName: item['title'] ?? ProfileStrings.untitled,
+                  contextId: offerId,
+                ),
+              ),
+            );
+          } else {
+             // Fallback if data sync issue, though status says accepted
+             Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ManageListingScreen(itemId: item['id'].toString()),
+              ),
+            );
+          }
+        } else {
+          // Standard flow
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ManageListingScreen(itemId: item['id'].toString()),
+            ),
+          );
+        }
       },
     );
   }

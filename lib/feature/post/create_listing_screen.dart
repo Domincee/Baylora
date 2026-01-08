@@ -196,7 +196,9 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
     final durationHours = int.tryParse(_durationController.text) ?? 24;
     final endTime = DateTime.now().add(Duration(hours: durationHours));
-    return endTime.toIso8601String();
+    
+    // FIX: Convert to UTC to ensure backend interprets time correctly (avoids +8hr offset issues)
+    return endTime.toUtc().toIso8601String();
   }
 
   Future<void> _handlePublish() async {

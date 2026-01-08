@@ -6,7 +6,6 @@ final profileServiceProvider = Provider<ProfileService>((ref) {
   return ProfileService();
 });
 
-// ✅ FIXED: Returns UserProfile (The Model), not Map
 // Added autoDispose to ensure the provider is reset when the user logs out (UI unmounts)
 final userProfileProvider = StreamProvider.autoDispose<UserProfile>((ref) {
   final profileService = ref.watch(profileServiceProvider);
@@ -14,14 +13,12 @@ final userProfileProvider = StreamProvider.autoDispose<UserProfile>((ref) {
 });
 
 // Listings (returns List of Maps)
-// Added autoDispose to prevent stale data persisting across sessions
 final myListingsProvider = StreamProvider.autoDispose<List<Map<String, dynamic>>>((ref) {
   final profileService = ref.watch(profileServiceProvider);
   return profileService.myListingsStream;
 });
 
 // Bids (returns List of Maps)
-// Added autoDispose to prevent stale data persisting across sessions
 final myBidsProvider = StreamProvider.autoDispose<List<Map<String, dynamic>>>((ref) {
   final profileService = ref.watch(profileServiceProvider);
   return profileService.myBidsStream;

@@ -92,6 +92,8 @@ class AppTheme {
         fontWeight: FontWeight.w400,
       ),
     ),
+    //===========Standard Font to Use//
+
 
     // ============================================
     // COMPONENT THEMES
