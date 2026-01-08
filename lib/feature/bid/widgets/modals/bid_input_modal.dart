@@ -2,8 +2,10 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/bid/widgets/sections/bid_cash_section.dart';
 import 'package:baylora_prjct/feature/bid/widgets/sections/bid_trade_section.dart';
+import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/provider/bid_provider.dart';
+import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart'; // Import offerSubscriptionProvider
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,6 +19,7 @@ class BidInputModal extends ConsumerStatefulWidget {
   final double minimumBid;
   final String itemId;
   final double? initialBidAmount;
+  final Map<String, dynamic>? initialOffer;
 
   const BidInputModal({
     super.key,
@@ -25,6 +28,7 @@ class BidInputModal extends ConsumerStatefulWidget {
     required this.minimumBid,
     required this.itemId,
     this.initialBidAmount,
+    this.initialOffer,
   });
 
   @override
@@ -82,6 +86,27 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
     final bidState = ref.watch(bidProvider);
     final bidNotifier = ref.read(bidProvider.notifier);
 
+    // Watch LIVE offer updates
+    final offersAsync = ref.watch(offerSubscriptionProvider(widget.itemId));
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+
+    // Determine Status
+    // Start with initialOffer status
+    Map<String, dynamic>? myOffer = widget.initialOffer;
+    String status = (myOffer?['status'] ?? 'pending').toString().toLowerCase();
+
+    // Update with live data if available
+    final offers = offersAsync.valueOrNull;
+    if (offers != null && userId != null) {
+      try {
+        final liveOffer = offers.firstWhere((o) => o['user_id'] == userId);
+        myOffer = liveOffer;
+        status = (liveOffer['status'] ?? 'pending').toString().toLowerCase();
+      } catch (_) {
+        // User might not have an offer yet in live data
+      }
+    }
+
     ref.listen(bidProvider, (prev, next) {
       if (next.cashAmount != (double.tryParse(_cashController.text) ?? 0.0)) {
         final newText = next.cashAmount > 0 ? next.cashAmount.toStringAsFixed(0) : "";
@@ -131,6 +156,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
               isCash: _isCash,
               isTrade: _isTrade,
               isEditing: _isCash && widget.initialBidAmount != null,
+              status: status, // Pass Status
             ),
           ),
 
@@ -140,33 +166,14 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
           Expanded(
             child: SingleChildScrollView(
               padding: AppValues.paddingAll,
-              child: _buildBodyLayout(bidState, bidNotifier),
+              child: _buildBodyLayout(bidState, bidNotifier, status),
             ),
           ),
 
           // Action Button
           Padding(
             padding: AppValues.paddingAll,
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => _handleAction(context, bidState),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.royalBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppValues.borderRadiusCircular,
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
-                ),
-                child: Text(
-                  _isCash ? ItemDetailsStrings.confirmBid : ItemDetailsStrings.submitOffer,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+            child: _buildActionButton(context, bidState, status, myOffer),
           ),
         ],
       ),
@@ -174,7 +181,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
   }
 
   // --- Layout Selector ---
-  Widget _buildBodyLayout(BidState state, BidNotifier notifier) {
+  Widget _buildBodyLayout(BidState state, BidNotifier notifier, String status) {
     if (_isMix) {
       // 1. MIX LAYOUT: Photos -> Price -> Details
       return BidTradeSection(
@@ -182,12 +189,14 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         notifier: notifier,
         titleController: _titleController,
         picker: _picker,
+        status: status,
         priceSection: BidCashSection(
           currentHighest: widget.currentHighest,
           minimumBid: widget.minimumBid,
           controller: _cashController,
           onAmountChanged: notifier.setCashAmount,
           onAddAmount: notifier.addToCashAmount,
+          status: status, // Pass Status
         ),
       );
     } else if (_isCash) {
@@ -198,6 +207,7 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         controller: _cashController,
         onAmountChanged: notifier.setCashAmount,
         onAddAmount: notifier.addToCashAmount,
+        status: status, // Pass Status
       );
     } else {
       // 3. TRADE LAYOUT: Photos -> Details
@@ -206,8 +216,68 @@ class _BidInputModalState extends ConsumerState<BidInputModal> {
         notifier: notifier,
         titleController: _titleController,
         picker: _picker,
+        status: status,
       );
     }
+  }
+
+  Widget _buildActionButton(BuildContext context, BidState bidState, String status, Map<String, dynamic>? myOffer) {
+    String label = _isCash ? ItemDetailsStrings.confirmBid : ItemDetailsStrings.submitOffer;
+    Color bgColor = AppColors.royalBlue;
+    Color textColor = AppColors.white;
+    VoidCallback? onTap = () => _handleAction(context, bidState);
+
+    if (status == 'accepted') {
+      label = "Deal Chat";
+      bgColor = AppColors.successColor;
+      onTap = () {
+        Navigator.pop(context); // Close modal
+        // Navigate to chat
+        if (myOffer != null) {
+          // We need to fetch the item details to get the seller name or pass it in
+          // For now, we use a placeholder or check if myOffer has profile expansion
+          // NOTE: The subscription provider might not expand profiles depending on query
+          // Assuming we navigate to chat with offer context
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => DealChatScreen(
+                chatTitle: "Seller", // You might want to fetch seller name properly if needed
+                itemName: "Item", // Pass item name if available
+                contextId: myOffer['id'],
+              ),
+            ),
+          );
+        }
+      };
+    } else if (status == 'rejected') {
+      label = "Rejected";
+      bgColor = AppColors.greyDisabled;
+      textColor = AppColors.grey400;
+      onTap = null;
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bgColor,
+          disabledBackgroundColor: AppColors.greyDisabled,
+          shape: RoundedRectangleBorder(
+            borderRadius: AppValues.borderRadiusCircular,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _handleAction(BuildContext context, BidState state) async {

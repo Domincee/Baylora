@@ -11,6 +11,7 @@ class BidCashSection extends StatelessWidget {
   final TextEditingController controller;
   final ValueChanged<double> onAmountChanged;
   final ValueChanged<double> onAddAmount;
+  final String status; // Added status
 
   const BidCashSection({
     super.key,
@@ -19,10 +20,37 @@ class BidCashSection extends StatelessWidget {
     required this.controller,
     required this.onAmountChanged,
     required this.onAddAmount,
+    this.status = '', // Default to empty
   });
 
   @override
   Widget build(BuildContext context) {
+    // If accepted or rejected, show static text instead of input
+    if (status == 'accepted' || status == 'rejected') {
+      final finalAmount = double.tryParse(controller.text) ?? 0.0;
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: AppValues.spacingM),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Your Final Offer",
+              style: TextStyle(color: AppColors.textGrey, fontSize: 12),
+            ),
+            AppValues.gapS,
+            Text(
+              "${ItemDetailsStrings.currencySymbol}${finalAmount.toStringAsFixed(0)}",
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: AppColors.black,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

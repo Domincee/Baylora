@@ -8,8 +8,10 @@ class ItemDetailsBottomBar extends StatelessWidget {
   final bool isTrade;
   final bool isMix;
   final bool hasBid;
+  final String status;
   final VoidCallback onPlaceBid;
-  final VoidCallback? onOwnerTap; // 1. NEW: Callback for owner actions
+  final VoidCallback? onOwnerTap;
+  final VoidCallback? onChatTap; // We keep this for now, but usage changes
 
   const ItemDetailsBottomBar({
     super.key,
@@ -17,11 +19,13 @@ class ItemDetailsBottomBar extends StatelessWidget {
     this.isTrade = false,
     this.isMix = false,
     this.hasBid = false,
+    this.status = '',
     required this.onPlaceBid,
-    this.onOwnerTap, // Optional: Pass this from parent when you are ready to implement nav
+    this.onOwnerTap,
+    this.onChatTap,
   });
 
-  bool get _isPendingOffer => hasBid && (isTrade || isMix);
+  bool get _isPendingOffer => hasBid && (isTrade || isMix) && status != 'accepted';
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +38,7 @@ class ItemDetailsBottomBar extends StatelessWidget {
           width: double.infinity,
           height: AppValues.buttonHeight,
           child: ElevatedButton(
-            // 2. UPDATED: Enable click for owner (executes onOwnerTap or empty function)
-            onPressed: isOwner
-                ? (onOwnerTap ?? () {})
-                : onPlaceBid,
+            onPressed: _handleOnPressed(),
             style: _buildButtonStyle(),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -63,18 +64,41 @@ class ItemDetailsBottomBar extends StatelessWidget {
     );
   }
 
+  VoidCallback? _handleOnPressed() {
+    if (isOwner) {
+      return onOwnerTap ?? () {};
+    }
+    
+    // Logic: 
+    // If status is accepted, we STILL use onPlaceBid (which opens the modal).
+    // The Modal handles the actual chat navigation.
+    // If rejected, button is disabled.
+    if (hasBid && status == 'rejected') {
+      return null;
+    }
+    
+    // For pending, accepted, or no bid -> onPlaceBid opens the modal or input
+    return onPlaceBid;
+  }
+
   String _getButtonText() {
     if (isOwner) {
-      return "Manage Item"; // Changed from "Your Item" to "Manage Item"
+      return ItemDetailsStrings.yourItem; // "Manage Item"
     }
+
     if (hasBid) {
+      if (status == 'accepted') {
+        return ItemDetailsStrings.statusAccepted; // "Deal Chat"
+      } else if (status == 'rejected') {
+        return ItemDetailsStrings.btnRejected; // "Rejected"
+      }
+      
       if (isTrade || isMix) {
-        return ItemDetailsStrings.pendingOffer;
+        return ItemDetailsStrings.btnPending; // "Pending"
       } else {
         return ItemDetailsStrings.editBid;
       }
-    }
-    else {
+    } else {
       if (isTrade || isMix) {
         return ItemDetailsStrings.makeAnOffer;
       } else {
@@ -112,9 +136,35 @@ class ItemDetailsBottomBar extends StatelessWidget {
       );
     }
 
+    // A.2 Accepted Style (Green)
+    if (hasBid && status == 'accepted') {
+       return ElevatedButton.styleFrom(
+        backgroundColor: AppColors.successColor, // Green
+        foregroundColor: Colors.white,
+        disabledBackgroundColor: AppColors.greyDisabled,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppValues.radiusCircular),
+        ),
+        elevation: 0,
+      );
+    }
+    
+    // A.3 Rejected Style (Grey)
+    if (hasBid && status == 'rejected') {
+       return ElevatedButton.styleFrom(
+        backgroundColor: AppColors.greyDisabled,
+        foregroundColor: AppColors.grey400,
+        disabledBackgroundColor: AppColors.greyDisabled,
+        disabledForegroundColor: AppColors.grey400,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppValues.radiusCircular),
+        ),
+        elevation: 0,
+      );
+    }
+
     // B. Standard Style
     return ElevatedButton.styleFrom(
-      // 3. UPDATED: Use royalBlue for owner so it looks active/clickable
       backgroundColor: isOwner
           ? AppColors.royalBlue
           : (isTrade ? AppColors.tradeIconColor : AppColors.royalBlue),
@@ -132,6 +182,16 @@ class ItemDetailsBottomBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.hourglass_empty_rounded, color: AppColors.royalBlue),
+          AppValues.gapHS,
+        ],
+      );
+    }
+
+    if (hasBid && status == 'accepted') {
+      return const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.chat_bubble_outline, color: AppColors.white),
           AppValues.gapHS,
         ],
       );

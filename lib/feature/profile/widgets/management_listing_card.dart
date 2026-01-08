@@ -2,7 +2,27 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+final offerSubscriptionProvider = StreamProvider.family<List<Map<String, dynamic>>, String>((ref, itemId) {
+  return Supabase.instance.client
+      .from('offers')
+      .stream(primaryKey: ['id'])
+      .eq('item_id', itemId);
+});
+
+final itemDetailsProvider = FutureProvider.family<Map<String, dynamic>, String>((ref, itemId) async {
+
+  ref.watch(offerSubscriptionProvider(itemId));
+  final response = await Supabase.instance.client
+      .from('items')
+      .select('*, offers(*, profiles(*))')
+      .eq('id', itemId)
+      .single();
+
+  return Map<String, dynamic>.from(response);
+});
 class ManagementListingCard extends StatelessWidget {
   final String title;
   final String imageUrl;
@@ -190,7 +210,7 @@ class ManagementListingCard extends StatelessWidget {
     return Wrap(
       spacing: 4,
       runSpacing: 4,
-      children: lookingFor.take(2).map((item) {
+      children: lookingFor.take(1).map((item) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
@@ -293,34 +313,49 @@ class ManagementListingCard extends StatelessWidget {
   }
 
   Widget _buildActionButton(BuildContext context) {
-    String label = ProfileStrings.manage; // Default for My Listings
+    String label = ProfileStrings.manageItem;
     Color bgColor = AppColors.grey200;
     Color textColor = AppColors.textDarkGrey;
 
+    // 1. Create a nullable callback variable
+    VoidCallback? onTapAction = onAction;
+
     final s = status.toLowerCase();
 
-    if (isMyBid) {
-      // --- BID LISTING LOGIC ---
-      label = ProfileStrings.viewItem;
-      // Light Blue Background for View Item to make it distinct
-      bgColor = AppColors.royalBlue.withValues(alpha:  0.1);
-      textColor = AppColors.royalBlue;
-    } else {
-      // --- MY LISTINGS LOGIC ---
+    // 2. CHECK REJECTED FIRST (Global Disable)
+    if (s == 'rejected') {
+      label = "Rejected";
+      bgColor = AppColors.grey200;     // Disabled background
+      textColor = AppColors.grey400;   // Disabled text (dimmed)
+      onTapAction = null;              // ✅ MAKES IT UNCLICKABLE
+    }
+    // 3. Normal Buyer Logic
+    else if (isMyBid) {
       if (s == 'accepted') {
-        label = ProfileStrings.dealChat;
-        bgColor = AppColors.selectedColor; // Assuming green/blue
+        label = ProfileStrings.manageItem;
+        bgColor = AppColors.successColor; // Green/Blue
+        textColor = AppColors.white;
+      } else {
+        label = ProfileStrings.viewItem;
+        bgColor = AppColors.royalBlue.withValues(alpha: 0.1);
+        textColor = AppColors.royalBlue;
+      }
+    }
+    // 4. Normal Seller Logic
+    else {
+      if (s == 'accepted') {
+        label = ProfileStrings.manageItem; // Corrected: Seller sees Manage Item
+        bgColor = AppColors.successColor;
         textColor = AppColors.white;
       } else if (s == 'sold') {
         label = ProfileStrings.review;
         bgColor = const Color(0xFFFFEBEE);
         textColor = AppColors.successColor;
       }
-      // Default remains "Manage"
     }
 
     return InkWell(
-      onTap: onAction, // This callback handles the navigation
+      onTap: onTapAction, // ✅ Pass the nullable variable here
       borderRadius: AppValues.borderRadiusM,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -339,7 +374,6 @@ class ManagementListingCard extends StatelessWidget {
       ),
     );
   }
-
   String _getRelativeTime(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);

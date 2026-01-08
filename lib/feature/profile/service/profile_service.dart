@@ -6,7 +6,6 @@ class ProfileService {
 
   String get userId => _supabase.auth.currentUser!.id;
 
-  // ✅ FIXED: Maps the List<Map> from Supabase to a single UserProfile
   Stream<UserProfile> get myProfileStream {
     return _supabase
         .from('profiles')
@@ -14,7 +13,6 @@ class ProfileService {
         .eq('id', userId)
         .map((event) {
       if (event.isEmpty) {
-        // Return empty profile if not found
         return UserProfile(id: userId, username: '', fullName: 'User');
       }
       return UserProfile.fromMap(event.first);
@@ -24,7 +22,7 @@ class ProfileService {
   Stream<List<Map<String, dynamic>>> get myListingsStream {
     return _supabase
         .from('items')
-        .select()
+        .select('*, offers(*, profiles(*))')
         .eq('owner_id', userId)
         .order('created_at', ascending: false)
         .asStream();
@@ -33,7 +31,7 @@ class ProfileService {
   Stream<List<Map<String, dynamic>>> get myBidsStream {
     return _supabase
         .from('offers')
-        .select('*, items(*)')
+        .select('*, items(*, profiles(*))')
         .eq('bidder_id', userId)
         .order('created_at', ascending: false)
         .asStream();

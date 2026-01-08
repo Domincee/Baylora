@@ -7,20 +7,31 @@ class BidHeaderSection extends StatelessWidget {
   final bool isCash;
   final bool isTrade;
   final bool isEditing;
+  final String status; // Added status
 
   const BidHeaderSection({
     super.key,
     required this.isCash,
     required this.isTrade,
     required this.isEditing,
+    this.status = '', // Default to empty
   });
 
   @override
   Widget build(BuildContext context) {
     String title = "";
     String? subtitle;
+    Color? titleColor;
 
-    if (isEditing) {
+    if (status == 'accepted') {
+      title = "Deal is Accepted";
+      subtitle = "You can now chat with the seller.";
+      titleColor = AppColors.successColor;
+    } else if (status == 'rejected') {
+      title = "Offer Rejected";
+      subtitle = "The seller has declined this offer.";
+      titleColor = AppColors.errorColor;
+    } else if (isEditing) {
       title = ItemDetailsStrings.editBid;
     } else {
       if (isCash) {
@@ -40,9 +51,10 @@ class BidHeaderSection extends StatelessWidget {
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
+            color: titleColor, // Apply color if set
           ),
         ),
-        if (subtitle != null && !isEditing) ...[
+        if (subtitle != null) ...[ // Always show subtitle if set (even for editing if status changed)
           AppValues.gapXS,
           Text(
             subtitle,

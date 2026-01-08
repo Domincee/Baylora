@@ -2,6 +2,7 @@ import 'package:baylora_prjct/core/constant/app_strings.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
+import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/item_details_screen.dart';
 import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
@@ -72,7 +73,7 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
       if (item == null) return false;
 
       final endTimeStr = item['end_time'] as String?;
-      final dbStatus = item['status']?.toString().toLowerCase();
+      final dbStatus = item['status']?.toString().toLowerCase(); // Existing code, keeping as is or could update.
 
 
       final double cashOffer = (bid['cash_offer'] as num?)?.toDouble() ?? 0.0;
@@ -100,14 +101,12 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
       }
 
       if (_selectedFilter == ProfileStrings.filterForSale) {
-        // Show bids where I offered Cash (even if mixed)
         if (dbStatus != ProfileStrings.dbStatusActive) return false;
         if (isExpired) return false;
         return hasCash && !hasTrade; 
       }
 
       if (_selectedFilter == ProfileStrings.filterForTrade) {
-        // Show bids where I offered Trade Item
         if (dbStatus != ProfileStrings.dbStatusActive) return false;
         if (isExpired) return false;
         return hasTrade && !hasCash;
@@ -206,7 +205,7 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
         // Determine Status based on BID status, not just ITEM status
         // bid['status'] could be pending, accepted, rejected
         String displayStatus = ProfileStrings.statusActive;
-        final bidStatus = bid['status']?.toString().toLowerCase();
+        final bidStatus = bid['status']?.toString().toLowerCase(); // Safe check?
         final itemStatus = item['status']?.toString().toLowerCase();
 
         DateTime? endTime;
@@ -246,12 +245,32 @@ class _MyBidsScreenState extends ConsumerState<MyBidsScreen> {
           lookingFor: lookingFor,
           endTime: endTime,
           onAction: () {
-            // Navigate to Item Details Screen
-            final itemId = item['id'].toString();
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ItemDetailsScreen(itemId: itemId)),
-            );
+            // Using safe access to avoid null pointer exceptions on logic
+            final currentBidStatus = bid['status']?.toString().toLowerCase();
+
+            if (currentBidStatus == ProfileStrings.dbStatusAccepted) {
+              final sellerProfile = item['profiles'] as Map<String, dynamic>?;
+              final sellerName = sellerProfile?['username'] ?? 'Seller';
+              final offerId = bid['id'].toString();
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DealChatScreen(
+                    chatTitle: sellerName,
+                    itemName: item['title'] ?? 'Unknown Item',
+                    contextId: offerId,
+                  ),
+                ),
+              );
+            } else {
+              // Navigate to Item Details Screen
+              final itemId = item['id'].toString();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ItemDetailsScreen(itemId: itemId)),
+              );
+            }
           }, 
           isMyBid: true,
         );

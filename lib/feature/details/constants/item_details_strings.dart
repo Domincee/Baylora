@@ -98,7 +98,7 @@ class ItemDetailsStrings {
 
   static const String statusUnderReview = "Under Review";
   static const String statusUnderReviewSubtitle = "Please wait for seller response";
-  static const String statusAccepted = "Offer Accepted! 🎉";
+  static const String statusAccepted = "Offer Accepted!";
   static const String statusAcceptedSubtitle = "You can now chat with the seller.";
   static const String statusRejected = "Offer Rejected";
   static const String statusRejectedSubtitle = "The seller declined this offer.";

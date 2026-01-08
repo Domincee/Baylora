@@ -1,6 +1,7 @@
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
 import 'package:baylora_prjct/feature/bid/widgets/modals/bid_input_modal.dart';
+import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/controller/item_details_controller.dart';
 import 'package:baylora_prjct/feature/details/provider/item_details_provider.dart';
@@ -12,6 +13,7 @@ import 'package:baylora_prjct/feature/manage_listing/screens/manage_listing_scre
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 class ItemDetailsScreen extends ConsumerWidget {
   final String itemId;
@@ -26,6 +28,7 @@ class ItemDetailsScreen extends ConsumerWidget {
       double minimumBid,
       double? existingBidAmount,
       bool hasOffered,
+      Map<String, dynamic>? userOffer,
       ) async {
     final isTradeOrMix = type == ItemDetailsStrings.typeTrade || type == ItemDetailsStrings.typeMix;
 
@@ -34,7 +37,7 @@ class ItemDetailsScreen extends ConsumerWidget {
       return;
     }
 
-    final bool? success = await _showInputModal(context, type, currentHighest, minimumBid, existingBidAmount);
+    final bool? success = await _showInputModal(context, type, currentHighest, minimumBid, existingBidAmount, userOffer);
 
     if (success == true && context.mounted) {
       ref.invalidate(itemDetailsProvider(itemId));
@@ -50,6 +53,7 @@ class ItemDetailsScreen extends ConsumerWidget {
       double currentHighest,
       double minimumBid,
       double? existingBidAmount,
+      Map<String, dynamic>? userOffer,
       ) {
     return showModalBottomSheet<bool>(
       context: context,
@@ -62,6 +66,7 @@ class ItemDetailsScreen extends ConsumerWidget {
           minimumBid: minimumBid,
           itemId: itemId,
           initialBidAmount: existingBidAmount,
+          initialOffer: userOffer,
         );
       },
     );
@@ -136,6 +141,8 @@ class ItemDetailsScreen extends ConsumerWidget {
         ? (userOffer['cash_offer'] as num).toDouble()
         : null;
 
+    final status = userOffer?['status'] ?? ''; // Extract status from offer
+
     return Stack(
       children: [
         ItemDetailsBody(
@@ -169,11 +176,25 @@ class ItemDetailsScreen extends ConsumerWidget {
             isTrade: type == ItemDetailsStrings.typeTrade,
             isMix: type == ItemDetailsStrings.typeMix,
             hasBid: hasOffered,
+            status: status, // Pass the status
             onOwnerTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ManageListingScreen(itemId: itemId),
+                ),
+              );
+            },
+            onChatTap: () {
+              // Navigate to Chat
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DealChatScreen(
+                    chatTitle: seller['username'] ?? 'Seller',
+                    itemName: title,
+                    contextId: userOffer?['id'] ?? '',
+                  ),
                 ),
               );
             },
@@ -184,7 +205,8 @@ class ItemDetailsScreen extends ConsumerWidget {
                 highestBidAmount,
                 minimumBid,
                 existingBidAmount,
-                hasOffered
+                hasOffered,
+                userOffer
             ),
           ),
         ),
