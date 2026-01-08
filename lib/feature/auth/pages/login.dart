@@ -19,6 +19,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../core/theme/app_text_style.dart';
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -127,9 +129,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () {},
                     child: Text(
                       AuthStrings.helpText,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.primaryColor.withValues(alpha: 0.5),
-                      ),
+                      style: AppTextStyles.labelSmall(context, color: AppColors.primaryColor.withValues(alpha: 0.5)),
                     ),
                   ),
                 ),
@@ -155,9 +155,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     padding: const EdgeInsets.only(bottom: AppValues.spacingXS),
                     child: Text(
                       AuthStrings.copyRightText,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.primaryColor.withValues(alpha: 0.5),
-                      ),
+                      style: AppTextStyles.labelSmall(context, color: AppColors.primaryColor.withValues(alpha: 0.5)),
                     ),
                   ),
                 ),

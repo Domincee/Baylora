@@ -1,10 +1,12 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/theme/app_text_style.dart';
 import 'package:baylora_prjct/core/widgets/listing_summary_card.dart';
 import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/provider/item_details_provider.dart';
 import 'package:baylora_prjct/feature/details/widgets/bid_list.dart';
+import 'package:baylora_prjct/feature/manage_listing/constant/manage_listing_strings.dart';
 import 'package:baylora_prjct/feature/post/screens/edit_listing_screen.dart';
 import 'package:baylora_prjct/feature/details/controller/item_details_controller.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +28,7 @@ class ManageListingScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        title:  Text("Manage Listing", style: Theme.of(context).textTheme.titleSmall),
+        title:  Text(ManageListingStrings.manageListingTitle, style: AppTextStyles.titleSmall(context)),
         backgroundColor: AppColors.white,
         elevation: 0,
         foregroundColor: AppColors.black,
@@ -39,7 +41,7 @@ class ManageListingScreen extends ConsumerWidget {
       ),
       body: itemAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text("Error: $err")),
+        error: (err, stack) => Center(child: Text("${ManageListingStrings.errorPrefix}$err", style: AppTextStyles.bodyMedium(context, color: AppColors.errorColor))),
         data: (item) {
           return _buildDashboard(context, ref, item);
         },
@@ -58,8 +60,8 @@ class ManageListingScreen extends ConsumerWidget {
 
       if (acceptedOffer.isNotEmpty) {
         final profile = acceptedOffer['profiles'];
-        final username = profile != null ? profile['username'] : 'Buyer';
-        
+        final username = profile != null ? profile['username'] : ManageListingStrings.defaultBuyerName;
+
         return FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(
@@ -67,13 +69,13 @@ class ManageListingScreen extends ConsumerWidget {
               MaterialPageRoute(
                 builder: (_) => DealChatScreen(
                   chatTitle: username,
-                  itemName: item['title'] ?? 'Item',
+                  itemName: item['title'] ?? ManageListingStrings.defaultItemName,
                   contextId: acceptedOffer['id'],
                 ),
               ),
             );
           },
-          label: const Text("Open Deal Chat", style: TextStyle(color: AppColors.highLightTextColor),),
+          label: Text(ManageListingStrings.openDealChat, style: AppTextStyles.bodyMedium(context, color: AppColors.highLightTextColor),),
           icon: const Icon(Icons.chat_bubble, color: AppColors.highLightTextColor,),
           backgroundColor: AppColors.lavenderBlue,
         );
@@ -81,7 +83,6 @@ class ManageListingScreen extends ConsumerWidget {
     }
     return null;
   }
-
   Widget _buildDashboard(
       BuildContext context,
       WidgetRef ref,
@@ -96,11 +97,9 @@ class ManageListingScreen extends ConsumerWidget {
     final endTime = ItemDetailsController.parseEndTime(item['end_time']);
     final isExpired = endTime != null && DateTime.now().isAfter(endTime);
 
-    // ✅ Shared offer extraction
     final rawOffers = item[ItemDetailsStrings.fieldOffers] ?? [];
     final offers = ItemDetailsController.sortOffers(rawOffers);
-    
-    // Determine if editing should be locked
+
     final bool isLocked = status == 'accepted' || status == 'sold';
 
     return SingleChildScrollView(
@@ -108,39 +107,57 @@ class ManageListingScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListingSummaryCard(
-            item: item,
-            bottomAction: OutlinedButton.icon(
-              onPressed: isLocked
-                  ? null
-                  : () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => EditListingScreen(itemId: item['id'])));
-              },
-              icon: Icon(isLocked ? Icons.lock : Icons.edit, size: 16),
-              label: Text(isLocked ? "Editing Locked (Deal Pending)" : "Edit Item Details"),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.black,
-                disabledForegroundColor: AppColors.grey400,
-                side: BorderSide(color: isLocked ? AppColors.greyLight : AppColors.greyMedium),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          // ✅ Use a Stack here so the Positioned Delete button works
+          Stack(
+            children: [
+              ListingSummaryCard(
+                item: item,
+                bottomAction: OutlinedButton.icon(
+                  onPressed: isLocked
+                      ? null
+                      : () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => EditListingScreen(itemId: item['id']))
+                    );
+                  },
+                  icon: Icon(isLocked ? Icons.lock : Icons.edit, size: 16),
+                  label: Text(
+                      isLocked ? ManageListingStrings.editingLockedShort : ManageListingStrings.editItemDetails,
+                      style: AppTextStyles.bodyMedium(context)
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.black,
+                    disabledForegroundColor: AppColors.grey400,
+                    side: BorderSide(color: isLocked ? AppColors.greyLight : AppColors.greyMedium),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
               ),
-            ),
+              // ✅ Delete Button positioned top-right of the card
+              Positioned(
+                top: 4,
+                right: 4,
+                child: IconButton(
+                  onPressed: () => _handleDeleteListing(context, ref, item['id'].toString()),
+                  icon: const Icon(Icons.delete_outline, color: AppColors.errorColor),
+                  tooltip: ManageListingStrings.deleteListing,
+                ),
+              ),
+            ],
           ),
 
           AppValues.gapL,
 
           Text(
-            "Offers (${offers.length})",
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
+            "${ManageListingStrings.offersTitle} (${offers.length})",
+            style: AppTextStyles.bodyLarge(context, bold: true),
           ),
 
           AppValues.gapM,
 
           if (offers.isEmpty)
-            _buildEmptyState()
+            _buildEmptyState(context)
           else
             BidList(
               offers: offers,
@@ -148,45 +165,87 @@ class ManageListingScreen extends ConsumerWidget {
               isMix: isMix,
               isManageMode: true,
               isExpiredAuction: isExpired && type == ItemDetailsStrings.typeCash,
-              // ✅ Pass the updated handlers
               onAccept: (offerId) => _handleAcceptOffer(context, ref, offerId),
               onReject: (offerId) => _handleRejectOffer(context, ref, offerId),
             ),
 
           AppValues.gapXXL,
-          // Add extra padding at the bottom for FAB
-          const SizedBox(height: 80),
+          AppValues.gapXXL,
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return const Center(
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 40),
+        padding: const EdgeInsets.symmetric(vertical: 40),
         child: Column(
           children: [
-            Icon(Icons.inbox, size: 48, color: AppColors.greyMedium),
+            const Icon(Icons.inbox, size: 48, color: AppColors.greyMedium),
             AppValues.gapS,
-            Text("No offers yet", style: TextStyle(color: AppColors.textGrey)),
+            Text(ManageListingStrings.noOffers, style: AppTextStyles.bodyMedium(context, color: AppColors.textGrey)),
           ],
         ),
       ),
     );
   }
 
+  Future<void> _handleDeleteListing(BuildContext context, WidgetRef ref, String itemId) async {
+    // 1. Show Confirmation Dialog
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title:  Text(ManageListingStrings.deleteListing,style: AppTextStyles.bodyLarge(context),),
+        content: Text( ManageListingStrings.deleteConfirmationMessage, style: AppTextStyles.bodyLarge(context),),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text(ManageListingStrings.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(ManageListingStrings.deleteAction, style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      // 2. Perform Hard Delete in Supabase
+      await Supabase.instance.client
+          .from('items')
+          .delete()
+          .eq('id', itemId);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(ManageListingStrings.deleteSuccess)),
+        );
+
+        ref.invalidate(myListingsProvider);
+        ref.invalidate(itemDetailsProvider(itemId));
+
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("${ManageListingStrings.deleteError}$e"), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
   // --- ✅ IMPLEMENTED ACTIONS ---
 
   Future<void> _handleAcceptOffer(BuildContext context, WidgetRef ref, String offerId) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Accept Offer?"),
-        content: const Text("This will mark your item as sold and reject all other offers. This cannot be undone."),
+        title: Text(ManageListingStrings.acceptOfferDialogTitle, style: AppTextStyles.titleSmall(context)),
+        content: Text(ManageListingStrings.acceptOfferDialogContent, style: AppTextStyles.bodyMedium(context)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancel")),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Confirm")),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ManageListingStrings.cancel, style: AppTextStyles.bodyMedium(context))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(ManageListingStrings.confirm, style: AppTextStyles.bodyMedium(context))),
         ],
       ),
     );
@@ -197,7 +256,7 @@ class ManageListingScreen extends ConsumerWidget {
       await Supabase.instance.client.rpc('accept_offer', params: {'p_offer_id': offerId});
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Offer accepted!")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(ManageListingStrings.offerAcceptedSnackbar, style: AppTextStyles.bodyMedium(context))));
 
         // ✅ FIX: Refresh BOTH screens
         ref.invalidate(itemDetailsProvider(itemId));
@@ -207,7 +266,7 @@ class ManageListingScreen extends ConsumerWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error accepting offer: $e"), backgroundColor: AppColors.errorColor)
+            SnackBar(content: Text("${ManageListingStrings.errorAcceptingOfferPrefix}$e", style: AppTextStyles.bodyMedium(context, color: AppColors.white)), backgroundColor: AppColors.errorColor)
         );
       }
     }
@@ -222,14 +281,14 @@ class ManageListingScreen extends ConsumerWidget {
           .eq('id', offerId);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Offer Rejected")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(ManageListingStrings.offerRejectedSnackbar, style: AppTextStyles.bodyMedium(context))));
         // 2. Refresh Data
         ref.invalidate(itemDetailsProvider(itemId));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error rejecting offer: $e"), backgroundColor: AppColors.errorColor)
+            SnackBar(content: Text("${ManageListingStrings.errorRejectingOfferPrefix}$e", style: AppTextStyles.bodyMedium(context, color: AppColors.white)), backgroundColor: AppColors.errorColor)
         );
       }
     }

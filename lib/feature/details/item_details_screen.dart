@@ -106,9 +106,7 @@ class ItemDetailsScreen extends ConsumerWidget {
       Map<String, dynamic> item,
       Map<String, dynamic>? userOffer,
       ) {
-    // FIX: Explicitly cast 'profiles' (seller) to Map<String, dynamic>
-    // Supabase might return it as a LinkedMap (dynamic), and passing it to
-    // functions expecting Map<String, dynamic> will crash.
+
     final rawSeller = item[ItemDetailsStrings.fieldProfiles];
     final seller = rawSeller != null ? Map<String, dynamic>.from(rawSeller) : <String, dynamic>{};
     

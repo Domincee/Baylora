@@ -1,5 +1,6 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/core/theme/app_text_style.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/basic_info_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/category_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/description_section.dart';
@@ -35,7 +36,7 @@ class EditListingScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        title: Text('Edit Listing', style: Theme.of(context).textTheme.titleSmall),
+        title: Text('Edit Listing', style: AppTextStyles.titleSmall(context)),
         centerTitle: true,
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -47,7 +48,7 @@ class EditListingScreen extends ConsumerWidget {
       body: itemAsyncValue.when(
         data: (item) => _EditListingForm(item: item, itemId: itemId),
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.royalBlue)),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => Center(child: Text('Error: $error', style: AppTextStyles.bodyMedium(context, color: AppColors.errorColor))),
       ),
     );
   }
@@ -170,7 +171,7 @@ class _EditListingFormState extends ConsumerState<_EditListingForm> {
       ref.invalidate(myListingsProvider);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Saved!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Saved!', style: AppTextStyles.bodyMedium(context, color: AppColors.white))));
         Navigator.pop(context);
       }
     } catch (e) {
@@ -202,7 +203,7 @@ class _EditListingFormState extends ConsumerState<_EditListingForm> {
             ),
             AppValues.gapL,
 
-            Text("Condition", style: Theme.of(context).textTheme.titleSmall),
+            Text("Condition", style: AppTextStyles.titleSmall(context)),
             AppValues.gapS,
             DropdownButtonFormField<String>(
               initialValue: _selectedCondition,
@@ -212,7 +213,7 @@ class _EditListingFormState extends ConsumerState<_EditListingForm> {
                 PostStrings.labelUsed,
                 PostStrings.labelBroken,
                 PostStrings.labelFair
-              ].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+              ].map((c) => DropdownMenuItem(value: c, child: Text(c, style: AppTextStyles.bodyMedium(context)))).toList(),
               onChanged: (val) => setState(() => _selectedCondition = val),
             ),
             AppValues.gapL,
@@ -264,7 +265,7 @@ class _EditListingFormState extends ConsumerState<_EditListingForm> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: AppValues.borderRadiusM),
               ),
-              child: const Text('Save Changes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text('Save Changes', style: AppTextStyles.bodyMedium(context, color: AppColors.white, bold: true)),
             ),
           ],
         ),

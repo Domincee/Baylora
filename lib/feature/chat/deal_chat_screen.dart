@@ -1,16 +1,20 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/core/widgets/listing_summary_card.dart'; // Import the new card
+import 'package:baylora_prjct/core/theme/app_text_style.dart';
+import 'package:baylora_prjct/core/widgets/listing_summary_card.dart';
+import 'package:baylora_prjct/feature/chat/constant/chat_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../details/provider/item_details_provider.dart';
+import '../profile/provider/profile_provider.dart';
 import 'provider/chat_provider.dart';
 
 class DealChatScreen extends ConsumerStatefulWidget {
   final String chatTitle;
   final String itemName;
-  final String contextId; // This is the offerId
+  final String contextId;
 
   const DealChatScreen({
     super.key,
@@ -24,6 +28,33 @@ class DealChatScreen extends ConsumerStatefulWidget {
 }
 
 class _DealChatScreenState extends ConsumerState<DealChatScreen> {
+  bool _isUpdatingStatus = false;
+
+  Future<void> _handleStatusUpdate(String itemId, String newStatus) async {
+    setState(() => _isUpdatingStatus = true);
+    try {
+      await ref.read(chatRepositoryProvider).updateItemStatus(itemId, newStatus);
+
+      // Invalidate providers to refresh UI labels everywhere
+      ref.invalidate(chatDealContextProvider(widget.contextId));
+      // Assuming you have these providers
+      ref.invalidate(itemDetailsProvider(itemId));
+      ref.invalidate(myListingsProvider);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text("${ChatStrings.itemMarkedAsPrefix}${newStatus.toUpperCase()}")),
+        );
+      }
+    } catch (e) {
+      debugPrint("${ChatStrings.statusUpdateError}$e");
+    } finally {
+      if (mounted) setState(() => _isUpdatingStatus = false);
+    }
+  }
+
   final TextEditingController _messageController = TextEditingController();
   bool _isSending = false;
 
@@ -46,14 +77,14 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
 
     try {
       await ref.read(chatRepositoryProvider).sendMessage(
-        widget.contextId,
-        content,
-        currentUser.id,
-      );
+            widget.contextId,
+            content,
+            currentUser.id,
+          );
     } catch (e) {
-      debugPrint("Error sending message: $e");
+      debugPrint("${ChatStrings.sendMessageErrorLog}$e");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to send message")),
+        const SnackBar(content: Text(ChatStrings.sendMessageError)),
       );
     } finally {
       if (mounted) setState(() => _isSending = false);
@@ -63,9 +94,7 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
   @override
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(chatMessagesProvider(widget.contextId));
-    // 1. Watch the deal context to get item details
     final dealAsync = ref.watch(chatDealContextProvider(widget.contextId));
-
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
 
     return Scaffold(
@@ -83,16 +112,11 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
           children: [
             Text(
               widget.chatTitle,
-              style: const TextStyle(
-                  color: AppColors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+              style: AppTextStyles.titleSmall(context, bold: true),
             ),
-            // We can remove the subtitle here since we have the card,
-            // or keep it as a fallback.
             Text(
-              "Regarding: ${widget.itemName}",
-              style: const TextStyle(color: AppColors.textGrey, fontSize: 12),
+              "${ChatStrings.regardingPrefix}${widget.itemName}",
+              style: AppTextStyles.bodySmall(context, color: AppColors.textGrey),
             ),
           ],
         ),
@@ -102,28 +126,88 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
           // 2. Insert ListingSummaryCard
           dealAsync.when(
             data: (data) {
-              // The provider returns the OFFER object, which contains the 'items' object
-              final item = data['items'];
+              final item = data[ChatStrings.tableItems];
               if (item == null) return const SizedBox.shrink();
 
-              return Container(
-                color: AppColors.greyLight.withValues(alpha: 0.3),
-                padding: const EdgeInsets.all(AppValues.spacingS),
-                child: ListingSummaryCard(
-                  item: item,
-                  bottomAction: null, // No buttons in chat view
-                ),
+              final String itemStatus =
+                  item[ChatStrings.colStatus]?.toString().toLowerCase() ?? '';
+              final bool showActions = itemStatus == ChatStrings.statusAccepted;
+
+              return Column(
+                children: [
+                  Container(
+                    color: AppColors.greyLight.withValues(alpha: 0.3),
+                    padding: const EdgeInsets.all(AppValues.spacingS),
+                    child: ListingSummaryCard(
+                      item: item,
+                      bottomAction: null,
+                    ),
+                  ),
+                  if (showActions)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(AppValues.spacingM, 0,
+                          AppValues.spacingM, AppValues.spacingS),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: _isUpdatingStatus
+                                  ? null
+                                  : () => _handleStatusUpdate(
+                                      item[ChatStrings.colId].toString(),
+                                      ChatStrings.statusCancelled),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.errorColor,
+                                side: const BorderSide(
+                                    color: AppColors.errorColor),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                              ),
+                              child: const Text(ChatStrings.cancelDealButton),
+                            ),
+                          ),
+                          AppValues.gapHM,
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _isUpdatingStatus
+                                  ? null
+                                  : () => _handleStatusUpdate(
+                                      item[ChatStrings.colId].toString(),
+                                      ChatStrings.statusSold),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.successColor,
+                                foregroundColor: AppColors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                              ),
+                              child: _isUpdatingStatus
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2, color: AppColors.white))
+                                  : const Text(ChatStrings.markAsDoneButton),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const Divider(height: 1, color: AppColors.greyLight),
+                ],
               );
             },
-            loading: () => const LinearProgressIndicator(minHeight: 2, color: AppColors.royalBlue),
-            error: (_, _) => const SizedBox.shrink(), // Hide header on error to keep chat usable
+            loading: () => const LinearProgressIndicator(
+                minHeight: 2, color: AppColors.royalBlue),
+            error: (_, _) => const SizedBox.shrink(),
           ),
-
           // 3. Chat Area
           Expanded(
             child: messagesAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator(color: AppColors.royalBlue)),
-              error: (err, stack) => Center(child: Text('Error loading chat: $err')),
+              loading: () => const Center(
+                  child: CircularProgressIndicator(color: AppColors.royalBlue)),
+              error: (err, stack) =>
+                  Center(child: Text('${ChatStrings.chatLoadingErrorPrefix}$err')),
               data: (messages) {
                 if (messages.isEmpty) {
                   return Center(
@@ -138,21 +222,20 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
                               color: AppColors.royalBlue.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.chat_bubble_outline_rounded,
-                                size: 64, color: AppColors.royalBlue),
+                            child: const Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                size: 64,
+                                color: AppColors.royalBlue),
                           ),
                           AppValues.gapM,
-                          const Text(
-                            "Start the Conversation",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.black),
+                          Text(
+                            ChatStrings.startConversationTitle,
+                            style: AppTextStyles.bodyLarge(context, bold: true),
                           ),
                           AppValues.gapS,
-                          const Text(
-                            "Messages will appear in real-time.",
-                            style: TextStyle(color: AppColors.textGrey),
+                          Text(
+                            ChatStrings.realTimeMessagesSubtitle,
+                            style: AppTextStyles.bodyMedium(context, color: AppColors.textGrey),
                           ),
                         ],
                       ),
@@ -186,7 +269,8 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
                 children: [
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppValues.spacingM),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppValues.spacingM),
                       decoration: BoxDecoration(
                         color: AppColors.greyLight,
                         borderRadius: BorderRadius.circular(25),
@@ -194,11 +278,11 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
                       child: TextField(
                         controller: _messageController,
                         textCapitalization: TextCapitalization.sentences,
-                        decoration: const InputDecoration(
-                          hintText: "Type a message...",
-                          hintStyle: TextStyle(color: AppColors.textGrey),
+                        decoration: InputDecoration(
+                          hintText: ChatStrings.typeMessageHint,
+                          hintStyle: AppTextStyles.bodyMedium(context, color: AppColors.textGrey),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                         onSubmitted: (_) => _sendMessage(),
                       ),
@@ -210,11 +294,12 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
                     child: IconButton(
                       icon: _isSending
                           ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                      )
-                          : const Icon(Icons.send, color: Colors.white, size: 18),
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                  color: AppColors.white, strokeWidth: 2),
+                            )
+                          : const Icon(Icons.send, color: AppColors.white, size: 18),
                       onPressed: _isSending ? null : _sendMessage,
                     ),
                   ),
@@ -233,22 +318,22 @@ class _DealChatScreenState extends ConsumerState<DealChatScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
         decoration: BoxDecoration(
           color: isMe ? AppColors.royalBlue : AppColors.grey200,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
-            bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(0),
-            bottomRight: isMe ? const Radius.circular(0) : const Radius.circular(16),
+            bottomLeft:
+                isMe ? const Radius.circular(16) : const Radius.circular(0),
+            bottomRight:
+                isMe ? const Radius.circular(0) : const Radius.circular(16),
           ),
         ),
         child: Text(
           msg.content,
-          style: TextStyle(
-            color: isMe ? Colors.white : AppColors.black,
-            fontSize: 15,
-          ),
+          style: AppTextStyles.bodyMedium(context, color: isMe ? AppColors.white : AppColors.black),
         ),
       ),
     );

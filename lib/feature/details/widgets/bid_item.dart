@@ -1,5 +1,6 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/home/util/date_util.dart';
 import 'package:baylora_prjct/feature/home/widgets/profile_avatar.dart';
 import 'package:baylora_prjct/feature/shared/widgets/secret_offer_badge.dart';
@@ -41,7 +42,7 @@ class BidItem extends StatelessWidget {
         ? Map<String, dynamic>.from(rawProfile) 
         : <String, dynamic>{};
 
-    final username = bidder['username']?.toString() ?? 'Unknown';
+    final username = bidder['username']?.toString() ?? ItemDetailsStrings.unknownUser;
     final avatarUrl = bidder['avatar_url']?.toString() ?? '';
     
     // Safely parse cash_offer
@@ -72,9 +73,9 @@ class BidItem extends StatelessWidget {
     final swapText = offer['swap_item_text']?.toString();
     final hasTrade = tradeImageUrl != null || (swapText != null && swapText.isNotEmpty);
 
-    final status = offer['status']?.toString() ?? 'pending';
-    final isRejected = status == 'rejected';
-    final isAccepted = status == 'accepted';
+    final status = offer['status']?.toString() ?? ItemDetailsStrings.statusPending;
+    final isRejected = status == ItemDetailsStrings.statusRejectedValue;
+    final isAccepted = status == ItemDetailsStrings.statusAcceptedValue;
 
     return Opacity(
       opacity: isRejected ? 0.5 : 1.0,
@@ -98,7 +99,7 @@ class BidItem extends StatelessWidget {
                      children: [
                         Flexible(
                           child: Text(
-                            "@$username",
+                            "${ItemDetailsStrings.userPrefix}$username",
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.black,
@@ -129,12 +130,12 @@ class BidItem extends StatelessWidget {
                    if (isRejected)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text("Rejected", style: TextStyle(color: AppColors.errorColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                      child: Text(ItemDetailsStrings.rejectedStatus, style: TextStyle(color: AppColors.errorColor, fontSize: 12, fontWeight: FontWeight.bold)),
                     ),
                    if (isAccepted)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text("Accepted", style: TextStyle(color: AppColors.successColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                      child: Text(ItemDetailsStrings.acceptedStatus, style: TextStyle(color: AppColors.successColor, fontSize: 12, fontWeight: FontWeight.bold)),
                     ),
                 ],
               ),
@@ -158,7 +159,7 @@ class BidItem extends StatelessWidget {
              if (hasCash)
                 _buildCashText(context, cashOffer),
              if (hasCash && hasTrade)
-                Text(" + ", style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textGrey, fontWeight: FontWeight.bold)),
+                Text(ItemDetailsStrings.plusOperator, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textGrey, fontWeight: FontWeight.bold)),
              if (hasTrade)
                 _buildTradeContent(context, tradeImageUrl),
           ],
@@ -172,7 +173,7 @@ class BidItem extends StatelessWidget {
 
   Widget _buildCashText(BuildContext context, num amount) {
      return Text(
-        "₱ ${amount.toString()}",
+        "${ItemDetailsStrings.currencySymbol} ${amount.toString()}",
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: AppColors.royalBlue,
@@ -216,7 +217,7 @@ class BidItem extends StatelessWidget {
                  foregroundColor: Colors.white,
                  padding: const EdgeInsets.symmetric(horizontal: 8),
                ),
-               child: const Text("Winner", style: TextStyle(fontSize: 10)),
+               child: const Text(ItemDetailsStrings.winnerLabel, style: TextStyle(fontSize: 10)),
             );
          }
          return const SizedBox.shrink();
