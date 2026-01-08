@@ -20,11 +20,13 @@ class MyListingsScreen extends ConsumerStatefulWidget {
 
 class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
   String _selectedFilter = ProfileStrings.filterAll;
-  
+
   final List<String> _filters = [
-    ProfileStrings.filterAll, 
-    ProfileStrings.filterForSale, 
-    ProfileStrings.filterForTrade, 
+    ProfileStrings.filterAll,
+    ProfileStrings.filterForSale,
+    ProfileStrings.filterForTrade,
+    ProfileStrings.filterAccepted, // Added
+    ProfileStrings.filterSold,     // Added
     ProfileStrings.filterExpired
   ];
 
@@ -67,45 +69,42 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
   }
 
   // --- Logic Helpers ---
-
   List<Map<String, dynamic>> _getFilteredList(List<Map<String, dynamic>> listings) {
     return listings.where((item) {
-      final endTimeStr = item['end_time'] as String?;
       final dbStatus = item['status']?.toString().toLowerCase();
       final type = item['type']?.toString().toLowerCase();
-      bool isExpired = false;
-      
-      if (endTimeStr != null) {
-        try {
-          final endTime = DateTime.parse(endTimeStr);
-          isExpired = DateTime.now().isAfter(endTime);
-        } catch (_) {}
+
+      // 1. Filter Accepted
+      if (_selectedFilter == ProfileStrings.filterAccepted) {
+        return dbStatus == ProfileStrings.dbStatusAccepted;
       }
 
+      // 2. Filter Sold
+      if (_selectedFilter == ProfileStrings.filterSold) {
+        return dbStatus == ProfileStrings.dbStatusSold;
+      }
+
+      // 3. Filter Expired
       if (_selectedFilter == ProfileStrings.filterExpired) {
-        if (dbStatus == ProfileStrings.dbStatusEnded || 
-            dbStatus == ProfileStrings.dbStatusSold || 
-            dbStatus == ProfileStrings.dbStatusAccepted) {
-          return true;
+        final endTimeStr = item['end_time'] as String?;
+        bool isTimeExpired = false;
+        if (endTimeStr != null) {
+          final endTime = DateTime.tryParse(endTimeStr);
+          isTimeExpired = endTime != null && DateTime.now().isAfter(endTime);
         }
-        if (isExpired) return true;
-        return false;
+        return isTimeExpired || dbStatus == ProfileStrings.dbStatusEnded;
       }
 
-      if (_selectedFilter == ProfileStrings.filterForSale) {
+      // 4. Filter Active Categories
+      if (_selectedFilter == ProfileStrings.filterForSale || _selectedFilter == ProfileStrings.filterForTrade) {
+        // Only show items that are still ACTIVE in these tabs
         if (dbStatus != ProfileStrings.dbStatusActive) return false;
-        if (isExpired) return false;
-        return type == ProfileStrings.typeCash;
+
+        if (_selectedFilter == ProfileStrings.filterForSale) return type == ProfileStrings.typeCash;
+        if (_selectedFilter == ProfileStrings.filterForTrade) return type == ProfileStrings.typeTrade;
       }
 
-      if (_selectedFilter == ProfileStrings.filterForTrade) {
-        if (dbStatus != ProfileStrings.dbStatusActive) return false;
-        if (isExpired) return false;
-        return type == ProfileStrings.typeTrade;
-      }
-
-      // Default: All
-      return true;
+      return true; // Default: All
     }).toList();
   }
 
@@ -179,7 +178,8 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
 
   Widget _buildListItem(Map<String, dynamic> item) {
     final images = item['images'] as List?;
-    
+    final dbStatus = item['status']?.toString().toLowerCase();
+
     // Handle swap_preference
     final swapPref = item['swap_preference'];
     final List<String> lookingFor = (swapPref != null && swapPref.toString().isNotEmpty)
@@ -205,8 +205,7 @@ class _MyListingsScreenState extends ConsumerState<MyListingsScreen> {
 
     // Status Logic
     String displayStatus = ProfileStrings.statusActive;
-    final dbStatus = item['status']?.toString().toLowerCase();
-    
+
     DateTime? endTime;
 
     if (dbStatus == ProfileStrings.dbStatusSold) {

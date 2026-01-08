@@ -92,7 +92,7 @@ class ItemDetailsStrings {
   static const String offerSent = "Offer Sent";
   static const String offerSentSubtitle = "Seller received your proposal";
   static const String sellerReview = "Seller Review";
-  static const String sellerReviewSubtitle = "They accept, reject, or counter";
+  static const String sellerReviewSubtitle = "They accept or reject your offer";
   static const String chatAndMeet = "Chat & Meet";
   static const String chatAndMeetSubtitle = "Details unlock upon acceptance";
 

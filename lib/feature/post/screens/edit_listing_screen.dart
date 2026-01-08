@@ -205,7 +205,7 @@ class _EditListingFormState extends ConsumerState<_EditListingForm> {
             Text("Condition", style: Theme.of(context).textTheme.titleSmall),
             AppValues.gapS,
             DropdownButtonFormField<String>(
-              value: _selectedCondition,
+              initialValue: _selectedCondition,
               decoration: _inputDecoration(),
               items: [
                 PostStrings.labelNew,

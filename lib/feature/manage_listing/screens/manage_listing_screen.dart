@@ -35,7 +35,7 @@ class ManageListingScreen extends ConsumerWidget {
       floatingActionButton: itemAsync.when(
         data: (item) => _buildFab(context, item),
         loading: () => null,
-        error: (_, __) => null,
+        error: (_, _) => null,
       ),
       body: itemAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

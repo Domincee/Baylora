@@ -182,7 +182,7 @@ class BidTradeSection extends StatelessWidget {
             readOnly: isReadOnly,
             decoration: InputDecoration(
               filled: true,
-              fillColor: isReadOnly ? AppColors.greyLight.withOpacity(0.5) : AppColors.greyLight,
+              fillColor: isReadOnly ? AppColors.greyLight.withValues(alpha: 0.5) : AppColors.greyLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppValues.radiusM),
                 borderSide: BorderSide.none,
@@ -200,10 +200,10 @@ class BidTradeSection extends StatelessWidget {
         IgnorePointer(
           ignoring: isReadOnly,
           child: DropdownButtonFormField<String>(
-            value: state.tradeCategory,
+            initialValue: state.tradeCategory,
             decoration: InputDecoration(
               filled: true,
-              fillColor: isReadOnly ? AppColors.greyLight.withOpacity(0.5) : AppColors.greyLight,
+              fillColor: isReadOnly ? AppColors.greyLight.withValues(alpha: 0.5) : AppColors.greyLight,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppValues.radiusM),
                 borderSide: BorderSide.none,
@@ -240,7 +240,7 @@ class BidTradeSection extends StatelessWidget {
                   selected: isSelected,
                   selectedColor: AppColors.royalBlue,
                   backgroundColor: AppColors.greyLight,
-                  disabledColor: isSelected ? AppColors.royalBlue.withOpacity(0.5) : AppColors.greyLight.withOpacity(0.5),
+                  disabledColor: isSelected ? AppColors.royalBlue.withValues(alpha: 0.5) : AppColors.greyLight.withValues(alpha: 0.5),
                   labelStyle: TextStyle(
                     color: isSelected ? AppColors.white : AppColors.textGrey,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
