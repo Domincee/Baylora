@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/util/network_utils.dart';
@@ -46,7 +44,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
 
   // Image selection
   final ImagePicker _picker = ImagePicker();
-  final List<File> _selectedImages = [];
+  final List<XFile> _selectedImages = []; // Changed to List<XFile>
 
   // Validation State
   bool _showImageError = false;
@@ -93,7 +91,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
       if (image != null) {
         if (kDebugMode) debugPrint("Image picked: ${image.path}");
         setState(() {
-          _selectedImages.add(File(image.path));
+          _selectedImages.add(image); // Store XFile directly
           if (_selectedImages.isNotEmpty && _showImageError) {
             _showImageError = false;
           }
@@ -106,7 +104,7 @@ class _CreateListingScreenState extends ConsumerState<CreateListingScreen> {
     }
   }
 
-  void _removePhoto(File file) {
+  void _removePhoto(XFile file) { // Changed to XFile
     setState(() {
       _selectedImages.remove(file);
     });

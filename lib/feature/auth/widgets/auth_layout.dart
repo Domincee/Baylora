@@ -34,7 +34,7 @@ class AuthLayout extends StatelessWidget {
                 child: Padding(
                   padding: AppValues.paddingScreen,
                   child: Container(
-                    constraints: const BoxConstraints(
+                    constraints:  BoxConstraints(
                       maxWidth: AppValues.maxContentWidth,
                     ),
                     child: Card(

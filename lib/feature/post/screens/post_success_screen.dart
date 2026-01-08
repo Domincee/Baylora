@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/item_details_screen.dart';
 import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
+import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 
 class PostSuccessScreen extends ConsumerWidget {
@@ -11,11 +12,16 @@ class PostSuccessScreen extends ConsumerWidget {
   const PostSuccessScreen({super.key, required this.newItemId});
 
   void _refreshAllData(WidgetRef ref) {
-    // Force refresh of Home Feed
-    ref.invalidate(homeItemsProvider);
-    // Force refresh of User's Listings
+    // Invalidate home feed with a common default filter.
+    // Using ProfileStrings.filterAll which is likely 'All'.
+    ref.invalidate(homeItemsProvider(ProfileStrings.filterAll));
+    
+    // You might want to invalidate other common filters if your home screen uses them.
+    // e.g., ref.invalidate(homeItemsProvider('For Sale'));
+
+    // Force refresh of User's Listings in their profile
     ref.invalidate(myListingsProvider);
-    // Force refresh of User Profile (stats like total trades)
+    // Force refresh of User Profile stats
     ref.invalidate(userProfileProvider);
   }
 

@@ -9,7 +9,7 @@ class HomeRepository {
 
   Future<List<ItemModel>> fetchItems(String filter) async {
     // Start the query
-    var query = _client
+    dynamic query = _client
         .from('items')
         .select('*, profiles:owner_id(username, avatar_url, rating, total_trades, is_verified)');
 
@@ -23,11 +23,11 @@ class HomeRepository {
           .order('end_time', ascending: true);
     } else if (filter == HomeStrings.categoryForSale) {
       query = query
-          .eq('type', HomeStrings.cash)
+          .or('type.eq.${HomeStrings.cash},type.eq.${HomeStrings.mix}')
           .order('created_at', ascending: false);
     } else if (filter == HomeStrings.categoryForTrade) {
       query = query
-          .eq('type', HomeStrings.trade)
+          .or('type.eq.${HomeStrings.trade},type.eq.${HomeStrings.mix}')
           .order('created_at', ascending: false);
     } else {
       // All or default
@@ -36,6 +36,8 @@ class HomeRepository {
     }
 
     final response = await query;
-    return (response as List<dynamic>).map((e) => ItemModel.fromJson(e)).toList();
+    return (response as List<dynamic>)
+        .map((e) => ItemModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
   }
 }

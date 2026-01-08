@@ -1,17 +1,19 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:flutter/material.dart';
 
 class ManagementListingCard extends StatelessWidget {
   final String title;
-  final String imageUrl; // Pass the FIRST image from the list here. If empty, pass ''.
-  final String status; // 'active', 'sold', 'accepted', 'expired'
+  final String imageUrl;
+  final String status;
   final double? price;
   final List<String> lookingFor;
   final int offerCount;
   final DateTime postedDate;
   final DateTime? endTime;
   final VoidCallback? onAction;
+  final bool isMyBid;
 
   const ManagementListingCard({
     super.key,
@@ -24,6 +26,7 @@ class ManagementListingCard extends StatelessWidget {
     required this.postedDate,
     this.endTime,
     this.onAction,
+    this.isMyBid = false, // Default to false (My Listings behavior)
   });
 
   bool get isCash => price != null && lookingFor.isEmpty;
@@ -57,18 +60,18 @@ class ManagementListingCard extends StatelessWidget {
               color: AppColors.greyLight,
               child: imageUrl.isNotEmpty
                   ? Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Center(
-                        child: Icon(Icons.image_not_supported,
-                            color: AppColors.grey400),
-                      ),
-                    )
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                const Center(
+                  child: Icon(Icons.image_not_supported,
+                      color: AppColors.grey400),
+                ),
+              )
                   : const Center(
-                      child: Icon(Icons.image_not_supported,
-                          color: AppColors.grey400),
-                    ),
+                child: Icon(Icons.image_not_supported,
+                    color: AppColors.grey400),
+              ),
             ),
           ),
           AppValues.gapHS,
@@ -80,8 +83,8 @@ class ManagementListingCard extends StatelessWidget {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -99,7 +102,8 @@ class ManagementListingCard extends StatelessWidget {
             children: [
               _buildStatusBadge(context),
               AppValues.gapL,
-              if (onAction != null || status != 'expired')
+
+              if (onAction != null)
                 _buildActionButton(context),
             ],
           ),
@@ -109,36 +113,72 @@ class ManagementListingCard extends StatelessWidget {
   }
 
   Widget _buildVariantContent(BuildContext context) {
+    final String tradeLabel = isMyBid ? ProfileStrings.labelMyOffer : ProfileStrings.lookingFor;
+
     if (isCash) {
-      return Text(
-        "₱${price!.toStringAsFixed(0)}",
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.highLightTextColor,
-              fontWeight: FontWeight.bold,
-            ),
-      );
-    } else if (isTrade) {
-      return _buildLookingFor(context);
-    } else if (isMix) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
+            isMyBid ? ProfileStrings.labelMyOffer : ProfileStrings.price,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.subTextColor,
+            ),
+          ),
+          Text(
             "₱${price!.toStringAsFixed(0)}",
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.highLightTextColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      );
+    } else if (isTrade) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            tradeLabel,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.subTextColor,
+            ),
+          ),
+          AppValues.gapXS,
+
+          _buildLookingFor(context),
+        ],
+      );
+    } else if (isMix) {
+      return Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isMyBid ? ProfileStrings.labelMyOffer : ProfileStrings.price,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.subTextColor,
+                ),
+              ),
+              Text(
+                "₱${price!.toStringAsFixed(0)}",
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.highLightTextColor,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
+
+            ],
           ),
-          const SizedBox(height: 2),
+          AppValues.gapHS,
           Text(
-            "or trade for:",
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.subTextColor,
-                  fontSize: 10,
-                ),
+            isMyBid ? "+ trade item:" : "or",
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.subTextColor,
+            ),
           ),
-          const SizedBox(height: 2),
+          AppValues.gapHS,
           _buildLookingFor(context),
         ],
       );
@@ -160,9 +200,9 @@ class ManagementListingCard extends StatelessWidget {
           child: Text(
             item,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.tealText,
-                  fontSize: 10,
-                ),
+              color: AppColors.tealText,
+              fontSize: 10,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -175,20 +215,21 @@ class ManagementListingCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (!isMyBid) // Only show offer count for My Listings
+          Text(
+            offerCount == 0 ? ProfileStrings.noOffersYet : "$offerCount ${ProfileStrings.offersCount}",
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppColors.textDarkGrey,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
+          ),
         Text(
-          offerCount == 0 ? "No offers yet" : "$offerCount Offers",
+          "${ProfileStrings.posted} ${_getRelativeTime(postedDate)}",
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AppColors.textDarkGrey,
-                fontWeight: FontWeight.w600,
-                fontSize: 11,
-              ),
-        ),
-        Text(
-          "Posted ${_getRelativeTime(postedDate)}",
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AppColors.subTextColor,
-                fontSize: 10,
-              ),
+            color: AppColors.subTextColor,
+            fontSize: 10,
+          ),
         ),
       ],
     );
@@ -209,6 +250,10 @@ class ManagementListingCard extends StatelessWidget {
       text = 'Accepted';
       bgColor = AppColors.statusAcceptedBg;
       textColor = Colors.white;
+    } else if (s == 'rejected') {
+      text = 'Rejected';
+      bgColor = AppColors.grey200;
+      textColor = AppColors.errorColor;
     } else {
       final now = DateTime.now();
 
@@ -225,7 +270,7 @@ class ManagementListingCard extends StatelessWidget {
       } else {
         // Case: Active (Default)
         text = 'Active';
-        bgColor = AppColors.tealLight.withValues(alpha:  0.5);
+        bgColor = AppColors.tealLight.withValues(alpha: 0.5);
         textColor = AppColors.tealText;
       }
     }
@@ -239,33 +284,43 @@ class ManagementListingCard extends StatelessWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: textColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 10,
-            ),
+          color: textColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 10,
+        ),
       ),
     );
   }
 
   Widget _buildActionButton(BuildContext context) {
-    String label = 'Manage';
+    String label = ProfileStrings.manage; // Default for My Listings
     Color bgColor = AppColors.grey200;
     Color textColor = AppColors.textDarkGrey;
-    
+
     final s = status.toLowerCase();
 
-    if (s == 'accepted') {
-      label = 'Deal Chat';
-      bgColor = AppColors.selectedColor;
-      textColor = AppColors.white;
-    } else if (s == 'sold') {
-      label = 'Review';
-      bgColor = const Color(0xFFFFEBEE);
-      textColor = AppColors.successColor;
+    if (isMyBid) {
+      // --- BID LISTING LOGIC ---
+      label = ProfileStrings.viewItem;
+      // Light Blue Background for View Item to make it distinct
+      bgColor = AppColors.royalBlue.withValues(alpha:  0.1);
+      textColor = AppColors.royalBlue;
+    } else {
+      // --- MY LISTINGS LOGIC ---
+      if (s == 'accepted') {
+        label = ProfileStrings.dealChat;
+        bgColor = AppColors.selectedColor; // Assuming green/blue
+        textColor = AppColors.white;
+      } else if (s == 'sold') {
+        label = ProfileStrings.review;
+        bgColor = const Color(0xFFFFEBEE);
+        textColor = AppColors.successColor;
+      }
+      // Default remains "Manage"
     }
 
     return InkWell(
-      onTap: onAction,
+      onTap: onAction, // This callback handles the navigation
       borderRadius: AppValues.borderRadiusM,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -276,10 +331,10 @@ class ManagementListingCard extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: textColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-              ),
+            color: textColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 11,
+          ),
         ),
       ),
     );

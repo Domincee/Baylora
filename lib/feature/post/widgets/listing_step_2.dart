@@ -10,7 +10,7 @@ import 'package:baylora_prjct/feature/post/widgets/sections/description_section.
 import 'package:baylora_prjct/feature/post/widgets/sections/duration_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/photos_section.dart';
 import 'package:baylora_prjct/feature/post/widgets/sections/pricing_section.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class ListingStep2 extends StatefulWidget {
   final int selectedType;
@@ -29,9 +29,9 @@ class ListingStep2 extends StatefulWidget {
   final List<String> wishlistTags;
   final ValueChanged<String> onTagAdded;
   final ValueChanged<String> onTagRemoved;
-  final List<File> images;
+  final List<XFile> images; // Changed to XFile
   final VoidCallback onAddPhoto;
-  final ValueChanged<File> onRemovePhoto;
+  final ValueChanged<XFile> onRemovePhoto; // Changed to XFile
   final VoidCallback onNext;
 
   // Validation Flags
@@ -273,5 +273,3 @@ class _ListingStep2State extends State<ListingStep2> {
     );
   }
 }
-
-

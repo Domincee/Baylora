@@ -114,7 +114,7 @@ class BidCard extends StatelessWidget {
     String label = status;
 
     if (extraStatus != null && extraStatus!.toLowerCase() == 'accepted') {
-      bg = AppColors.successColor.withOpacity(0.1);
+      bg = AppColors.successColor.withValues(alpha: 0.1);
       text = AppColors.successColor;
       label = ProfileStrings.statusAccepted;
     } else if (status.toLowerCase() == 'sold') {

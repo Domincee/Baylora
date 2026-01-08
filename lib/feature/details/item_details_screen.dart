@@ -1,13 +1,15 @@
-import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
-import 'package:baylora_prjct/core/widgets/action_bottom_sheet.dart';
 import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
+import 'package:baylora_prjct/feature/bid/widgets/modals/bid_input_modal.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/controller/item_details_controller.dart';
 import 'package:baylora_prjct/feature/details/provider/item_details_provider.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_app_bar.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_body.dart';
 import 'package:baylora_prjct/feature/details/widgets/item_details_bottom_bar.dart';
+import 'package:baylora_prjct/feature/details/widgets/offer_status_modal.dart';
+import 'package:baylora_prjct/feature/manage_listing/screens/manage_listing_screen.dart';
+import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,67 +18,72 @@ class ItemDetailsScreen extends ConsumerWidget {
 
   const ItemDetailsScreen({super.key, required this.itemId});
 
-  Future<void> _handlePlaceBid(BuildContext context, String type) async {
-    // Step 1: Input Modal
-    final bool? shouldProceed = await _showInputModal(context, type);
+  Future<void> _handlePlaceBid(
+      BuildContext context,
+      WidgetRef ref,
+      String type,
+      double currentHighest,
+      double minimumBid,
+      double? existingBidAmount,
+      bool hasOffered,
+      ) async {
+    final isTradeOrMix = type == ItemDetailsStrings.typeTrade || type == ItemDetailsStrings.typeMix;
 
-    // Step 2: Review Modal
-    if (shouldProceed == true && context.mounted) {
-      await _showReviewModal(context);
+    if (hasOffered && isTradeOrMix) {
+      await _showOfferStatusModal(context, ref);
+      return;
+    }
+
+    final bool? success = await _showInputModal(context, type, currentHighest, minimumBid, existingBidAmount);
+
+    if (success == true && context.mounted) {
+      ref.invalidate(itemDetailsProvider(itemId));
+      ref.invalidate(userOfferProvider(itemId));
+      ref.invalidate(myBidsProvider);
+      await _showOfferStatusModal(context, ref);
     }
   }
 
-  Future<bool?> _showInputModal(BuildContext context, String type) {
-    final isCash = type == ItemDetailsStrings.typeCash;
+  Future<bool?> _showInputModal(
+      BuildContext context,
+      String type,
+      double currentHighest,
+      double minimumBid,
+      double? existingBidAmount,
+      ) {
     return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppValues.radiusXL)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (context) {
-        return ActionBottomSheet(
-          heightFactor: 0.5,
-          title: isCash
-              ? ItemDetailsStrings.placeYourBid
-              : ItemDetailsStrings.placeYourOffer,
-          titleStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-          actionLabel: isCash
-              ? ItemDetailsStrings.confirmBid
-              : ItemDetailsStrings.submitOffer,
-          onAction: () => Navigator.pop(context, true),
-          child: Container(), // Body Placeholder
+        return BidInputModal(
+          listingType: type,
+          currentHighest: currentHighest,
+          minimumBid: minimumBid,
+          itemId: itemId,
+          initialBidAmount: existingBidAmount,
         );
       },
     );
   }
 
-  Future<void> _showReviewModal(BuildContext context) {
+  Future<void> _showOfferStatusModal(BuildContext context, WidgetRef ref) async {
+    final itemState = ref.read(itemDetailsProvider(itemId));
+    final offerState = ref.read(userOfferProvider(itemId));
+
+    final listingItem = itemState.valueOrNull;
+    final myOffer = offerState.valueOrNull;
+
+    if (listingItem == null || myOffer == null) return;
+
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppValues.radiusXL)),
+      backgroundColor: Colors.transparent,
+      builder: (context) => OfferStatusModal(
+        listingItem: listingItem,
+        myOffer: myOffer,
       ),
-      builder: (context) {
-        return ActionBottomSheet(
-          heightFactor: 0.4,
-          title: ItemDetailsStrings.reviewOffer,
-          titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-          actionLabel: ItemDetailsStrings.submitFinalOffer,
-          onAction: () {
-            // Submit Final Offer logic
-            Navigator.pop(context);
-          },
-          child: Container(), // Body Placeholder
-        );
-      },
     );
   }
 
@@ -88,17 +95,26 @@ class ItemDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, Map<String, dynamic> item) {
-    // 1. Data Processing via Controller
-    final seller = item[ItemDetailsStrings.fieldProfiles] ?? {};
+  Widget _buildContent(
+      BuildContext context,
+      WidgetRef ref,
+      Map<String, dynamic> item,
+      Map<String, dynamic>? userOffer,
+      ) {
+    // FIX: Explicitly cast 'profiles' (seller) to Map<String, dynamic>
+    // Supabase might return it as a LinkedMap (dynamic), and passing it to
+    // functions expecting Map<String, dynamic> will crash.
+    final rawSeller = item[ItemDetailsStrings.fieldProfiles];
+    final seller = rawSeller != null ? Map<String, dynamic>.from(rawSeller) : <String, dynamic>{};
+    
     final rawOffers = item[ItemDetailsStrings.fieldOffers] ?? [];
 
     final offers = ItemDetailsController.sortOffers(rawOffers);
     final displayPrice = ItemDetailsController.calculateDisplayPrice(
         offers, item['price']);
+        
     final isOwner = ItemDetailsController.isOwner(item, seller);
 
-    // 2. Parsed Fields
     final images = (item['images'] as List<dynamic>?) ?? [];
     final title = item['title'] ?? ItemDetailsStrings.noTitle;
     final description = item['description'] ?? '';
@@ -108,9 +124,20 @@ class ItemDetailsScreen extends ConsumerWidget {
     final endTime = ItemDetailsController.parseEndTime(item['end_time']);
     final createdAtStr = item['created_at'];
 
+    final bool hasBids = offers.isNotEmpty;
+    final double startingPrice = (item['price'] as num?)?.toDouble() ?? 0.0;
+
+    final double highestBidAmount = hasBids ? ((offers.first['cash_offer'] ?? 0) as num).toDouble() : 0.0;
+
+    final double minimumBid = startingPrice;
+
+    final bool hasOffered = userOffer != null;
+    final double? existingBidAmount = hasOffered && userOffer['cash_offer'] != null
+        ? (userOffer['cash_offer'] as num).toDouble()
+        : null;
+
     return Stack(
       children: [
-        // 1. Scrollable Content
         ItemDetailsBody(
           item: item,
           seller: seller,
@@ -126,7 +153,6 @@ class ItemDetailsScreen extends ConsumerWidget {
           createdAtStr: createdAtStr,
         ),
 
-        // 2. Transparent App Bar
         const Positioned(
           top: 0,
           left: 0,
@@ -134,7 +160,6 @@ class ItemDetailsScreen extends ConsumerWidget {
           child: ItemDetailsAppBar(),
         ),
 
-        // 3. Bottom Action Bar
         Positioned(
           bottom: 0,
           left: 0,
@@ -143,7 +168,24 @@ class ItemDetailsScreen extends ConsumerWidget {
             isOwner: isOwner,
             isTrade: type == ItemDetailsStrings.typeTrade,
             isMix: type == ItemDetailsStrings.typeMix,
-            onPlaceBid: () => _handlePlaceBid(context, type),
+            hasBid: hasOffered,
+            onOwnerTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ManageListingScreen(itemId: itemId),
+                ),
+              );
+            },
+            onPlaceBid: () => _handlePlaceBid(
+                context,
+                ref,
+                type,
+                highestBidAmount,
+                minimumBid,
+                existingBidAmount,
+                hasOffered
+            ),
           ),
         ),
       ],
@@ -153,6 +195,7 @@ class ItemDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final itemAsync = ref.watch(itemDetailsProvider(itemId));
+    final userOfferAsync = ref.watch(userOfferProvider(itemId));
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -160,9 +203,18 @@ class ItemDetailsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => _buildErrorState(
           error,
-          () => ref.refresh(itemDetailsProvider(itemId)),
+              () {
+            ref.invalidate(itemDetailsProvider(itemId));
+            ref.invalidate(userOfferProvider(itemId));
+          },
         ),
-        data: (item) => _buildContent(context, item),
+        data: (item) {
+          return userOfferAsync.when(
+            data: (userOffer) => _buildContent(context, ref, item, userOffer),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, st) => _buildContent(context, ref, item, null),
+          );
+        },
       ),
     );
   }

@@ -29,6 +29,8 @@ class ProfileStrings {
   static const String recently = "Recently";
   
   // Card Text
+  static const String price =  "Price";
+  static const String suffixOr =  "or";
   static const String startingBid = "Starting Bid";
   static const String buyPrice = "Buy Price";
   static const String lookingFor = "Looking for";
@@ -42,7 +44,9 @@ class ProfileStrings {
   static const String myItems = "My Items";
   static const String orTradeFor = "or trade for:";
   static const String offersCount = "Offers";
-  
+  static const String labelMyOffer = "My Offer";
+
+
   // Action Buttons
   static const String dealChat = "Deal Chat";
   static const String leaveReview = "Leave Review";
@@ -50,18 +54,22 @@ class ProfileStrings {
   static const String viewItem = "View Item";
   static const String manage = "Manage";
   static const String review = "Review";
+  static const String seeAll = "See ALl";
 
   // Filters
   static const String filterAll = 'All';
   static const String filterForSale = 'For Sale';
   static const String filterForTrade = 'For Trade';
   static const String filterExpired = 'Expired';
+  static const String filterActive = 'Active';
 
   // Status Labels
   static const String statusActive = 'Active';
   static const String statusSold = 'Sold';
   static const String statusAccepted = 'Accepted';
+  static const String statusRejected = 'Rejected';
   static const String statusExpired = 'Expired';
+  static const String statusExpiredSmall = 'expired';
   static const String statusEndsIn = 'Ends in';
 
   // Item Types
@@ -73,6 +81,7 @@ class ProfileStrings {
   static const String dbStatusEnded = 'ended';
   static const String dbStatusSold = 'sold';
   static const String dbStatusAccepted = 'accepted';
+  static const String dbStatusRejected = 'rejected';
 
   // Messages
   static const String noItemsFoundPrefix = 'No';
@@ -85,4 +94,17 @@ class ProfileStrings {
   static const String dayShort = 'd';
   static const String hourShort = 'h';
   static const String minuteShort = 'm';
+
+  // Profile Listings Section
+  static const String fieldImages = 'images';
+  static const String fieldSwapPreference = 'swap_preference';
+  static const String fieldCreatedAt = 'created_at';
+  static const String fieldPrice = 'price';
+  static const String fieldStatus = 'status';
+  static const String fieldEndTime = 'end_time';
+  static const String fieldTitle = 'title';
+  static const String fieldOfferCount = 'offer_count';
+  
+  // Separators
+  static const String separatorComma = ',';
 }

@@ -6,21 +6,25 @@ class ItemDetailsController {
   static List<dynamic> sortOffers(List<dynamic> rawOffers) {
     final List<dynamic> offers = List.from(rawOffers);
     offers.sort((a, b) {
-      final amtA = (a['amount'] ?? 0) as num;
-      final amtB = (b['amount'] ?? 0) as num;
+      final amtA = (a['cash_offer'] ?? 0) as num;
+      final amtB = (b['cash_offer'] ?? 0) as num;
       return amtB.compareTo(amtA);
     });
     return offers;
   }
 
   static dynamic calculateDisplayPrice(List<dynamic> offers, dynamic basePrice) {
-    final highestOffer = offers.isNotEmpty ? offers.first['amount'] : null;
-    return highestOffer ?? basePrice;
+    final highestOffer = offers.isNotEmpty ? offers.first['cash_offer'] : null;
+    if (highestOffer != null && (highestOffer as num) > 0) {
+      return highestOffer;
+    }
+    return basePrice;
   }
 
   static bool isOwner(Map<String, dynamic> item, Map<String, dynamic> seller) {
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
-    final String? ownerId = item['user_id']?.toString() ?? seller['id']?.toString();
+    // Fix: Use 'owner_id' instead of 'user_id' as per schema
+    final String? ownerId = item['owner_id']?.toString() ?? seller['id']?.toString();
     
     final isOwner = currentUserId != null && ownerId != null && currentUserId == ownerId;
     

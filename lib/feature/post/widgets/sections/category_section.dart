@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 
-import '../../constants/listing_constants.dart';
+import '../../../../core/constant/listing_constants.dart';
 import '../../constants/post_strings.dart';
 
 class CategorySection extends StatelessWidget {
