@@ -4,6 +4,9 @@ import 'package:baylora_prjct/core/theme/app_colors.dart';
 /// Central theme configuration for the entire app.
 /// Defines all text styles, colors, and component themes.
 class AppTheme {
+
+
+
   static ThemeData themeData = ThemeData(
 
     textTheme: const TextTheme(
@@ -13,33 +16,10 @@ class AppTheme {
         fontSize: 50,
         fontWeight: FontWeight.w400,
       ),
-      displayMedium: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 40,
-        fontWeight: FontWeight.w700,
-      ),
-      displaySmall: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 32,
-        fontWeight: FontWeight.w600,
-      ),
+
 
       // Headline styles - Section headers
-      headlineLarge: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 28,
-        fontWeight: FontWeight.w700,
-      ),
-      headlineMedium: TextStyle(
-        fontFamily: 'NunitoSans',
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-      ),
-      headlineSmall: TextStyle(
-        fontFamily: 'NunitoSans',
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-      ),
+
 
       // Title styles - Card headers, list titles
       titleLarge: TextStyle(
@@ -75,30 +55,17 @@ class AppTheme {
         fontWeight: FontWeight.w400,
       ),
 
-      // Label styles - Buttons, chips, small UI elements
-      labelLarge: TextStyle(
-        fontFamily: 'NunitoSans',
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      ),
-      labelMedium: TextStyle(
-        fontFamily: 'NunitoSans',
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-      ),
+
       labelSmall: TextStyle(
         fontFamily: 'NunitoSans',
         fontSize: 8,
         fontWeight: FontWeight.w400,
       ),
     ),
-    //===========Standard Font to Use//
 
 
-    // ============================================
-    // COMPONENT THEMES
-    // ============================================
-    
+
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryColor,

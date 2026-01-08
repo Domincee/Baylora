@@ -331,7 +331,7 @@ class ManagementListingCard extends StatelessWidget {
     }
     // 3. Normal Buyer Logic
     else if (isMyBid) {
-
+        if (status == 'sold') label = "Review Seller";
         label = ProfileStrings.viewItem;
         bgColor = AppColors.royalBlue.withValues(alpha: 0.1);
         textColor = AppColors.royalBlue;
@@ -347,6 +347,7 @@ class ManagementListingCard extends StatelessWidget {
         bgColor = const Color(0xFFFFEBEE);
         textColor = AppColors.successColor;
       }
+      if (status == 'cancelled') return const SizedBox.shrink();
     }
 
     return InkWell(

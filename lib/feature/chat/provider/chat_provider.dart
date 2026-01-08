@@ -29,6 +29,13 @@ class ChatRepository {
 
   ChatRepository(this._client);
 
+  Future<void> updateItemStatus(String itemId, String newStatus) async {
+    await _client
+        .from('items')
+        .update({'status': newStatus})
+        .eq('id', itemId);
+  }
+
   Future<void> sendMessage(String offerId, String content, String senderId) async {
     await _client.from('messages').insert({
       'offer_id': offerId,
@@ -49,12 +56,15 @@ class ChatRepository {
 
 final chatRepositoryProvider = Provider((ref) {
   return ChatRepository(Supabase.instance.client);
+
+
 });
 
 final chatMessagesProvider = StreamProvider.family.autoDispose<List<ChatMessage>, String>((ref, offerId) {
   final repo = ref.watch(chatRepositoryProvider);
   return repo.getMessages(offerId);
 });
+
 
 final chatDealContextProvider = FutureProvider.family.autoDispose<Map<String, dynamic>, String>((ref, offerId) async {
   final client = Supabase.instance.client;

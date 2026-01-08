@@ -36,12 +36,12 @@ class ItemDetailsStrings {
   static const String currentHighest = "Current Highest Bid";
   static const String miniMumBid = "Minimum Bid:";
   static const String placeATrade = "Place a Trade";
-  static const String offerCombine ="Offer cash, trade an item, or combine both";
+  static const String offerCombine = "Offer cash, trade an item, or combine both";
   static const String photos = "Photos";
   static const String addPhotos = "Add photos";
-  static const String itemTitle =  "Item title";
-  static const String condition =  "Condition";
-  static const String cancel =  "Cancel";
+  static const String itemTitle = "Item title";
+  static const String condition = "Condition";
+  static const String cancel = "Cancel";
 
 
   // Defaults
@@ -71,11 +71,11 @@ class ItemDetailsStrings {
   static const String enterTitle = "Please enter item title";
   static const String enterCategory = "Please select a category";
 
-  static const String confirmOffer =  "Confirm Offer?";
+  static const String confirmOffer = "Confirm Offer?";
   static const String areYouSure = "Are you sure you want to submit this offer?";
   static const String pleaseLogin = "Please login to submit an offer";
-  static const String failedSubmitOffer =   "Failed to submit offer";
-  static const String errorSubmit =   "Error submitting offer";
+  static const String failedSubmitOffer = "Failed to submit offer";
+  static const String errorSubmit = "Error submitting offer";
 
 
   //condition
@@ -113,4 +113,23 @@ class ItemDetailsStrings {
   static const String btnDealChat = "Deal Chat";
   static const String btnRejected = "Rejected";
   static const String msgNavigatingChat = "Navigating to Chat...";
+  
+  static const String errorPrefixGeneric = "Error: ";
+  static const String statusPending = 'pending';
+  static const String statusAcceptedValue = 'accepted';
+  static const String statusRejectedValue = 'rejected';
+  static const String offerRejectedTitle = "Offer Rejected";
+  static const String offerDeclinedSubtitle = "The seller has declined this offer.";
+  static const String offerNotAcceptedSubtitle = "This offer was not accepted by the seller.";
+  static const String defaultSellerName = 'Seller';
+  static const String defaultItemNameAlt = 'Item';
+  static const String btnRejectedTitle = "Rejected";
+
+  // Bid Item
+  static const String unknownUser = 'Unknown';
+  static const String userPrefix = '@';
+  static const String rejectedStatus = 'Rejected';
+  static const String acceptedStatus = 'Accepted';
+  static const String plusOperator = ' + ';
+  static const String winnerLabel = 'Winner';
 }
