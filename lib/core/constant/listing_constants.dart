@@ -5,6 +5,8 @@ class ListingConstants {
     'Fashion',
     'Home',
     'Sports',
+    'Clothing',
+    'Appliances',
     'Others',
   ];
 }

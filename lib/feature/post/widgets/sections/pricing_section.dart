@@ -50,14 +50,16 @@ class PricingSection extends StatelessWidget {
                   child: TextField(
                     controller: priceController,
                     onChanged: onChanged,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                     ],
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+
                     decoration: const InputDecoration(
+
                       prefixText: "₱ ",
                       prefixStyle: TextStyle(
                         fontSize: 16,
