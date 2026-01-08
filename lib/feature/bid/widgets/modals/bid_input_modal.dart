@@ -2,7 +2,7 @@ import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/bid/widgets/sections/bid_cash_section.dart';
 import 'package:baylora_prjct/feature/bid/widgets/sections/bid_trade_section.dart';
-import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
+import 'package:baylora_prjct/feature/chat/screens/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/provider/bid_provider.dart';
 import 'package:baylora_prjct/feature/profile/widgets/management_listing_card.dart'; // Import offerSubscriptionProvider

@@ -34,4 +34,10 @@ class ChatStrings {
   static const String statusAccepted = 'accepted';
   static const String statusCancelled = 'cancelled';
   static const String statusSold = 'sold';
+
+  static const String rateSellerButton = "Rate Seller";
+
+  static const String reviewSubmitted = "Thank you for your feedback!";
+
+  static const String ratingDialogTitle = "Rate your experience";
 }

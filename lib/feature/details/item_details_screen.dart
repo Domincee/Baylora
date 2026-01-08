@@ -1,7 +1,7 @@
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/core/widgets/common_error_widget.dart';
 import 'package:baylora_prjct/feature/bid/widgets/modals/bid_input_modal.dart';
-import 'package:baylora_prjct/feature/chat/deal_chat_screen.dart';
+import 'package:baylora_prjct/feature/chat/screens/deal_chat_screen.dart';
 import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/controller/item_details_controller.dart';
 import 'package:baylora_prjct/feature/details/provider/item_details_provider.dart';
