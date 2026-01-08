@@ -36,6 +36,8 @@ class HomeRepository {
     }
 
     final response = await query;
-    return (response as List<dynamic>).map((e) => ItemModel.fromJson(e)).toList();
+    return (response as List<dynamic>)
+        .map((e) => ItemModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
   }
 }

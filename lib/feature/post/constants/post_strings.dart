@@ -51,10 +51,10 @@ class PostStrings {
   static const String publishingYourListing = "Publishing your listing...";
 
   // --- Labels & Values ---
-  static const String labelNew = "New";
-  static const String labelUsed = "Used";
-  static const String labelBroken = "Broken";
-  static const String labelFair = "Fair";
+  static const String labelNew = "new";
+  static const String labelUsed = "used";
+  static const String labelBroken = "broken";
+  static const String labelFair = "fair";
   static const String labelNA = "N/A";
   static const String hoursSuffix = " hrs";
 }

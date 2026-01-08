@@ -90,14 +90,15 @@ class BidNotifier extends StateNotifier<BidState> {
 
   Future<void> loadExistingOffer(String itemId, String userId) async {
     try {
-      final data = await Supabase.instance.client
+      final rawData = await Supabase.instance.client
           .from(ItemDetailsStrings.fieldOffers)
           .select()
           .eq('item_id', itemId)
           .eq('bidder_id', userId)
           .maybeSingle();
 
-      if (data != null) {
+      if (rawData != null) {
+        final data = Map<String, dynamic>.from(rawData);
         final cash = (data['cash_offer'] as num?)?.toDouble() ?? 0.0;
         final swapText = data['swap_item_text'] as String?;
         final swapImages = List<String>.from(data['swap_item_images'] ?? []);
@@ -146,12 +147,14 @@ class BidNotifier extends StateNotifier<BidState> {
       // Merge existing urls + new urls
       final finalImages = [...state.existingImageUrls, ...newImageUrls];
 
-      final existingOffer = await Supabase.instance.client
+      final rawExistingOffer = await Supabase.instance.client
           .from(ItemDetailsStrings.fieldOffers)
           .select('id')
           .eq('item_id', itemId)
           .eq('bidder_id', userId)
           .maybeSingle();
+      
+      final existingOffer = rawExistingOffer != null ? Map<String, dynamic>.from(rawExistingOffer) : null;
 
       final timestamp = DateTime.now().toIso8601String();
       final swapText = (isTrade || isMix) ? "${state.tradeTitle} (${state.tradeCondition})" : null;

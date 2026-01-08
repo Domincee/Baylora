@@ -65,7 +65,7 @@ class ItemDetailsBottomBar extends StatelessWidget {
 
   String _getButtonText() {
     if (isOwner) {
-      return ItemDetailsStrings.yourItem;
+      return "Manage Item"; // Changed from "Your Item" to "Manage Item"
     }
     if (hasBid) {
       if (isTrade || isMix) {

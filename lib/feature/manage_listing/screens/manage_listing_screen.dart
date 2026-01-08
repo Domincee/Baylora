@@ -1,9 +1,16 @@
 import 'package:baylora_prjct/core/constant/app_values.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
+import 'package:baylora_prjct/feature/details/constants/item_details_strings.dart';
 import 'package:baylora_prjct/feature/details/provider/item_details_provider.dart';
+import 'package:baylora_prjct/feature/details/widgets/bid_list.dart';
 import 'package:baylora_prjct/feature/post/screens/edit_listing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../details/controller/item_details_controller.dart';
+
+// Removed local manageListingProvider to ensure consistency with ItemDetailsScreen
+// We now use itemDetailsProvider from the details feature.
 
 class ManageListingScreen extends ConsumerWidget {
   final String itemId;
@@ -12,6 +19,7 @@ class ManageListingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Use the shared provider that is known to work in ItemDetailsScreen
     final itemAsync = ref.watch(itemDetailsProvider(itemId));
 
     return Scaffold(
@@ -31,81 +39,80 @@ class ManageListingScreen extends ConsumerWidget {
       ),
     );
   }
-
-  Widget _buildDashboard(BuildContext context, WidgetRef ref, Map<String, dynamic> item) {
-    // 1. Extract Data
-    final offers = List<Map<String, dynamic>>.from(item['offers'] ?? []);
+  Widget _buildDashboard(
+      BuildContext context,
+      WidgetRef ref,
+      Map<String, dynamic> item,
+      ) {
     final status = item['status'] ?? 'active';
-    final type = item['type'] ?? 'cash';
-    final endTime = item['end_time'] != null ? DateTime.parse(item['end_time']) : null;
+    final type = item['type'] ?? ItemDetailsStrings.typeCash;
 
-    // Sort offers: Pending first, then by amount/date
-    offers.sort((a, b) {
-      if (a['status'] == 'pending' && b['status'] != 'pending') return -1;
-      if (b['status'] == 'pending' && a['status'] != 'pending') return 1;
-      return 0;
-    });
+    final isTrade = type == ItemDetailsStrings.typeTrade;
+    final isMix = type == ItemDetailsStrings.typeMix;
 
-    // Auction Logic: Check Expiry
-    bool isExpired = false;
-    if (endTime != null && DateTime.now().isAfter(endTime)) {
-      isExpired = true;
-    }
+    final endTime = ItemDetailsController.parseEndTime(item['end_time']);
+    final isExpired = endTime != null && DateTime.now().isAfter(endTime);
+
+    // ✅ Shared offer extraction
+    final rawOffers = item[ItemDetailsStrings.fieldOffers] ?? [];
+    final offers = ItemDetailsController.sortOffers(rawOffers);
 
     return SingleChildScrollView(
       padding: AppValues.paddingAll,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // A. Header Section (Your Item)
-          _buildItemHeader(context, item, isExpired, status),
+          _buildItemHeader(
+            context,
+            item,
+            isExpired,
+            status,
+            isTrade,
+            isMix,
+          ),
 
           AppValues.gapL,
 
-          // B. Offers Title
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Offers (${offers.length})",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              // Optional: Filter Icon could go here
-            ],
+          Text(
+            "Offers (${offers.length})",
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
+
           AppValues.gapM,
 
-          // C. Offers List
           if (offers.isEmpty)
             _buildEmptyState()
           else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: offers.length,
-              separatorBuilder: (_, __) => const Divider(height: 24),
-              itemBuilder: (context, index) {
-                final offer = offers[index];
-                return _OfferRowItem(
-                  offer: offer,
-                  isExpiredAuction: isExpired && type == 'cash',
-                  isWinningBid: index == 0 && isExpired && type == 'cash', // Logic: Top bid wins if expired
-                  onAccept: () => _handleAcceptOffer(context, ref, offer['id']),
-                  onReject: () => _handleRejectOffer(context, ref, offer['id']),
-                );
-              },
+            BidList(
+              offers: offers,
+              isTrade: isTrade,
+              isMix: isMix,
+              isManageMode: true,
+              isExpiredAuction: isExpired && type == ItemDetailsStrings.typeCash,
+              onAccept: (offerId) =>
+                  _handleAcceptOffer(context, ref, offerId),
+              onReject: (offerId) =>
+                  _handleRejectOffer(context, ref, offerId),
             ),
 
-          // Extra padding for safe area
           AppValues.gapXXL,
         ],
       ),
     );
   }
-
-  Widget _buildItemHeader(BuildContext context, Map<String, dynamic> item, bool isExpired, String status) {
+  Widget _buildItemHeader(BuildContext context, Map<String, dynamic> item, bool isExpired, String status, bool isTrade, bool isMix) {
     final images = item['images'] as List<dynamic>? ?? [];
     final imageUrl = images.isNotEmpty ? images.first : '';
+    final swapPreference = item['swap_preference']?.toString() ?? '';
+    
+    // Parse swap items: split by comma if needed
+    List<String> swapItems = [];
+    if (swapPreference.isNotEmpty) {
+      swapItems = swapPreference.split(',').map((e) => e.trim()).toList();
+    }
 
     return Container(
       padding: AppValues.paddingS,
@@ -137,9 +144,9 @@ class ManageListingScreen extends ConsumerWidget {
                       : const Icon(Icons.image, color: AppColors.grey400),
                 ),
               ),
-              AppValues.gapM,
+              AppValues.gapHS,
 
-              // 2. Title & Price
+              // 2. Title & Price / Swap Text
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,13 +158,70 @@ class ManageListingScreen extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     AppValues.gapXS,
-                    Text(
-                      "₱${item['price']}",
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.royalBlue, fontSize: 16),
-                    ),
+                    
+                    // --- DISPLAY LOGIC ---
+                    if (isMix) ...[
+                      // Mix: Show Price
+                      Text(
+                        "Price: ₱${item['price'] ?? 0}",
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.royalBlue, fontSize: 14),
+                      ),
+                      const SizedBox(height: 2),
+                      // And "Trade for:"
+                      if (swapItems.isNotEmpty)
+                         Row(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                              const Text("Trade for: ", style: TextStyle(fontSize: 12, color: AppColors.textGrey)),
+                              Expanded(
+                                child: Text(
+                                  swapItems.take(2).join(", "),
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                           ],
+                         ),
+                    ] else if (isTrade) ...[
+                       // Trade Only
+                       if (swapItems.isNotEmpty)
+                         Row(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                              const Text("Trade for: ", style: TextStyle(fontSize: 12, color: AppColors.textGrey)),
+                              Expanded(
+                                child: Text(
+                                  swapItems.take(2).join(", "),
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                           ],
+                         )
+                       else
+                         const Text(
+                          "Trade Only",
+                          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.royalBlue, fontSize: 14),
+                        ),
+                    ] else ...[
+                       // Cash Only
+                       Text(
+                        "Price: ₱${item['price'] ?? 0}",
+                        style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.royalBlue, fontSize: 16),
+                      ),
+                    ],
+
                     AppValues.gapS,
-                    // Status Badge
-                    _buildStatusBadge(status, isExpired),
+                    // Status Badge in Row with Condition
+                    Row(
+                      children: [
+                        _buildStatusBadge(status, isExpired),
+                        const SizedBox(width: 8),
+                        _buildConditionBadge(item['condition'] ?? 'Used'),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -188,6 +252,20 @@ class ManageListingScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildConditionBadge(String condition) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.greyLight,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        condition,
+        style: const TextStyle(color: AppColors.textDarkGrey, fontWeight: FontWeight.bold, fontSize: 10),
       ),
     );
   }
@@ -235,7 +313,6 @@ class ManageListingScreen extends ConsumerWidget {
   // --- ACTIONS ---
 
   Future<void> _handleAcceptOffer(BuildContext context, WidgetRef ref, String offerId) async {
-    // 1. Show Confirmation
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -250,203 +327,14 @@ class ManageListingScreen extends ConsumerWidget {
 
     if (confirm != true) return;
 
-    // 2. Call Supabase Logic
-    // In a real app, do this in a controller. Here is the logic:
-    // UPDATE offers SET status = 'accepted' WHERE id = offerId
-    // UPDATE offers SET status = 'rejected' WHERE item_id = itemId AND id != offerId
-    // UPDATE items SET status = 'sold' WHERE id = itemId
-
-    // Simulating refresh for UI
+    // Simulate update - In real app, call Supabase logic
+    // For now, invalidate provider to refresh data (assuming backend state changed)
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Offer Accepted!")));
-    ref.invalidate(itemDetailsProvider(itemId));
+    ref.invalidate(itemDetailsProvider(itemId)); // Updated to invalidate the correct provider
   }
 
   Future<void> _handleRejectOffer(BuildContext context, WidgetRef ref, String offerId) async {
-    // UPDATE offers SET status = 'rejected' WHERE id = offerId
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Offer Rejected")));
-    ref.invalidate(itemDetailsProvider(itemId));
-  }
-}
-
-// =========================================================
-// WIDGET: INDIVIDUAL OFFER ROW
-// =========================================================
-
-class _OfferRowItem extends StatelessWidget {
-  final Map<String, dynamic> offer;
-  final bool isExpiredAuction;
-  final bool isWinningBid;
-  final VoidCallback onAccept;
-  final VoidCallback onReject;
-
-  const _OfferRowItem({
-    required this.offer,
-    required this.isExpiredAuction,
-    required this.isWinningBid,
-    required this.onAccept,
-    required this.onReject,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final bidder = offer['profiles'] ?? {};
-    final username = bidder['username'] ?? 'User';
-    final avatarUrl = bidder['avatar_url'];
-
-    final cashAmount = (offer['cash_offer'] ?? 0).toDouble();
-    final tradeImages = offer['swap_item_images'] as List<dynamic>? ?? [];
-    final tradeImage = tradeImages.isNotEmpty ? tradeImages.first : null;
-    final hasTrade = tradeImage != null;
-
-    final status = offer['status'] ?? 'pending';
-    final isRejected = status == 'rejected';
-    final isAccepted = status == 'accepted';
-
-    // AUCTION LOGIC: If expired, disable buttons unless it's the winner
-    // If it is the winner, show "Deal Chat" button instead of accept/reject
-
-    return Opacity(
-      opacity: isRejected ? 0.5 : 1.0,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Avatar
-          CircleAvatar(
-            radius: 20,
-            backgroundImage: (avatarUrl != null) ? NetworkImage(avatarUrl) : null,
-            backgroundColor: AppColors.greyLight,
-            child: (avatarUrl == null) ? const Icon(Icons.person, color: AppColors.grey400) : null,
-          ),
-          AppValues.gapM,
-
-          // 2. Content (Name + Offer)
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(username, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                AppValues.gapXS,
-
-                // THE OFFER PAYLOAD
-                if (hasTrade)
-                  _buildTradePreview(context, tradeImage, cashAmount) // Trade/Mix
-                else
-                  Text( // Cash Only
-                    "₱${cashAmount.toStringAsFixed(0)}",
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.royalBlue),
-                  ),
-
-                if (isRejected)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 4),
-                    child: Text("Rejected", style: TextStyle(color: AppColors.errorColor, fontSize: 12)),
-                  ),
-              ],
-            ),
-          ),
-
-          // 3. Actions (Buttons)
-          if (!isRejected && !isAccepted) ...[
-            if (isExpiredAuction) ...[
-              // AUCTION TIMEOUT STATE
-              if (isWinningBid)
-                ElevatedButton(
-                  onPressed: () {}, // Navigate to Chat
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.royalBlue, padding: const EdgeInsets.symmetric(horizontal: 12)),
-                  child: const Text("Deal Chat", style: TextStyle(color: Colors.white, fontSize: 12)),
-                )
-              else
-                const Text("Lost", style: TextStyle(color: AppColors.textGrey, fontSize: 12))
-            ] else ...[
-              // STANDARD ACTIVE STATE
-              IconButton(
-                onPressed: onReject,
-                icon: const Icon(Icons.close, color: AppColors.errorColor),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-              AppValues.gapM,
-              IconButton(
-                onPressed: onAccept,
-                icon: const Icon(Icons.check, color: AppColors.successColor),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ]
-          ] else if (isAccepted) ...[
-            // ALREADY ACCEPTED STATE
-            ElevatedButton(
-              onPressed: () {}, // Navigate to Chat
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.royalBlue, padding: const EdgeInsets.symmetric(horizontal: 12)),
-              child: const Text("Deal Chat", style: TextStyle(color: Colors.white, fontSize: 12)),
-            )
-          ]
-        ],
-      ),
-    );
-  }
-
-  // --- Trade Image Preview with Fullscreen Logic ---
-  Widget _buildTradePreview(BuildContext context, String imageUrl, double cash) {
-    return GestureDetector(
-      onTap: () => _showFullScreenImage(context, imageUrl),
-      child: Row(
-        children: [
-          Hero(
-            tag: imageUrl, // For smooth animation
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                imageUrl,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          if (cash > 0) ...[
-            AppValues.gapS,
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.royalBlue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                "+ ₱${cash.toStringAsFixed(0)}",
-                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.royalBlue, fontSize: 12),
-              ),
-            )
-          ]
-        ],
-      ),
-    );
-  }
-
-  void _showFullScreenImage(BuildContext context, String imageUrl) {
-    Navigator.of(context).push(PageRouteBuilder(
-      opaque: false,
-      pageBuilder: (_, __, ___) => Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.9),
-        body: Stack(
-          children: [
-            Center(
-              child: Hero(
-                tag: imageUrl,
-                child: Image.network(imageUrl),
-              ),
-            ),
-            Positioned(
-              top: 40,
-              right: 20,
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, color: Colors.white, size: 30),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ));
+    ref.invalidate(itemDetailsProvider(itemId)); // Updated to invalidate the correct provider
   }
 }

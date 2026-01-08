@@ -5,10 +5,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final itemDetailsProvider = StreamProvider.autoDispose.family<Map<String, dynamic>, String>((ref, itemId) {
   return Supabase.instance.client
       .from(ItemDetailsStrings.tableItems)
-      .select('*, ${ItemDetailsStrings.fieldProfiles}(*), ${ItemDetailsStrings.fieldOffers}(*, ${ItemDetailsStrings.fieldProfiles}(*))')
+      .select('*, ${ItemDetailsStrings.fieldOffers}(*, ${ItemDetailsStrings.fieldProfiles}(*))')
       .eq('id', itemId)
       .single()
-      .asStream();
+      .asStream()
+      .map((data) => Map<String, dynamic>.from(data));
 });
 
 final userOfferProvider = StreamProvider.autoDispose.family<Map<String, dynamic>?, String>((ref, itemId) {
@@ -21,5 +22,6 @@ final userOfferProvider = StreamProvider.autoDispose.family<Map<String, dynamic>
       .eq('item_id', itemId)
       .eq('bidder_id', userId)
       .maybeSingle()
-      .asStream();
+      .asStream()
+      .map((data) => data == null ? null : Map<String, dynamic>.from(data));
 });

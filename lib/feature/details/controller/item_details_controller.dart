@@ -23,7 +23,8 @@ class ItemDetailsController {
 
   static bool isOwner(Map<String, dynamic> item, Map<String, dynamic> seller) {
     final currentUserId = Supabase.instance.client.auth.currentUser?.id;
-    final String? ownerId = item['user_id']?.toString() ?? seller['id']?.toString();
+    // Fix: Use 'owner_id' instead of 'user_id' as per schema
+    final String? ownerId = item['owner_id']?.toString() ?? seller['id']?.toString();
     
     final isOwner = currentUserId != null && ownerId != null && currentUserId == ownerId;
     
