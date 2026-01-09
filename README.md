@@ -19,9 +19,9 @@ Baylora is a modern marketplace and trading platform designed to facilitate seam
 |:---:|:---:|:---:|
 | <img width="740" height="907" alt="image" src="https://github.com/user-attachments/assets/b29e2fbb-f535-4ec2-8a8b-f7d268b27031" />
 |<img width="736" height="870" alt="image" src="https://github.com/user-attachments/assets/520f81b3-cd0e-4a16-bee0-dc4b0761f53f" />
-<img width="800" height="1080" alt="localhost_54759_" src="https://github.com/user-attachments/assets/a60e760b-fafb-49ec-95ba-dcdfe473aca6" />
+|<img width="800" height="1080" alt="localhost_54759_" src="https://github.com/user-attachments/assets/a60e760b-fafb-49ec-95ba-dcdfe473aca6" />
 
-<img width="750" height="1334" alt="localhost_54759_(iPhone SE)" src="https://github.com/user-attachments/assets/8856c90f-fcd3-45ac-aac3-f17626966b83" />
+|<img width="750" height="1334" alt="localhost_54759_(iPhone SE)" src="https://github.com/user-attachments/assets/8856c90f-fcd3-45ac-aac3-f17626966b83" />
 
 
 
