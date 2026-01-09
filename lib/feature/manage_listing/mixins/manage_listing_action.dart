@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/config/routes.dart';
 import '../../profile/provider/profile_provider.dart';
 import '../../details/provider/item_details_provider.dart';
 import '../constant/manage_listing_strings.dart';
@@ -63,9 +64,12 @@ mixin ManageListingActions {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ManageListingStrings.deleteSuccess)));
+        
+        // Invalidate listing lists
         ref.invalidate(myListingsProvider);
-        ref.invalidate(itemDetailsProvider(itemId));
-        Navigator.pop(context);
+        
+        // Navigate back to Main/Home and clear the stack to avoid landing on deleted item details
+        Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
       }
     } catch (e) {
       if (context.mounted) {
