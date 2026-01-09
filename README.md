@@ -4,9 +4,8 @@
 **Baylora**
 
 ## Team Members
-* [Add Team Member Name] - Lead Developer / UI Designer
-* [Add Team Member Name] - Backend / Database Architect
-* [Add Team Member Name] - Quality Assurance
+* [Domince A. Aseberos] - SOLO
+
 
 ## App Description
 Baylora is a modern marketplace and trading platform designed to facilitate seamless transactions between users. The application allows users to list items for sale, trade, or a combination of both (cash + trade). Key features include:
