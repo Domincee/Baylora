@@ -183,7 +183,7 @@ class ListingStep3 extends StatelessWidget {
       padding:  EdgeInsets.only(bottom: AppValues.spacingXS),
       child: Text(
         text,
-        style:  Theme.of(context).textTheme.bodyLarge
+        style:  Theme.of(context).textTheme.titleSmall
       ),
     );
   }

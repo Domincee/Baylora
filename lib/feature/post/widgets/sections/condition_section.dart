@@ -21,8 +21,7 @@ class ConditionSection extends StatelessWidget {
       children: [
         Text(
           PostStrings.condition,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
+      style: Theme.of(context).textTheme.titleSmall,),
         AppValues.gapS,
         Row(
           children: [

@@ -23,9 +23,7 @@ class DescriptionSection extends StatelessWidget {
       children: [
          Text(
           PostStrings.descAndDetails,
-             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                 fontWeight: FontWeight.w600
-             ),
+             style: Theme.of(context).textTheme.titleSmall
         ),
         AppValues.gapS,
         Container(

@@ -23,8 +23,7 @@ class BasicInfoSection extends StatelessWidget {
       children: [
          Text(
           PostStrings.basicInfo,
-          style: Theme.of(context).textTheme.titleSmall!.copyWith(
-          )
+          style: Theme.of(context).textTheme.titleSmall
         ),
         AppValues.gapS,
         ValueListenableBuilder(
