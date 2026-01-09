@@ -1,6 +1,6 @@
 
-# App Title
-**Baylora**
+# Baylora
+
 
 ## Team Members
 * [Domince Aseberos] - SOLO
