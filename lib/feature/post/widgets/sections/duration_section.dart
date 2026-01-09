@@ -32,7 +32,7 @@ class DurationSection extends StatelessWidget {
             Expanded(
               child: Text(
                PostStrings.setDuration,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: Theme.of(context).textTheme.titleSmall,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
