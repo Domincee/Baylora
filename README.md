@@ -16,7 +16,7 @@ Baylora is a modern marketplace and trading platform designed to facilitate seam
 ## Screenshots of Major Screens
 | Splash & Onboarding | Login / Register | Home / Marketplace |
 |:---:|:---:|:---:|
-| ![![Uploading image.png…]()
+| !Uploading image.png…()
 ] | ![Placeholder] | ![Placeholder] |
 | *Initial App Experience* | *User Access* | *Item Discovery* |
 
