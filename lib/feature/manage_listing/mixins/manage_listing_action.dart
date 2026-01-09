@@ -28,6 +28,15 @@ mixin ManageListingActions {
 
     if (confirm != true) return;
 
+    // Show loading indicator
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     try {
       final client = Supabase.instance.client;
 
@@ -69,10 +78,13 @@ mixin ManageListingActions {
         ref.invalidate(myListingsProvider);
         
         // Navigate back to Main/Home and clear the stack to avoid landing on deleted item details
+        // This will also remove the loading dialog
         Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
       }
     } catch (e) {
       if (context.mounted) {
+        // Pop the loading indicator if an error occurs
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("${ManageListingStrings.errorPrefix}$e"), backgroundColor: Colors.red),
         );
