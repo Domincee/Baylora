@@ -6,6 +6,7 @@ import '../../details/provider/item_details_provider.dart';
 import '../constant/manage_listing_strings.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_style.dart';
+import '../../post/constants/post_storage.dart';
 
 mixin ManageListingActions {
   Future<void> handleDeleteListing(BuildContext context, WidgetRef ref, String itemId) async {
@@ -27,7 +28,39 @@ mixin ManageListingActions {
     if (confirm != true) return;
 
     try {
-      await Supabase.instance.client.from('items').delete().eq('id', itemId);
+      final client = Supabase.instance.client;
+
+      // 1. Fetch item to get image URLs before deleting
+      final itemData = await client
+          .from(PostStorage.tableItems)
+          .select('images')
+          .eq('id', itemId)
+          .single();
+
+      final List<dynamic>? imageUrls = itemData['images'];
+
+      // 2. Delete the item from the database
+      await client.from(PostStorage.tableItems).delete().eq('id', itemId);
+
+      // 3. Delete images from storage if they exist
+      if (imageUrls != null && imageUrls.isNotEmpty) {
+        final List<String> pathsToDelete = imageUrls.map((url) {
+          final uri = Uri.parse(url.toString());
+          final pathSegments = uri.pathSegments;
+          // Supabase public URL format: .../storage/v1/object/public/bucket_name/path/to/file
+          // We need the part after the bucket name
+          final bucketIndex = pathSegments.indexOf(PostStorage.bucketItemImages);
+          if (bucketIndex != -1 && bucketIndex < pathSegments.length - 1) {
+            return pathSegments.sublist(bucketIndex + 1).join('/');
+          }
+          return '';
+        }).where((path) => path.isNotEmpty).toList();
+
+        if (pathsToDelete.isNotEmpty) {
+          await client.storage.from(PostStorage.bucketItemImages).remove(pathsToDelete);
+        }
+      }
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(ManageListingStrings.deleteSuccess)));
         ref.invalidate(myListingsProvider);
