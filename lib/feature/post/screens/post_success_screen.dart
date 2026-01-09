@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:baylora_prjct/core/theme/app_colors.dart';
 import 'package:baylora_prjct/feature/details/item_details_screen.dart';
 import 'package:baylora_prjct/feature/home/provider/home_provider.dart';
-import 'package:baylora_prjct/feature/profile/constant/profile_strings.dart';
 import 'package:baylora_prjct/feature/profile/provider/profile_provider.dart';
+import 'package:baylora_prjct/core/root/main_wrapper.dart';
+
+import '../../home/constant/home_strings.dart'; // Added for key matching
 
 class PostSuccessScreen extends ConsumerWidget {
   final String newItemId;
@@ -12,10 +14,10 @@ class PostSuccessScreen extends ConsumerWidget {
   const PostSuccessScreen({super.key, required this.newItemId});
 
   void _refreshAllData(WidgetRef ref) {
-
-    ref.invalidate(homeItemsProvider(ProfileStrings.filterAll));
+    // FIX: Using HomeStrings.categoryAll to match the key used in HomeScreen
+    // If these keys don't match exactly, Riverpod won't trigger the UI refresh
+    ref.invalidate(homeItemsProvider(HomeStrings.categoryAll));
     ref.invalidate(myListingsProvider);
-    // Force refresh of User Profile stats
     ref.invalidate(userProfileProvider);
   }
 
@@ -96,7 +98,14 @@ class PostSuccessScreen extends ConsumerWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       _refreshAllData(ref);
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+
+                      // FIX: Navigate directly to the MainWrapper and clear the stack
+                      // This avoids popping back into SplashPage or Onboarding logic
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainWrapper()),
+                            (route) => false,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.greyLight,
