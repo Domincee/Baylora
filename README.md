@@ -20,12 +20,12 @@ Baylora is a modern marketplace and trading platform designed to facilitate seam
 <img width="740" height="907" alt="image" src="https://github.com/user-attachments/assets/b29e2fbb-f535-4ec2-8a8b-f7d268b27031" />
 
 <img width="736" height="870" alt="image" src="https://github.com/user-attachments/assets/520f81b3-cd0e-4a16-bee0-dc4b0761f53f" />
-
-
+<img width="750" height="1334" alt="localhost_54759_(iPhone SE) (8)" src="https://github.com/user-attachments/assets/5bd25ed1-7160-4540-a3ad-3105eca89a8e" />
 
 <img width="750" height="1334" alt="localhost_54759_(iPhone SE)" src="https://github.com/user-attachments/assets/8856c90f-fcd3-45ac-aac3-f17626966b83" />
+
 <img width="750" height="1334" alt="localhost_54759_(iPhone SE) (2)" src="https://github.com/user-attachments/assets/8f9f97a8-6e9b-4670-a0d8-07d8f39849bb" />
-<img width="750" height="1334" alt="localhost_54759_(iPhone SE) (8)" src="https://github.com/user-attachments/assets/5bd25ed1-7160-4540-a3ad-3105eca89a8e" />
+
 <img width="750" height="1334" alt="localhost_54759_(iPhone SE) (9)" src="https://github.com/user-attachments/assets/4c712ac0-a734-46fc-8e84-82dcb5d6779f" />
 <img width="750" height="1334" alt="localhost_54759_(iPhone SE) (10)" src="https://github.com/user-attachments/assets/5c864d8b-19f8-401e-bbb9-b596170a5e5b" />
 <img width="750" height="1334" alt="localhost_54759_(iPhone SE) (3)" src="https://github.com/user-attachments/assets/9df03e5d-be19-41c5-b886-385a987a1d55" />
