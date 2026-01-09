@@ -1,7 +1,5 @@
-# Baylora App Documentation
+# Baylor
 
-## App Title
-**Baylora**
 
 ## Team Members
 * [Domince A. Aseberos] - SOLO
